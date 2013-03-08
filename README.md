@@ -4,6 +4,11 @@ ff-fixity-service
 This service is meant to be run as a client to [Fedora 4](https://github.com/futures/fcrepo4).
 It is designed to run fixity checks (e.g. checksum comparison) of stored Datastreams.
 
+Dependencies
+------------
+
+This project currently depends on https://github.com/futures/ff-fedora-client , which has to be built and installed first
+
 Running the service
 -------------------
 
