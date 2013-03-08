@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="fixityService" class="org.fcrepo.services.fixity.FixityService"
+		destroy-method="shutdown">
+		<property name="databaseService" ref="databaseService" />
+		<property name="fixityChecks">
+			<map>
+				<entry key="Datastream Checksum" value-ref="datastreamChecksumCheck" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="datastreamChecksumCheck" class="org.fcrepo.services.fixity.DatastreamChecksumCheck">
+		<property name="client" ref="fedoraClient" />
+	</bean>
+
+	<bean id="fedoraClient" class="org.fcrepo.client.FedoraClient" />
+
+	<bean id="hsqlDatasource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+<!-- 		<property name="driverClassName" value="org.postgresql.Driver" /> -->
+<!-- 		<property name="url" value="jdbc:postgresql://localhost/fixity" /> -->
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:results" />
+		<property name="username" value="fixity" />
+		<property name="password" value="fixity" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="hsqlDatasource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>org.fcrepo.services.fixity.model.FixityCheckResult</value>
+				<value>org.fcrepo.services.fixity.model.FixityError</value>
+				<value>org.fcrepo.services.fixity.model.FixityWarning</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect"> org.hibernate.dialect.HSQLDialect</prop>
+<!-- 				<prop key="hibernate.dialect"> org.hibernate.dialect.PostgreSQLDialect</prop> -->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="databaseService" class="org.fcrepo.services.db.DefaultDatabaseService">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="txManager" />
+	
+</beans>
