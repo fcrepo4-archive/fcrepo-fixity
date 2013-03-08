@@ -43,15 +43,13 @@ public class TestFixityService {
 	private DatastreamChecksumCheck checksumCheck;
 	private FedoraClient client;
 	private ExecutorService executor;
-	private Future<Integer> taskreturnValue;
 
 	@PostConstruct
 	public void initMock() {
 		/* inject the mock client to the datastream checksum check */
 		this.client = mock(FedoraClient.class);
 		this.checksumCheck.setClient(this.client);
-		this.executor = Executors.newSingleThreadExecutor();
-		taskreturnValue = executor.submit(service);
+		
 	}
 
 	@Test
@@ -138,8 +136,4 @@ public class TestFixityService {
 		assertTrue(results.get(0).getErrors().get(0).getTimestamp() != null);
 	}
 
-	@PreDestroy
-	public void tearDown() throws Exception {
-		executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-	}
 }

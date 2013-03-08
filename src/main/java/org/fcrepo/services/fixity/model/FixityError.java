@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -14,6 +16,7 @@ import org.hibernate.annotations.ForeignKey;
 
 @Entity
 @Table(name = "fixity_errors")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class FixityError {
 	@XmlTransient
 	@Id

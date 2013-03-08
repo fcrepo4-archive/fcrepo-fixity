@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
 import org.fcrepo.services.fixity.model.FixityCheckResult;
+import org.springframework.stereotype.Service;
 
 @Path("/fixity")
 public class Results {

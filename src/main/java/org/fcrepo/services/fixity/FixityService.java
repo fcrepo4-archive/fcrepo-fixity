@@ -21,6 +21,7 @@ import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.FixityCheckResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * A fixity service implementation This is a standalone service that checks the fixity values of a fedora datastream It
@@ -70,26 +71,20 @@ public class FixityService implements Callable<Integer> {
 	@Override
 	public Integer call() throws Exception {
 		try {
-			do {
-				/* check every second for work to be done */
-				if (workQueue.isEmpty()) {
-					Thread.sleep(100);
-				}
-				while (!workQueue.isEmpty()) {
-					/* pop an object id from the queue to check it */
-					final String id = workQueue.poll();
-					final List<FixityCheckResult> results = runChecks(id);
-					logger.debug("gathered " + results.size() + " fixity check results for object '" + id + "'");
-					databaseService.addResults(results);
-					for (final FixityCheckResult result : results) {
-						if (result.isSuccess()) {
-							logger.debug("Success for object " + id);
-						} else {
-							logger.error("Errors when checking fixity of object " + id + ":\n" + this.jsonWriter.writeValueAsString(result));
-						}
+			while (!workQueue.isEmpty()) {
+				/* pop an object id from the queue to check it */
+				final String id = workQueue.poll();
+				final List<FixityCheckResult> results = runChecks(id);
+				logger.debug("gathered " + results.size() + " fixity check results for object '" + id + "'");
+				databaseService.addResults(results);
+				for (final FixityCheckResult result : results) {
+					if (result.isSuccess()) {
+						logger.debug("Success for object " + id);
+					} else {
+						logger.error("Errors when checking fixity of object " + id + ":\n" + this.jsonWriter.writeValueAsString(result));
 					}
 				}
-			} while (!shutdown);
+			}
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 		}
@@ -135,6 +130,7 @@ public class FixityService implements Callable<Integer> {
 
 	/**
 	 * retrieve the list of results for a certain object from the result database
+	 * 
 	 * @param pid
 	 * @return
 	 */
