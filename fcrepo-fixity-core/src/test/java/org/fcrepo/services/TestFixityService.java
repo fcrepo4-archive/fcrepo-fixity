@@ -1,5 +1,9 @@
 package org.fcrepo.services;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
@@ -8,12 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.fcrepo.client.FedoraClient;
@@ -24,14 +24,10 @@ import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.DatastreamChecksumCheck;
 import org.fcrepo.services.fixity.FixityService;
 import org.fcrepo.services.fixity.model.FixityCheckResult;
-import org.fcrepo.services.fixity.model.FixityError;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/context.xml")
