@@ -3,17 +3,14 @@ package org.fcrepo.services.fixity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.avro.Protocol.Message;
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.jaxb.responses.access.ObjectDatastreams;
-import org.fcrepo.jaxb.responses.access.ObjectProfile;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.model.FixityCheckResult;
 import org.fcrepo.services.fixity.model.FixityError;

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.fcrepo.services.fixity.model.FixityCheckResult;
-import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

@@ -3,17 +3,12 @@ package org.fcrepo.services.fixity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.inject.Inject;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
@@ -21,7 +16,6 @@ import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.FixityCheckResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * A fixity service implementation This is a standalone service that checks the fixity values of a fedora datastream It
@@ -38,7 +32,7 @@ import org.springframework.scheduling.annotation.Async;
 public class FixityService implements Callable<Integer> {
 	private static final Logger logger = LoggerFactory.getLogger(FixityService.class);
 
-	private boolean shutdown = false;
+    private boolean shutdown = false;
 	private final Queue<String> workQueue = new ConcurrentLinkedQueue<String>();
 	private final ObjectMapper jsonMapper = new ObjectMapper();
 	private final ObjectWriter jsonWriter = jsonMapper.defaultPrettyPrintingWriter();

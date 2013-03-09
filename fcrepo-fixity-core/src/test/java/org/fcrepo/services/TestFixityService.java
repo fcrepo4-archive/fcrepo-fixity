@@ -11,7 +11,6 @@ import java.security.MessageDigest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,7 +37,6 @@ public class TestFixityService {
 	@Inject
 	private DatastreamChecksumCheck checksumCheck;
 	private FedoraClient client;
-	private ExecutorService executor;
 
 	@PostConstruct
 	public void initMock() {

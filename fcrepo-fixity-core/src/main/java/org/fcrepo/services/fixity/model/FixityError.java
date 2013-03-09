@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.ForeignKey;
-
 @Entity
 @Table(name = "fixity_errors")
 @XmlAccessorType(XmlAccessType.FIELD)
