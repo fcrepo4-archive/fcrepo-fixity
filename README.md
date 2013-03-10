@@ -1,20 +1,16 @@
-ff-fixity-service
-=================
+# fcrepo-fixity
 
 This service is meant to be run as a client to [Fedora 4](https://github.com/futures/fcrepo4).
 It is designed to run fixity checks (e.g. checksum comparison) of stored Datastreams.
 
-Dependencies
-------------
-
-This project currently depends on https://github.com/futures/ff-fedora-client , which has to be built and installed first
-
-Running the service
--------------------
+## Running the service
 
 The service is built as a Java war file and can be run directly from maven using:
-	
-	mvn jetty.port=8180 clean package  jetty:run
+
+```bash
+$ cd fcrepo-fixity-webapp
+$ MAVEN_OPTS="-Xmx512m" mvn -Djetty.port=8180 jetty:run
+```
 
 Requesting the check of an object can be done using a HTTP GET request to:
 
