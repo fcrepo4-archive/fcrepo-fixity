@@ -3,31 +3,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:jms="http://www.springframework.org/schema/jms"
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+    http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+	http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
 
-	<bean id="fixityService" class="org.fcrepo.services.fixity.FixityService"
-		destroy-method="shutdown">
-		<property name="databaseService" ref="databaseService" />
-		<property name="fixityChecks">
-			<map>
-				<entry key="Datastream Checksum" value-ref="datastreamChecksumCheck" />
-			</map>
-		</property>
-	</bean>
+	<!-- the required fedora client to request data -->
+	<bean id="fedoraClient" class="org.fcrepo.client.FedoraClient" />
 
-	<bean id="datastreamChecksumCheck" class="org.fcrepo.services.fixity.DatastreamChecksumCheck">
-		<property name="client" ref="fedoraClient" />
-	</bean>
-
-	<bean id="fedoraClient" class="org.fcrepo.client.FedoraClient">
-		<property name="fedoraUri" value="http://localhost:8080/rest" />
-	</bean>
-
+	<!--  Database configuration -->
 	<bean id="hsqlDatasource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<!-- <property name="driverClassName" value="org.postgresql.Driver" /> -->
@@ -38,14 +27,15 @@
 		<property name="password" value="fixity" />
 	</bean>
 
+	<!--  hibernate session factory configuration -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 		<property name="dataSource" ref="hsqlDatasource" />
 		<property name="annotatedClasses">
 			<list>
-				<value>org.fcrepo.services.fixity.model.FixityCheckResult</value>
-				<value>org.fcrepo.services.fixity.model.FixityError</value>
-				<value>org.fcrepo.services.fixity.model.FixityWarning</value>
+				<value>org.fcrepo.services.fixity.model.FixityResult</value>
+				<value>org.fcrepo.services.fixity.model.DatastreamFixityResult
+				</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -65,32 +55,29 @@
 		</property>
 	</bean>
 
-	<bean id="databaseService" class="org.fcrepo.services.db.DefaultDatabaseService">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
 
-	<jaxrs:server id="restEndpoint" address="/">
-		<jaxrs:serviceBeans>
-			<bean class="org.fcrepo.web.resources.Results" />
-		</jaxrs:serviceBeans>
-		<jaxrs:extensionMappings>
-			<entry key="xml" value="application/xml" />
-			<entry key="json" value="application/json" />
-		</jaxrs:extensionMappings>
-	</jaxrs:server>
-
-	<task:scheduled-tasks scheduler="fixityServiceScheduler">
-		<task:scheduled ref="fixityService" method="call"
-			fixed-rate="500" />
-	</task:scheduled-tasks>
-
-	<task:executor id="fixityServiceExecutor" pool-size="1" />
-
-	<task:scheduler id="fixityServiceScheduler" pool-size="1" />
+	<context:component-scan base-package="org.fcrepo.services.fixity, org.fcrepo.services.db" />
 
 	<tx:annotation-driven transaction-manager="txManager" />
 
-	<context:annotation-config />
+	<!-- Test specific beans -->
 
-	<context:component-scan base-package="org.fcrepo.web.resources" />
+	<amq:queue id="fixityQueue" physicalName="org.fcrepo.services.fixity.queue" />
+
+	<amq:connectionFactory id="jmsFactory" brokerURL="vm://localhost" />
+
+	<jms:listener-container connection-factory="jmsConnectionFactory">
+		<jms:listener destination="org.fcrepo.services.fixity.queue" ref="fixityService"
+			method="processRequest" />
+	</jms:listener-container>
+
+	<bean id="jmsConnectionFactory"
+		class="org.springframework.jms.connection.SingleConnectionFactory"
+		p:targetConnectionFactory-ref="jmsFactory" />
+
+	<bean id="fixityJmsTemplate" class="org.springframework.jms.core.JmsTemplate"
+		p:connectionFactory-ref="jmsConnectionFactory"
+		p:defaultDestination-ref="fixityQueue" />
+
+
 </beans>

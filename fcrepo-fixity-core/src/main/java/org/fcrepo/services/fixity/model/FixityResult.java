@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,7 +20,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "fixity_results")
-public class FixityCheckResult {
+public class FixityResult {
 
 	@XmlTransient
 	@GeneratedValue
@@ -32,28 +33,38 @@ public class FixityCheckResult {
 	@XmlAttribute(name = "success")
 	private boolean success;
 
+	@XmlElementWrapper(name = "successes")
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "SUCCESS_ID")
+	private List<DatastreamFixityResult> successes;
+
 	@XmlElementWrapper(name = "errors")
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<FixityError> errors;
+	@JoinColumn(name = "ERROR_ID")
+	private List<DatastreamFixityResult> errors;
 
-	@XmlElementWrapper(name = "warnings")
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<FixityWarning> warnings;
-
-	public FixityCheckResult() {
+	public FixityResult() {
 		super();
 	}
 
-	public FixityCheckResult(String pid, boolean success, List<FixityError> errors, List<FixityWarning> warnings) {
+	public FixityResult(String pid, List<DatastreamFixityResult> successes, List<DatastreamFixityResult> errors) {
 		super();
 		this.pid = pid;
-		this.success = success;
+		this.success = (errors.size() == 0);
 		this.errors = errors;
-		this.warnings = warnings;
+		this.successes = successes;
 	}
 
 	public String getPid() {
 		return pid;
+	}
+
+	public List<DatastreamFixityResult> getSuccesses() {
+		return successes;
+	}
+
+	public void setSuccesses(List<DatastreamFixityResult> successes) {
+		this.successes = successes;
 	}
 
 	public void setPid(String pid) {
@@ -64,23 +75,16 @@ public class FixityCheckResult {
 		this.success = success;
 	}
 
-	public void setErrors(List<FixityError> errors) {
+	public void setErrors(List<DatastreamFixityResult> errors) {
 		this.errors = errors;
-	}
-
-	public void setWarnings(List<FixityWarning> warnings) {
-		this.warnings = warnings;
 	}
 
 	public boolean isSuccess() {
 		return success;
 	}
 
-	public List<FixityError> getErrors() {
+	public List<DatastreamFixityResult> getErrors() {
 		return errors;
 	}
 
-	public List<FixityWarning> getWarnings() {
-		return warnings;
-	}
 }

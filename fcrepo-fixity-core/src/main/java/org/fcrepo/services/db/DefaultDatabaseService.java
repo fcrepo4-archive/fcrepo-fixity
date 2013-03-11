@@ -3,15 +3,19 @@ package org.fcrepo.services.db;
 import java.util.Collection;
 import java.util.List;
 
-import org.fcrepo.services.fixity.model.FixityCheckResult;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.fcrepo.services.fixity.model.FixityResult;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Named("databaseService")
 public class DefaultDatabaseService implements DatabaseService {
+	@Inject
 	private SessionFactory sessionFactory;
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -19,8 +23,8 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
-	public void addResult(FixityCheckResult res) {
+	@Transactional
+	public void addResult(FixityResult res) {
 		Session sess = sessionFactory.openSession();
 		sess.save(res);
 		sess.flush();
@@ -28,8 +32,8 @@ public class DefaultDatabaseService implements DatabaseService {
 
 	
 	@Override
-	public void addResults(Collection<FixityCheckResult> results) {
-		for (FixityCheckResult result : results) {
+	public void addResults(Collection<FixityResult> results) {
+		for (FixityResult result : results) {
 			this.addResult(result);
 		}
 	}
@@ -37,16 +41,17 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public List<FixityCheckResult> getResults(String objectId) {
+	public List<FixityResult> getResults(String objectId) {
 		Session sess = sessionFactory.openSession();
-		List<FixityCheckResult> results = sess.createCriteria(FixityCheckResult.class)
+		List<FixityResult> results = sess.createCriteria(FixityResult.class)
 				.add(Restrictions.eq("pid", objectId))
 				.list();
 		/* initialize the collections */
-		for (FixityCheckResult r : results){
-			Hibernate.initialize(r.getWarnings());
+		for (FixityResult r : results){
+			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
 		}
+		sess.flush();
 		return results;
 	}
 

@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
-import org.fcrepo.services.fixity.model.FixityCheckResult;
+import org.fcrepo.services.fixity.model.FixityResult;
 
+@Named
 @Path("/fixity")
 public class Results {
 
@@ -20,7 +22,7 @@ public class Results {
 
 	@Path("/{pid}")
 	@GET
-	public List<FixityCheckResult> getResults(@PathParam("pid") String pid) {
+	public List<FixityResult> getResults(@PathParam("pid") String pid) {
 		return service.getResults(pid);
 	}
 

@@ -1,7 +1,7 @@
 package org.fcrepo.services.fixity;
 
-import org.fcrepo.services.fixity.model.FixityCheckResult;
+import org.fcrepo.services.fixity.model.FixityResult;
 
 public interface FixityCheck {
-	public FixityCheckResult check(String objectId) throws Exception;
+	public FixityResult check(String objectId) throws Exception;
 }

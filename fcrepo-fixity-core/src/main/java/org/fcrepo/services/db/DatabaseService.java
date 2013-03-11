@@ -3,12 +3,12 @@ package org.fcrepo.services.db;
 import java.util.Collection;
 import java.util.List;
 
-import org.fcrepo.services.fixity.model.FixityCheckResult;
+import org.fcrepo.services.fixity.model.FixityResult;
 
 public interface DatabaseService {
-	void addResult(FixityCheckResult res);
+	void addResult(FixityResult res);
 
-	List<FixityCheckResult> getResults(String objectId);
+	List<FixityResult> getResults(String objectId);
 
-	void addResults(Collection<FixityCheckResult> results);
+	void addResults(Collection<FixityResult> results);
 }

@@ -22,7 +22,7 @@ import org.fcrepo.jaxb.responses.access.ObjectProfile;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.DatastreamChecksumCheck;
 import org.fcrepo.services.fixity.FixityService;
-import org.fcrepo.services.fixity.model.FixityCheckResult;
+import org.fcrepo.services.fixity.model.FixityResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,8 +81,14 @@ public class TestFixityService {
 		/* tell the service to check a specific object */
 		service.checkObject(obj.pid);
 
-		/* let the daemon respond to the request */
-		Thread.sleep(300);
+		/* let the daemon respond to the request give it 15 secs max*/
+		long started = System.currentTimeMillis();
+		do{
+			if (System.currentTimeMillis() - started > 15000){
+				throw new Exception("Timeout while waiting for JMS queue");
+			}
+			Thread.sleep(500);
+		}while(service.getResults(obj.pid).size() == 0);
 		
 		/* check if there is a result in the database */
 		assertTrue(service.getResults(obj.pid).size() == 1);
@@ -120,9 +126,16 @@ public class TestFixityService {
 		/* tell the service to check a specific object */
 		service.checkObject(obj.pid);
 
-		/* let the daemon respond to the request */
-		Thread.sleep(300);
-		List<FixityCheckResult> results =service.getResults(obj.pid); 
+		/* let the daemon respond to the request give it 15 secs max*/
+		long started = System.currentTimeMillis();
+		do{
+			if (System.currentTimeMillis() - started > 15000){
+				throw new Exception("Timeout while waiting for JMS queue");
+			}
+			Thread.sleep(500);
+		}while(service.getResults(obj.pid).size() == 0);
+
+		List<FixityResult> results =service.getResults(obj.pid); 
 		assertTrue(results.size() == 1);
 		assertTrue(results.get(0).getPid().equals(obj.pid));
 		assertTrue(results.get(0).getErrors().size() == 1);
