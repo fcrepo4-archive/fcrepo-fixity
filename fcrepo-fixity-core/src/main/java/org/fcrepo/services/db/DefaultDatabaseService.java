@@ -28,9 +28,9 @@ public class DefaultDatabaseService implements DatabaseService {
 		Session sess = sessionFactory.openSession();
 		sess.save(res);
 		sess.flush();
+		sess.close();
 	}
 
-	
 	@Override
 	public void addResults(Collection<FixityResult> results) {
 		for (FixityResult result : results) {
@@ -47,11 +47,27 @@ public class DefaultDatabaseService implements DatabaseService {
 				.add(Restrictions.eq("pid", objectId))
 				.list();
 		/* initialize the collections */
-		for (FixityResult r : results){
+		for (FixityResult r : results) {
 			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
 		}
-		sess.flush();
+		sess.close();
+		return results;
+	}
+
+	@Override
+	public List<FixityResult> getResults(int offset, int length) {
+		Session sess = sessionFactory.openSession();
+		List<FixityResult> results = sess.createCriteria(FixityResult.class)
+				.setFirstResult(offset)
+				.setFetchSize(length)
+				.list();
+		/* initialize the collections */
+		for (FixityResult r : results) {
+			Hibernate.initialize(r.getSuccesses());
+			Hibernate.initialize(r.getErrors());
+		}
+		sess.close();
 		return results;
 	}
 

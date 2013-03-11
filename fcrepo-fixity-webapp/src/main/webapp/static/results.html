@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Fixity Service Report</title>
+<style type="text/css">
+@import "css/tables.css";
+</style>
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script src="js/raphael.js"></script>
+<script src="js/g.raphael-min.js"></script>
+<script src="js/g.pie-min.js"></script>
+<script>
+	$(document).ready(function() {
+		var aaData = new Array();
+		console.log("getting data via ajax...");
+		$.getJSON('../rest/results', function(data) {
+			counter = 0;
+			$.each(data, function() {
+				var row = new Array();
+				row[0] = this["fixity-result"]['@pid'];
+				row[1] = this["fixity-result"]['@success'];
+				aaData[counter++] = row;
+			});
+			$('#results').dataTable({
+				"aaData" : aaData
+			});
+			var r = Raphael("piechart");
+			pie = r.piechart(320, 240, 100, [ 2 ], {
+				legend : [ "%%.%% - Success", "Error" ],
+				legendpos : "east"
+			});
+		});
+	});
+</script>
+
+</head>
+<body>
+	<h1>Fixity Service Report</h1>
+	<div id="wrap">
+		<div id="left_col">
+			<div id="piechart"></div>
+		</div>
+		<div id="right_col">
+			<table cellpadding="0" cellspacing="0" border="1" id="results">
+				<thead>
+					<tr>
+						<th>pid</th>
+						<th>success</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>pid</th>
+						<th>success</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

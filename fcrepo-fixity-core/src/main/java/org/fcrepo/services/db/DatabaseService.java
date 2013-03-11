@@ -11,4 +11,6 @@ public interface DatabaseService {
 	List<FixityResult> getResults(String objectId);
 
 	void addResults(Collection<FixityResult> results);
+
+	List<FixityResult> getResults(int offset, int length);
 }

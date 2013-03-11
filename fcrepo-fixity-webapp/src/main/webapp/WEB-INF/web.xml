@@ -5,9 +5,18 @@
 	version="3.0">
 	<display-name>Fedora fixity service</display-name>
 
+	<welcome-file-list>
+		<welcome-file>static/results.html</welcome-file>
+	</welcome-file-list>
+
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:context-fixity-core.xml classpath:context-fixity-web.xml</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>resteasy.servlet.mapping.prefix</param-name>
+		<param-value>/rest</param-value>
 	</context-param>
 	
 	<listener>
@@ -25,7 +34,7 @@
 
 	<servlet-mapping>
 		<servlet-name>resteasy-servlet</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

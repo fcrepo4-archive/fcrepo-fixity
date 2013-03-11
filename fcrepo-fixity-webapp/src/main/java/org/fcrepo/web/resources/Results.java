@@ -14,11 +14,22 @@ import org.fcrepo.services.fixity.FixityService;
 import org.fcrepo.services.fixity.model.FixityResult;
 
 @Named
-@Path("/fixity")
+@Path("/results")
 public class Results {
 
 	@Inject
 	private FixityService service;
+
+	@GET
+	public List<FixityResult> getAllResults() {
+		return service.getResults(0, 50);
+	}
+
+	@Path("/{offset}/{length}")
+	@GET
+	public List<FixityResult> getAllResultsWithOffset(@PathParam("offset") int offset, @PathParam("length") int length) {
+		return service.getResults(offset, length);
+	}
 
 	@Path("/{pid}")
 	@GET

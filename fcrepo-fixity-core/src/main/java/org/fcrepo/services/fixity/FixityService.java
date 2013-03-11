@@ -134,4 +134,8 @@ public class FixityService {
 		return databaseService.getResults(pid);
 	}
 
+	public List<FixityResult> getResults(int offset, int length) {
+		return databaseService.getResults(offset, length);
+	}
+
 }
