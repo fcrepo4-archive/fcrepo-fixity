@@ -204,8 +204,10 @@ h1{
 				axis : "0 0 1 1",
 				shade: true,
 				symbol: "circle",
-				colors: ["#00ff00","#ff0000"]
+				colors: ["#00ff00","#ff0000"],
+				axisxstep : 1
 			});
+		label = r.label(138,40,"Errors and success per day");
 	
 	}
 	function createPieChart() {
@@ -214,13 +216,14 @@ h1{
 		var chart_data = new Array();
 		chart_data[0] = generalStats.numSuccesses;
 		if (generalStats.numErrors > 0) {
-			chart_data[1] = statistics.numErrors;
+			chart_data[1] = generalStats.numErrors;
 		}
-		pie = r.piechart(180, 180, 140, chart_data, {
+		pie = r.piechart(290, 190, 120, chart_data, {
 			legend : [ "%%.%% - Success", "%%.%% - Error" ],
 			legendpos : "east",
 			colors : [ '#00ff00', '#ff0000' ]
 		});
+		label = r.label(128,40,"Overall errors vs. success");
 	}
 </script>
 
