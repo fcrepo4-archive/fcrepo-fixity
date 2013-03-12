@@ -18,6 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.GeneralStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -136,6 +137,14 @@ public class FixityService {
 
 	public List<FixityResult> getResults(int offset, int length) {
 		return databaseService.getResults(offset, length);
+	}
+	
+	public GeneralStatistics getStatistics(){
+		GeneralStatistics stats = new GeneralStatistics();
+		stats.setNumObjects(databaseService.getResultCount());
+		stats.setErrorCount(databaseService.getErrorCount());
+		stats.setSuccessCount(databaseService.getSuccessCount());
+		return stats;
 	}
 
 }

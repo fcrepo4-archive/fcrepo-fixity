@@ -35,9 +35,9 @@ public class DatastreamFixityResult {
 		super();
 	}
 
-	@XmlTransient
 	@Id
 	@GeneratedValue
+	@XmlAttribute(name = "record-id")
 	private long id;
 
 	@XmlAttribute(name = "type")
@@ -65,6 +65,10 @@ public class DatastreamFixityResult {
 		this.type = type;
 		this.timestamp = timestamp;
 		this.datastreamId = datastreamId;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public ResultType getType() {

@@ -4,61 +4,231 @@
 <meta charset=utf-8 />
 <title>Fixity Service Report</title>
 <style type="text/css">
-@import "css/tables.css";
+@import "css/overcast/jquery-ui-1.10.1.custom.min.css";
+
+body {
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+
+tr.odd {
+	background-color: #c4ffc4;
+}
+
+tr.even {
+	background-color: #eeffee;
+}
+
+#wrap {
+	width: 100%;
+	min-width: 800px;
+}
+
+#left_col {
+	position: relative;
+	margin: -6px -6px -6px -6px;
+	float: left;
+	width: 50%;
+	min-width: 300;
+}
+
+#right_col {
+	position: relative;
+	margin: -6px -6px -6px -6px;
+	width: 50%;
+	float: right;
+	min-width: 300;
+}
+
+.roundbox {
+	margin-bottom: 6px;
+	-moz-border-radius: 6px 6px 6px 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px 6px 6px 6px;
+	-moz-box-shadow: 10px 10px 5px #888; 
+	-webkit-box-shadow : 10px 10px 5px #888;
+	box-shadow : 10px 10px 5px #888;
+	background-color: #ffffee;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+h1{
+	color: #3383bb;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+#dataTableDiv{
+	margin: 6px 6px 6px 6px;
+	padding: 6px 6px 6px 6px;
+}
+#inputDiv{
+	margin: 6px 6px 6px 6px;
+	padding: 6px 6px 6px 6px;
+}
+.ui-widget-header {
+	font-weight:normal;
+}
 </style>
-<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui-1.10.1.custom.min.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
 <script src="js/raphael.js"></script>
 <script src="js/g.raphael-min.js"></script>
 <script src="js/g.pie-min.js"></script>
+<script src="js/g.line-min.js"></script>
 <script>
+	var statistics;
+	
 	$(document).ready(function() {
-		var aaData = new Array();
-		console.log("getting data via ajax...");
-		$.getJSON('../rest/results', function(data) {
-			counter = 0;
-			$.each(data, function() {
-				var row = new Array();
-				row[0] = this["fixity-result"]['@pid'];
-				row[1] = this["fixity-result"]['@success'];
-				aaData[counter++] = row;
+		$('input:text')
+		  .button()
+		  .css({'font' : 'inherit',
+		        'color' : 'inherit',
+		        'text-align' : 'left',
+		        'outline' : 'none',
+		        'cursor' : 'text',
+		        'width'  : '240px'
+		  });
+		$('input:submit')
+			.button();
+		
+		$('#queueButton')
+			.click(function(){
+				var pid = $('#queueInput').val(); 
+				queuePid(pid);
 			});
-			$('#results').dataTable({
-				"aaData" : aaData
+		
+		$('#queueInput')
+			.focusin(function(){
+				if (this.value == "Pid"){
+					this.value = "";
+				}
 			});
-			var r = Raphael("piechart");
-			pie = r.piechart(320, 240, 100, [ 2 ], {
-				legend : [ "%%.%% - Success", "Error" ],
-				legendpos : "east"
+
+		$('#queueInput')
+			.focusout(function(){
+				if (this.value == ""){
+					this.value = "Pid";
+				}
 			});
+		
+		updateTable();
+		
+		$.getJSON('../rest/results/statistics', function (data) {
+			statistics = createStatistics(data);
+			createCharts();
+		});
+
+		$(window).resize(function(e) {
+			createCharts();
 		});
 	});
+
+	function updateTable(){
+		$.getJSON('../rest/results', function(data) {
+			var aaData = new Array();
+			counter = 0;
+			$.each(data,function() {
+				var row = new Array();
+				row[0] = this['fixity-result']['@record-id'];
+				row[1] = this["fixity-result"]['@pid'];
+				row[2] = this['fixity-result']['@timestamp'];
+				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : "Error";
+				aaData[counter++] = row;
+			});
+
+			$('#results').dataTable({
+				aaData : aaData,
+				bJQueryUI : true,
+				aoColumns : [ {sWwidth : "5%"},
+				              {sWidth : "40%"},
+				              {sWidth : "35%"},
+				              {sWwidth : "15%"} ]
+			});
+		});
+	}
+
+	function queuePid(pid){
+		var path = '../rest/results/queue/' + pid;
+		$.get(path, function (data) {
+			location.reload(true);
+		});
+	}
+	
+	function createStatistics(data) {
+		statistics = {
+			numObjects : parseInt(data['general-stat']['@object-count']),
+			numErrors : parseInt(data['general-stat']['@error-count']),
+			numSuccesses : parseInt(data['general-stat']['@success-count'])
+		}
+		return statistics;
+	}
+
+	function createCharts() {
+		$('#piechart').empty();
+		$('#linechart').empty();
+		var width = $('#left_col').width();
+		var r = Raphael("piechart");
+		var chart_data = new Array();
+		chart_data[0] = statistics.numSuccesses;
+		if (statistics.numErrors > 0) {
+			chart_data[1] = statistics.numErrors;
+		}
+		pie = r.piechart(180, 180, 140, chart_data, {
+			legend : [ "%%.%% - Success", "%%.%% - Error" ],
+			legendpos : "east",
+			colors : [ '#00ff00', '#ff0000' ]
+		});
+		/* 		r = Raphael("linechart");
+		 lines = r.linechart(40, 60, width - 100, 100 , [1,2,3,4,5,6,7,8,9,10],[1,4,9,16,25,36,49,64,81,100], {
+		 axis : "0 0 1 1",
+		 shade: true
+		 });
+		 */}
 </script>
 
 </head>
 <body>
-	<h1>Fixity Service Report</h1>
-	<div id="wrap">
+	<div class="roundbox">
+		<h1>Fedora 4 - Fixity Service Report</h1>
+	</div>
+	<div class="clearfix" id="wrap">
 		<div id="left_col">
-			<div id="piechart"></div>
+			<div id="piechart" class="roundbox"></div>
 		</div>
 		<div id="right_col">
-			<table cellpadding="0" cellspacing="0" border="1" id="results">
-				<thead>
-					<tr>
-						<th>pid</th>
-						<th>success</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-				<tfoot>
-					<tr>
-						<th>pid</th>
-						<th>success</th>
-					</tr>
-				</tfoot>
-			</table>
+			<div class="roundbox" id="inputDiv">
+				<input type="text" id="queueInput" value="Pid">
+				<input type="submit" id="queueButton" value="Queue PID for fixity checks">
+			</div>
+			<div class="roundbox" id="dataTableDiv">
+				<table id="results" width="100%">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Pid</th>
+							<th>Timestamp</th>
+							<th>Result</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>Id</th>
+							<th>Pid</th>
+							<th>Timestamp</th>
+							<th>Result</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
 		</div>
 	</div>
 </body>

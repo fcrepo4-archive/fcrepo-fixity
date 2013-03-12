@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
 import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.GeneralStatistics;
 
 @Named
 @Path("/results")
@@ -42,5 +43,11 @@ public class Results {
 	public Response queueFixityCheck(@PathParam("pid") String pid) throws IOException {
 		service.checkObject(pid);
 		return Response.ok().build();
+	}
+
+	@Path("/statistics")
+	@GET
+	public GeneralStatistics getGeneralStatsitics() {
+		return service.getStatistics();
 	}
 }

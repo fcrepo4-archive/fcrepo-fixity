@@ -1,5 +1,6 @@
 package org.fcrepo.services.fixity.model;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -22,9 +23,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "fixity_results")
 public class FixityResult {
 
-	@XmlTransient
 	@GeneratedValue
 	@Id
+	@XmlAttribute(name = "record-id")
 	private long id;
 
 	@XmlAttribute(name = "pid")
@@ -32,6 +33,9 @@ public class FixityResult {
 
 	@XmlAttribute(name = "success")
 	private boolean success;
+
+	@XmlAttribute(name = "timestamp")
+	private Date timestamp;
 
 	@XmlElementWrapper(name = "successes")
 	@OneToMany(cascade = CascadeType.ALL)
@@ -47,12 +51,25 @@ public class FixityResult {
 		super();
 	}
 
-	public FixityResult(String pid, List<DatastreamFixityResult> successes, List<DatastreamFixityResult> errors) {
+	public FixityResult(String pid, Date timestamp, List<DatastreamFixityResult> successes, List<DatastreamFixityResult> errors) {
 		super();
 		this.pid = pid;
+		this.timestamp = timestamp;
 		this.success = (errors.size() == 0);
 		this.errors = errors;
 		this.successes = successes;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getPid() {

@@ -6,10 +6,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.fcrepo.services.fixity.model.DatastreamFixityResult;
+import org.fcrepo.services.fixity.model.DatastreamFixityResult.ResultType;
 import org.fcrepo.services.fixity.model.FixityResult;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +59,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
+	@Transactional
 	public List<FixityResult> getResults(int offset, int length) {
 		Session sess = sessionFactory.openSession();
 		List<FixityResult> results = sess.createCriteria(FixityResult.class)
@@ -69,6 +73,41 @@ public class DefaultDatabaseService implements DatabaseService {
 		}
 		sess.close();
 		return results;
+	}
+
+	@Override
+	@Transactional
+	public long getResultCount() {
+		Session sess = sessionFactory.openSession();
+		long value = (Long) sess.createCriteria(FixityResult.class)
+				.setProjection(Projections.rowCount())
+				.uniqueResult();
+		sess.close();
+		return value;
+	}
+
+	@Override
+	@Transactional
+	public long getSuccessCount() {
+		Session sess = sessionFactory.openSession();
+		long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
+				.add(Restrictions.eq("type", ResultType.SUCCESS))
+				.setProjection(Projections.rowCount())
+				.uniqueResult();
+		sess.close();
+		return value;
+	}
+
+	@Override
+	@Transactional
+	public long getErrorCount() {
+		Session sess = sessionFactory.openSession();
+		Long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
+				.add(Restrictions.eq("type", ResultType.ERROR))
+				.setProjection(Projections.rowCount())
+				.uniqueResult();
+		sess.close();
+		return value;
 	}
 
 }

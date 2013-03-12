@@ -70,7 +70,7 @@ public class DatastreamChecksumCheck implements FixityCheck {
 				successes.add(success);
 			}
 		}
-		return new FixityResult(objectId, successes, errors);
+		return new FixityResult(objectId,new Date(), successes, errors);
 	}
 
 	private String createChecksum(DatastreamProfile ds, String dsChecksumType) throws NoSuchAlgorithmException, IOException {
