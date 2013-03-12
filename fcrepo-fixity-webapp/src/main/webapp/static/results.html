@@ -106,15 +106,17 @@ h1{
 		
 		$('#queueInput')
 			.focusin(function(){
-				if (this.value == "Pid"){
+				if (this.value == "All Objects"){
 					this.value = "";
+					$('#queueButton').val("Queue PID");
 				}
 			});
 
 		$('#queueInput')
 			.focusout(function(){
 				if (this.value == ""){
-					this.value = "Pid";
+					this.value = "All Objects";
+					$('#queueButton').val("Queue all Objects");
 				}
 			});
 		
@@ -145,6 +147,7 @@ h1{
 
 			$('#results').dataTable({
 				aaData : aaData,
+				iDisplayLength: 25,
 				bJQueryUI : true,
 				aoColumns : [ {sWwidth : "5%"},
 				              {sWidth : "40%"},
@@ -155,8 +158,11 @@ h1{
 	}
 
 	function queuePid(pid){
-		var path = '../rest/results/queue/' + pid;
-		$.get(path, function (data) {
+		var path = '../rest/results/queue';
+		if (pid != "All Objects"){
+			path = '../rest/results/queue?pid=' + pid;
+		}
+		$.post(path, function (data) {
 			location.reload(true);
 		});
 	}
@@ -204,8 +210,8 @@ h1{
 		</div>
 		<div id="right_col">
 			<div class="roundbox" id="inputDiv">
-				<input type="text" id="queueInput" value="Pid">
-				<input type="submit" id="queueButton" value="Queue PID for fixity checks">
+				<input type="text" id="queueInput" value="All Objects">
+				<input type="submit" id="queueButton" value="Queue all Objects">
 			</div>
 			<div class="roundbox" id="dataTableDiv">
 				<table id="results" width="100%">

@@ -6,8 +6,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
@@ -38,9 +40,9 @@ public class Results {
 		return service.getResults(pid);
 	}
 
-	@Path("/queue/{pid}")
-	@GET
-	public Response queueFixityCheck(@PathParam("pid") String pid) throws IOException {
+	@Path("/queue")
+	@POST
+	public Response queueFixityCheck(@QueryParam("pid") String pid) throws IOException {
 		service.checkObject(pid);
 		return Response.ok().build();
 	}

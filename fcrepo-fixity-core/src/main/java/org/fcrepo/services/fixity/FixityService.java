@@ -2,6 +2,8 @@ package org.fcrepo.services.fixity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +18,7 @@ import javax.jms.Session;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
+import org.fcrepo.client.FedoraClient;
 import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.FixityResult;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
@@ -52,6 +55,9 @@ public class FixityService {
 
 	@Inject
 	private DatabaseService databaseService;
+	
+	@Inject
+	private FedoraClient fedora;
 
 	private boolean shutdown = false;
 
@@ -112,13 +118,18 @@ public class FixityService {
 	 * @param objectId
 	 * @throws IOException
 	 */
-	public synchronized void checkObject(final String... pids) throws IOException {
+	public synchronized void checkObject(String... pids) throws IOException {
+		if (pids.length == 1 && pids[0] == null){
+			/* no pids a re given so a list of all objects is queued */
+			List<String> allpids = fedora.getPids();
+			pids = allpids.toArray(new String[allpids.size()]);
+		}
 		for (final String pid : pids) {
 			fixityJmsTemplate.send(new MessageCreator() {
 				@Override
 				public Message createMessage(Session session) throws JMSException {
 					javax.jms.Message msg = session.createMessage();
-					msg.setStringProperty("pid", pid);
+					msg.setStringProperty("pid", pid.trim());
 					return msg;
 				}
 			});
