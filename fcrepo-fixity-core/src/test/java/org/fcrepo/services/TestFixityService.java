@@ -91,7 +91,10 @@ public class TestFixityService {
 		}while(service.getResults(obj.pid).size() == 0);
 		
 		/* check if there is a result in the database */
-		assertTrue(service.getResults(obj.pid).size() == 1);
+		List<FixityResult> results =service.getResults(obj.pid); 
+		assertTrue(results.size() == 1);
+		assertTrue(results.get(0).getErrors().size() == 0);
+		assertTrue(results.get(0).getSuccesses().size() == 1);
 	}
 
 	@Test
@@ -138,6 +141,7 @@ public class TestFixityService {
 		List<FixityResult> results =service.getResults(obj.pid); 
 		assertTrue(results.size() == 1);
 		assertTrue(results.get(0).getPid().equals(obj.pid));
+		System.out.println(results.get(0).getErrors().size());
 		assertTrue(results.get(0).getErrors().size() == 1);
 		assertTrue(results.get(0).getErrors().get(0).getDatastreamId().equals(ds.dsID));
 		assertTrue(results.get(0).getErrors().get(0).getTimestamp() != null);

@@ -6,7 +6,7 @@
 	<display-name>Fedora fixity service</display-name>
 
 	<welcome-file-list>
-		<welcome-file>static/results.html</welcome-file>
+		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
 	<context-param>

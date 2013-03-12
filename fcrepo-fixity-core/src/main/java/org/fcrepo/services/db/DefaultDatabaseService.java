@@ -1,17 +1,21 @@
 package org.fcrepo.services.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.fcrepo.services.fixity.model.DailyStatistics;
 import org.fcrepo.services.fixity.model.DatastreamFixityResult;
 import org.fcrepo.services.fixity.model.DatastreamFixityResult.ResultType;
 import org.fcrepo.services.fixity.model.FixityResult;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,9 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Transactional
 	public void addResult(FixityResult res) {
 		Session sess = sessionFactory.openSession();
+		int errors = res.getErrors().size();
+		int successes = res.getSuccesses().size();
+		addStat(successes, errors);
 		sess.save(res);
 		sess.flush();
 		sess.close();
@@ -59,7 +66,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<FixityResult> getResults(int offset, int length) {
 		Session sess = sessionFactory.openSession();
 		List<FixityResult> results = sess.createCriteria(FixityResult.class)
@@ -76,7 +83,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public long getResultCount() {
 		Session sess = sessionFactory.openSession();
 		long value = (Long) sess.createCriteria(FixityResult.class)
@@ -87,7 +94,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public long getSuccessCount() {
 		Session sess = sessionFactory.openSession();
 		long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
@@ -99,7 +106,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public long getErrorCount() {
 		Session sess = sessionFactory.openSession();
 		Long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
@@ -110,4 +117,42 @@ public class DefaultDatabaseService implements DatabaseService {
 		return value;
 	}
 
+	@Override
+	@Transactional
+	public void addStat(int successCount, int errorCount) {
+		Session sess = sessionFactory.openSession();
+		DailyStatistics stat = getDailyStat(new Date());
+		stat.setErrorCount(stat.getErrorCount() + errorCount);
+		stat.setSuccessCount(stat.getSuccessCount() + successCount);
+		sess.saveOrUpdate(stat);
+		sess.flush();
+		sess.close();
+	}
+
+	@Transactional(readOnly = true)
+	private DailyStatistics getDailyStat(Date date) {
+		Session sess = sessionFactory.openSession();
+		DailyStatistics stat = (DailyStatistics) sess.createCriteria(DailyStatistics.class)
+				.add(Restrictions.eq("date", date))
+				.uniqueResult();
+		if (stat == null) {
+			stat = new DailyStatistics();
+			stat.setDate(date);
+			stat.setErrorCount(0);
+			stat.setSuccessCount(0);
+		}
+		sess.close();
+		return stat;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<DailyStatistics> getDailyStatistics() {
+		Session sess = sessionFactory.openSession();
+		List<DailyStatistics> stats = sess.createCriteria(DailyStatistics.class)
+				.addOrder(Order.asc("date"))
+				.list();
+		sess.close();
+		return stats;
+	}
 }

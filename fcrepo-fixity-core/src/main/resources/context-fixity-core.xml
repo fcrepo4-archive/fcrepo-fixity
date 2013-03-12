@@ -33,9 +33,9 @@
 		<property name="dataSource" ref="hsqlDatasource" />
 		<property name="annotatedClasses">
 			<list>
+				<value>org.fcrepo.services.fixity.model.DailyStatistics</value>
 				<value>org.fcrepo.services.fixity.model.FixityResult</value>
-				<value>org.fcrepo.services.fixity.model.DatastreamFixityResult
-				</value>
+				<value>org.fcrepo.services.fixity.model.DatastreamFixityResult</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">

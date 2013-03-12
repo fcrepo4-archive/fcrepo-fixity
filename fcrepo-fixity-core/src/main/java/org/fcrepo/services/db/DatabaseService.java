@@ -3,6 +3,7 @@ package org.fcrepo.services.db;
 import java.util.Collection;
 import java.util.List;
 
+import org.fcrepo.services.fixity.model.DailyStatistics;
 import org.fcrepo.services.fixity.model.FixityResult;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
 
@@ -20,4 +21,8 @@ public interface DatabaseService {
 	long getErrorCount();
 
 	long getSuccessCount();
+	
+	void addStat(int successCount, int errorCount);
+	
+	List<DailyStatistics> getDailyStatistics();
 }

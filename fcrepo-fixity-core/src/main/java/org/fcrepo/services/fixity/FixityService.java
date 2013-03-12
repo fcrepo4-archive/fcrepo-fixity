@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.services.db.DatabaseService;
+import org.fcrepo.services.fixity.model.DailyStatistics;
 import org.fcrepo.services.fixity.model.FixityResult;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
 import org.slf4j.Logger;
@@ -156,6 +157,10 @@ public class FixityService {
 		stats.setErrorCount(databaseService.getErrorCount());
 		stats.setSuccessCount(databaseService.getSuccessCount());
 		return stats;
+	}
+
+	public List<DailyStatistics> getDailyStatistics() {
+		return databaseService.getDailyStatistics();
 	}
 
 }

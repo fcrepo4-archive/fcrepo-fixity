@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
+import org.fcrepo.services.fixity.model.DailyStatistics;
 import org.fcrepo.services.fixity.model.FixityResult;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
 
@@ -47,9 +48,15 @@ public class Results {
 		return Response.ok().build();
 	}
 
-	@Path("/statistics")
+	@Path("/statistics/general")
 	@GET
 	public GeneralStatistics getGeneralStatsitics() {
 		return service.getStatistics();
+	}
+	
+	@Path("/statistics/daily")
+	@GET
+	public List<DailyStatistics> getDailyStatistics(){
+		return service.getDailyStatistics();
 	}
 }
