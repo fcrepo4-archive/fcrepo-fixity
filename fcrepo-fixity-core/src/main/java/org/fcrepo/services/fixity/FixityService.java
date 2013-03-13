@@ -123,6 +123,10 @@ public class FixityService {
 		if (pids.length == 1 && pids[0] == null){
 			/* no pids a re given so a list of all objects is queued */
 			List<String> allpids = fedora.getPids();
+			if (allpids == null){
+				logger.warn("No objects could be discovered in fedora. Queued noting.");
+				return;
+			}
 			pids = allpids.toArray(new String[allpids.size()]);
 		}
 		for (final String pid : pids) {

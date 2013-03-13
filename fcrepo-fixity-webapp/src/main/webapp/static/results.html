@@ -5,75 +5,7 @@
 <title>Fixity Service Report</title>
 <style type="text/css">
 @import "css/overcast/jquery-ui-1.10.1.custom.min.css";
-
-body {
-	font-family: sans-serif;
-	font-size: 10pt;
-}
-
-tr.odd {
-	background-color: #c4ffc4;
-}
-
-tr.even {
-	background-color: #eeffee;
-}
-
-#wrap {
-	width: 100%;
-	min-width: 800px;
-}
-
-#left_col {
-	position: relative;
-	margin: -6px -6px -6px -6px;
-	float: left;
-	width: 50%;
-	min-width: 300;
-}
-
-#right_col {
-	position: relative;
-	margin: -6px -6px -6px -6px;
-	width: 50%;
-	float: right;
-	min-width: 300;
-}
-
-.roundbox {
-	margin-bottom: 6px;
-	-moz-border-radius: 6px 6px 6px 6px;
-	-webkit-border-radius: 6px;
-	border-radius: 6px 6px 6px 6px;
-	-moz-box-shadow: 10px 10px 5px #888; 
-	-webkit-box-shadow : 10px 10px 5px #888;
-	box-shadow : 10px 10px 5px #888;
-	background-color: #ffffee;
-	-webkit-box-shadow: 10px 10px 5px #888;
-	box-shadow: 10px 10px 5px #888;
-}
-h1{
-	color: #3383bb;
-}
-
-.clearfix:after {
-	content: ".";
-	display: block;
-	height: 0;
-	clear: both;
-	visibility: hidden;
-}
-#dataTableDiv{
-	margin: 6px 6px 6px 6px;
-	padding: 6px 6px 6px 6px;
-}
-#inputDiv{
-	margin: 6px 6px 6px 6px;
-	padding: 6px 6px 6px 6px;
-}
-.ui-widget-header {
-	font-weight:normal;
-}
+@import "css/main.css";
 </style>
 <script src="js/jquery-1.9.1.js"></script>
 <script src="js/jquery-ui-1.10.1.custom.min.js"></script>
@@ -82,149 +14,52 @@ h1{
 <script src="js/g.raphael-min.js"></script>
 <script src="js/g.pie-min.js"></script>
 <script src="js/g.line-min.js"></script>
+<script src="js/fixity-webapp.js"></script>
 <script>
-	var generalStats;
-	var dailyStats = new Array();
+$(document).ready(function() {
+	$('input:text')
+	  .button()
+	  .css({'font' : 'inherit',
+	        'color' : 'inherit',
+	        'text-align' : 'left',
+	        'outline' : 'none',
+	        'cursor' : 'text',
+	        'width'  : '240px'
+	  });
+	$('input:submit')
+		.button();
 	
-	$(document).ready(function() {
-		$('input:text')
-		  .button()
-		  .css({'font' : 'inherit',
-		        'color' : 'inherit',
-		        'text-align' : 'left',
-		        'outline' : 'none',
-		        'cursor' : 'text',
-		        'width'  : '240px'
-		  });
-		$('input:submit')
-			.button();
-		
-		$('#queueButton')
-			.click(function(){
-				var pid = $('#queueInput').val(); 
-				queuePid(pid);
-			});
-		
-		$('#queueInput')
-			.focusin(function(){
-				if (this.value == "All Objects"){
-					this.value = "";
-					$('#queueButton').val("Queue PID");
-				}
-			});
-
-		$('#queueInput')
-			.focusout(function(){
-				if (this.value == ""){
-					this.value = "All Objects";
-					$('#queueButton').val("Queue all Objects");
-				}
-			});
-		
-		updateTable();
-		
-		$.getJSON('../rest/results/statistics/general', function (data) {
-			generalStats = createStatistics(data);
-			createPieChart();
+	$('#queueButton')
+		.click(function(){
+			var pid = $('#queueInput').val(); 
+			queuePid(pid);
 		});
-
-		$.getJSON('../rest/results/statistics/daily', function (data) {
-			len = data.length;
-			for (i=0;i<len;i++){
-				dailyStats[i] = {
-						date : data[i]['stat-daily']['@date'],
-						successes : data[i]['stat-daily']['@successCount'],
-						errors : data[i]['stat-daily']['@errorCount']
-				}
+	
+	$('#queueInput')
+		.focusin(function(){
+			if (this.value == "All Objects"){
+				this.value = "";
+				$('#queueButton').val("Queue PID");
 			}
-			createLineChart();
 		});
 
-		$(window).resize(function(e) {
-			createPieChart();
+	$('#queueInput')
+		.focusout(function(){
+			if (this.value == ""){
+				this.value = "All Objects";
+				$('#queueButton').val("Queue all Objects");
+			}
 		});
+	
+	updateTable();
+	updateStatistics();
+	
+
+	$(window).resize(function(e) {
+		createPieChart();
+		createLineChart();
 	});
-
-	function updateTable(){
-		$.getJSON('../rest/results', function(data) {
-			var aaData = new Array();
-			counter = 0;
-			$.each(data,function() {
-				var row = new Array();
-				row[0] = this['fixity-result']['@record-id'];
-				row[1] = this["fixity-result"]['@pid'];
-				row[2] = this['fixity-result']['@timestamp'];
-				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : "Error";
-				aaData[counter++] = row;
-			});
-
-			$('#results').dataTable({
-				aaData : aaData,
-				iDisplayLength: 25,
-				bJQueryUI : true,
-				aoColumns : [ {sWwidth : "5%"},
-				              {sWidth : "40%"},
-				              {sWidth : "35%"},
-				              {sWwidth : "15%"} ]
-			});
-		});
-	}
-
-	function queuePid(pid){
-		var path = '../rest/results/queue';
-		if (pid != "All Objects"){
-			path = '../rest/results/queue?pid=' + pid;
-		}
-		$.post(path, function (data) {
-			location.reload(true);
-		});
-	}
-	
-	function createStatistics(data) {
-		generalStats = {
-			numObjects : parseInt(data['general-stat']['@object-count']),
-			numErrors : parseInt(data['general-stat']['@error-count']),
-			numSuccesses : parseInt(data['general-stat']['@success-count'])
-		}
-		return generalStats;
-	}
-
-	function createLineChart() {
-		$('#linechart').empty();
-		r = Raphael("linechart");
-		errorValues = new Array();
-		successValues = new Array();
-		len = dailyStats.length;
-		xValues = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
-		for (i = 0;i<len;i++){
-			errorValues[i] = dailyStats[i].errors;
-			successValues[i] = dailyStats[i].successes;
-		}
-		lines = r.linechart(60, 80, 500, 190 , xValues,[successValues,errorValues], {
-				axis : "0 0 1 1",
-				shade: true,
-				symbol: "circle",
-				colors: ["#00ff00","#ff0000"],
-				axisxstep : 1
-			});
-		label = r.label(138,40,"Errors and success per day");
-	
-	}
-	function createPieChart() {
-		$('#piechart').empty();
-		var r = Raphael("piechart");
-		var chart_data = new Array();
-		chart_data[0] = generalStats.numSuccesses;
-		if (generalStats.numErrors > 0) {
-			chart_data[1] = generalStats.numErrors;
-		}
-		pie = r.piechart(290, 190, 120, chart_data, {
-			legend : [ "%%.%% - Success", "%%.%% - Error" ],
-			legendpos : "east",
-			colors : [ '#00ff00', '#ff0000' ]
-		});
-		label = r.label(128,40,"Overall errors vs. success");
-	}
+});
 </script>
 
 </head>
