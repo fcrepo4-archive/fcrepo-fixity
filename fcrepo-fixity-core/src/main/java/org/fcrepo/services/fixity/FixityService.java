@@ -167,4 +167,9 @@ public class FixityService {
 		return databaseService.getDailyStatistics();
 	}
 
+	public FixityResult getResult(long recordId) {
+		return databaseService.getResult(recordId);
+	}
+	
+
 }

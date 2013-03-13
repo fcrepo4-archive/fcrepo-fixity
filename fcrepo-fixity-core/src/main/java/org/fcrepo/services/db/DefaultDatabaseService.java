@@ -155,4 +155,15 @@ public class DefaultDatabaseService implements DatabaseService {
 		sess.close();
 		return stats;
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public FixityResult getResult(long recordId) {
+		Session sess = sessionFactory.openSession();
+		FixityResult result = (FixityResult) sess.get(FixityResult.class, recordId);
+		Hibernate.initialize(result.getErrors());
+		Hibernate.initialize(result.getSuccesses());
+		sess.close();
+		return result;
+	}
 }

@@ -44,6 +44,12 @@ tr.even {
 	-webkit-box-shadow: 10px 10px 5px #888;
 	box-shadow: 10px 10px 5px #888;
 }
+
+.row_hover {
+	color: blue;
+	cursor: pointer;
+}
+
 h1{
 	color: #3383bb;
 }

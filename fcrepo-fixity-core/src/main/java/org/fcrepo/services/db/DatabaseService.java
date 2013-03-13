@@ -25,4 +25,6 @@ public interface DatabaseService {
 	void addStat(int successCount, int errorCount);
 	
 	List<DailyStatistics> getDailyStatistics();
+
+	FixityResult getResult(long recordId);
 }

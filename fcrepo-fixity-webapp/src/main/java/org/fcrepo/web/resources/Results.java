@@ -40,6 +40,12 @@ public class Results {
 	public List<FixityResult> getResults(@PathParam("pid") String pid) {
 		return service.getResults(pid);
 	}
+	
+	@Path("/details/{recordId}")
+	@GET
+	public FixityResult getResult(@PathParam("recordId") long recordId){
+		return service.getResult(recordId);
+	}
 
 	@Path("/queue")
 	@POST

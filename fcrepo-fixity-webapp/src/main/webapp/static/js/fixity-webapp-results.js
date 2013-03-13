@@ -41,11 +41,26 @@
 				aoColumns : [ {sWwidth : "5%"},
 				              {sWidth : "40%"},
 				              {sWidth : "35%"},
-				              {sWwidth : "15%"} ]
+				              {sWwidth : "15%"} ],
+				fnCreatedRow : function (n_row, row_data, data_idx){
+					console.log(n_row);
+					console.log(row_data);
+					$('td:eq(0)',n_row).parent().mouseover(function() {
+						$(this).addClass('row_hover');
+					});
+					$('td:eq(0)',n_row).parent().mouseout(function() {
+						$(this).removeClass('row_hover');
+					});
+				}
+			});
+		
+			$('#results').delegate('tbody > tr > td', 'click', function () {
+				record_id = $(this).parent().children()[0].innerText;
+				window.location = 'details.html?id=' + record_id;
 			});
 		});
 	}
-
+	
 	function queuePid(pid){
 		var path = '../rest/results/queue';
 		if (pid != "All Objects"){
