@@ -8,6 +8,7 @@
 	<bean id="fedoraClient" class="org.fcrepo.client.FedoraClient">
 		<property name="fedoraUri" value="http://localhost:8080/rest" />
 	</bean>
+	
 	<context:annotation-config />
 	<context:component-scan base-package="org.fcrepo.web.resources" />
 </beans>
