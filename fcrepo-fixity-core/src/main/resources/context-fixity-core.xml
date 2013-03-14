@@ -61,19 +61,19 @@
 
 	<amq:queue id="fixityQueue" physicalName="org.fcrepo.services.fixity.queue" />
 
-	<amq:connectionFactory id="jmsFactory" brokerURL="vm://localhost" />
+	<amq:connectionFactory id="fixityJmsFactory"  brokerURL="vm://fixityBroker" />
 
-	<jms:listener-container connection-factory="jmsConnectionFactory">
+	<jms:listener-container connection-factory="fixityJmsConnectionFactory">
 		<jms:listener destination="org.fcrepo.services.fixity.queue" ref="fixityService"
 			method="processRequest" />
 	</jms:listener-container>
 
-	<bean id="jmsConnectionFactory"
+	<bean id="fixityJmsConnectionFactory"
 		class="org.springframework.jms.connection.SingleConnectionFactory"
-		p:targetConnectionFactory-ref="jmsFactory" />
+		p:targetConnectionFactory-ref="fixityJmsFactory" />
 
 	<bean id="fixityJmsTemplate" class="org.springframework.jms.core.JmsTemplate"
-		p:connectionFactory-ref="jmsConnectionFactory"
+		p:connectionFactory-ref="fixityJmsConnectionFactory"
 		p:defaultDestination-ref="fixityQueue" />
 
 
