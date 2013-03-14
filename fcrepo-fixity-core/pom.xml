@@ -69,7 +69,6 @@
 			<groupId>org.apache.xbean</groupId>
 			<artifactId>xbean-spring</artifactId>
 			<version>3.12</version>
-			<type>bundle</type>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
