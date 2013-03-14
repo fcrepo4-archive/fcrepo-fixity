@@ -19,9 +19,9 @@
 	<!--  Database configuration -->
 	<bean id="hsqlDatasource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<!-- <property name="driverClassName" value="org.postgresql.Driver" /> -->
-		<!-- <property name="url" value="jdbc:postgresql://localhost/fixity" /> -->
-		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+<!-- 		<property name="driverClassName" value="org.postgresql.Driver" /> -->
+<!-- 		<property name="url" value="jdbc:postgresql://localhost/fixity" /> -->
+ 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="url" value="jdbc:hsqldb:mem:results" />
 		<property name="username" value="fixity" />
 		<property name="password" value="fixity" />
@@ -29,7 +29,7 @@
 
 	<!--  hibernate session factory configuration -->
 	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="hsqlDatasource" />
 		<property name="annotatedClasses">
 			<list>
@@ -40,16 +40,16 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect"> org.hibernate.dialect.HSQLDialect</prop>
-				<!-- <prop key="hibernate.dialect"> org.hibernate.dialect.PostgreSQLDialect</prop> -->
-				<prop key="hibernate.show_sql">true</prop>
+ 				<prop key="hibernate.dialect"> org.hibernate.dialect.HSQLDialect</prop>
+<!-- 				<prop key="hibernate.dialect"> org.hibernate.dialect.PostgreSQLDialect</prop> -->
+				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 			</props>
 		</property>
 	</bean>
 
 	<bean id="txManager"
-		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory">
 			<ref local="sessionFactory" />
 		</property>
