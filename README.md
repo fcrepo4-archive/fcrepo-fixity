@@ -19,4 +19,8 @@ Requesting the check of an object can be done using a HTTP GET request to:
 To retrieve test results of an object you can query:
 
 	GET http://localhost:8180/fixity/<pid>
+
+The java property "org.fcrepo.fixity.fcrepo.url" can be set to overrride the fedora4 url in the spring configuration:
+
+	MAVEN_OPTS="-Dorg.fcrepo.fixity.fcrepo.url=http://myfedora:80/fedora"
 	  	
