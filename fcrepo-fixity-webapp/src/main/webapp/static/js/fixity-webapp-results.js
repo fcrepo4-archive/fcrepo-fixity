@@ -43,8 +43,6 @@
 				              {sWidth : "35%"},
 				              {sWwidth : "15%"} ],
 				fnCreatedRow : function (n_row, row_data, data_idx){
-					console.log(n_row);
-					console.log(row_data);
 					$('td:eq(0)',n_row).parent().mouseover(function() {
 						$(this).addClass('row_hover');
 					});

@@ -61,7 +61,7 @@
 
 	<amq:queue id="fixityQueue" physicalName="org.fcrepo.services.fixity.queue" />
 
-	<amq:connectionFactory id="fixityJmsFactory"  brokerURL="failover:(tcp://localhost:61616,vm://fixityBroker)?initialReconnectDelay=120" />
+	<amq:connectionFactory id="fixityJmsFactory"  brokerURL="failover:(tcp://localhost:61616,vm://fixityBroker?persistent=false)?initialReconnectDelay=5000" />
 
 	<jms:listener-container connection-factory="fixityJmsConnectionFactory">
 		<jms:listener destination="org.fcrepo.services.fixity.queue" ref="fixityService"
