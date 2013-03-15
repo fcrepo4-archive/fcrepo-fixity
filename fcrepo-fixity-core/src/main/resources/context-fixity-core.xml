@@ -19,7 +19,7 @@
 <!-- 		<property name="driverClassName" value="org.postgresql.Driver" /> -->
 <!-- 		<property name="url" value="jdbc:postgresql://localhost/fixity" /> -->
  		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-		<property name="url" value="jdbc:hsqldb:file:/tmp/fixity-results.db" />
+		<property name="url" value="jdbc:hsqldb:file:/tmp/fixity-results.db;shutdown=true" />
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
