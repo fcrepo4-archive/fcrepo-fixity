@@ -3,6 +3,7 @@ package org.fcrepo.services;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -22,7 +23,8 @@ import org.fcrepo.jaxb.responses.access.ObjectProfile;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.DatastreamChecksumCheck;
 import org.fcrepo.services.fixity.FixityService;
-import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.ObjectFixity;
+import org.fcrepo.utils.FixityResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -76,7 +78,19 @@ public class TestFixityService {
 		when(client.getObjectDatastreams(obj.pid)).thenReturn(datastreams);
 		when(client.getDatastreamProfile(obj.pid, dsElement.dsid)).thenReturn(ds);
 		when(client.getDatastreamContent(obj.pid, dsElement.dsid)).thenReturn(new ByteArrayInputStream(someData));
+		org.fcrepo.jaxb.responses.management.DatastreamFixity fixity = new org.fcrepo.jaxb.responses.management.DatastreamFixity();
+		fixity.dsId = dsElement.dsid;
+		fixity.objectId = obj.pid;
+		fixity.timestamp = new java.util.Date();
+		fixity.statuses = new java.util.ArrayList<FixityResult>();
+		FixityResult success = new FixityResult(someData.length, ds.dsChecksum);
+		success.dsSize = someData.length;
+		success.dsChecksum = ds.dsChecksum;
+		success.validChecksum = true;
+		success.validSize = true;
+		fixity.statuses.add(success);
 		
+		when(client.getDatastreamFixity(obj.pid, dsElement.dsid)).thenReturn(fixity);
 
 		/* tell the service to check a specific object */
 		service.checkObject(obj.pid);
@@ -91,7 +105,7 @@ public class TestFixityService {
 		}while(service.getResults(obj.pid).size() == 0);
 		
 		/* check if there is a result in the database */
-		List<FixityResult> results =service.getResults(obj.pid); 
+		List<ObjectFixity> results =service.getResults(obj.pid); 
 		assertTrue(results.size() == 1);
 		assertTrue(results.get(0).getErrors().size() == 0);
 		assertTrue(results.get(0).getSuccesses().size() == 1);
@@ -126,9 +140,24 @@ public class TestFixityService {
 		when(client.getDatastreamProfile(obj.pid, dsElement.dsid)).thenReturn(ds);
 		when(client.getDatastreamContent(obj.pid, dsElement.dsid)).thenReturn(new ByteArrayInputStream(someData));
 
+		org.fcrepo.jaxb.responses.management.DatastreamFixity fixity = new org.fcrepo.jaxb.responses.management.DatastreamFixity();
+		fixity.dsId = dsElement.dsid;
+		fixity.objectId = obj.pid;
+		fixity.timestamp = new java.util.Date();
+		fixity.statuses = new java.util.ArrayList<FixityResult>();
+		FixityResult error = new FixityResult(someData.length - 2, ds.dsChecksum);
+		error.validChecksum = true;
+		error.validSize = false;
+		error.dsSize = someData.length;
+		error.dsChecksum = ds.dsChecksum;
+		fixity.statuses.add(error);
+		
+		
+		when(client.getDatastreamFixity(obj.pid, dsElement.dsid)).thenReturn(fixity);
+
 		/* tell the service to check a specific object */
 		service.checkObject(obj.pid);
-
+        
 		/* let the daemon respond to the request give it 15 secs max*/
 		long started = System.currentTimeMillis();
 		do{
@@ -137,8 +166,8 @@ public class TestFixityService {
 			}
 			Thread.sleep(500);
 		}while(service.getResults(obj.pid).size() == 0);
-
-		List<FixityResult> results =service.getResults(obj.pid); 
+		verify(client).getDatastreamFixity(obj.pid, dsElement.dsid);
+		List<ObjectFixity> results =service.getResults(obj.pid); 
 		assertTrue(results.size() == 1);
 		assertTrue(results.get(0).getPid().equals(obj.pid));
 		System.out.println(results.get(0).getErrors().size());

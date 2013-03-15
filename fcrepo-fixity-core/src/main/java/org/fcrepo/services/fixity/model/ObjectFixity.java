@@ -1,5 +1,7 @@
 package org.fcrepo.services.fixity.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "fixity_results")
-public class FixityResult {
+public class ObjectFixity {
 
 	@GeneratedValue
 	@Id
@@ -40,18 +42,19 @@ public class FixityResult {
 	@XmlElementWrapper(name = "successes")
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "SUCCESS_ID")
-	private List<DatastreamFixityResult> successes;
+	private List<DatastreamFixity> successes;
 
 	@XmlElementWrapper(name = "errors")
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ERROR_ID")
-	private List<DatastreamFixityResult> errors;
+	private List<DatastreamFixity> errors;
 
-	public FixityResult() {
+	public ObjectFixity() {
 		super();
 	}
 
-	public FixityResult(String pid, Date timestamp, List<DatastreamFixityResult> successes, List<DatastreamFixityResult> errors) {
+	public ObjectFixity(String pid, Date timestamp, List<DatastreamFixity> successes,
+			List<DatastreamFixity> errors) {
 		super();
 		this.pid = pid;
 		this.timestamp = timestamp;
@@ -59,7 +62,7 @@ public class FixityResult {
 		this.errors = errors;
 		this.successes = successes;
 	}
-
+	
 	public long getId() {
 		return id;
 	}
@@ -76,11 +79,11 @@ public class FixityResult {
 		return pid;
 	}
 
-	public List<DatastreamFixityResult> getSuccesses() {
+	public List<DatastreamFixity> getSuccesses() {
 		return successes;
 	}
 
-	public void setSuccesses(List<DatastreamFixityResult> successes) {
+	public void setSuccesses(List<DatastreamFixity> successes) {
 		this.successes = successes;
 	}
 
@@ -92,7 +95,7 @@ public class FixityResult {
 		this.success = success;
 	}
 
-	public void setErrors(List<DatastreamFixityResult> errors) {
+	public void setErrors(List<DatastreamFixity> errors) {
 		this.errors = errors;
 	}
 
@@ -100,7 +103,7 @@ public class FixityResult {
 		return success;
 	}
 
-	public List<DatastreamFixityResult> getErrors() {
+	public List<DatastreamFixity> getErrors() {
 		return errors;
 	}
 

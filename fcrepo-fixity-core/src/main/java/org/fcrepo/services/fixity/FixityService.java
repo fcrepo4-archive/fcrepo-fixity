@@ -2,16 +2,12 @@ package org.fcrepo.services.fixity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -21,7 +17,7 @@ import org.codehaus.jackson.map.ObjectWriter;
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.DailyStatistics;
-import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +71,11 @@ public class FixityService {
 		try {
 			final String pid = (String) message.getStringProperty("pid");
 			/* pop an object id from the queue to check it */
-			final List<FixityResult> results = runChecks(pid);
+			final List<ObjectFixity> results = runChecks(pid);
 			logger.debug("gathered " + results.size() +
 					" fixity check results for object '" + pid + "'");
 			databaseService.addResults(results);
-			for (final FixityResult result : results) {
+			for (final ObjectFixity result : results) {
 				if (result.isSuccess()) {
 					logger.debug("Success for object " + pid + ":\n" + this.jsonWriter.writeValueAsString(result));
 				} else {
@@ -93,9 +89,9 @@ public class FixityService {
 		}
 	}
 
-	private List<FixityResult> runChecks(final String pid) {
-		final List<FixityResult> results =
-				new ArrayList<FixityResult>();
+	private List<ObjectFixity> runChecks(final String pid) {
+		final List<ObjectFixity> results =
+				new ArrayList<ObjectFixity>();
 		try {
 			results.add(checksumFixityCheck.check(pid));
 		} catch (Exception e) {
@@ -147,11 +143,11 @@ public class FixityService {
 	 * @param pid
 	 * @return
 	 */
-	public List<FixityResult> getResults(String pid) {
+	public List<ObjectFixity> getResults(String pid) {
 		return databaseService.getResults(pid);
 	}
 
-	public List<FixityResult> getResults(int offset, int length) {
+	public List<ObjectFixity> getResults(int offset, int length) {
 		return databaseService.getResults(offset, length);
 	}
 	
@@ -167,7 +163,7 @@ public class FixityService {
 		return databaseService.getDailyStatistics();
 	}
 
-	public FixityResult getResult(long recordId) {
+	public ObjectFixity getResult(long recordId) {
 		return databaseService.getResult(recordId);
 	}
 	

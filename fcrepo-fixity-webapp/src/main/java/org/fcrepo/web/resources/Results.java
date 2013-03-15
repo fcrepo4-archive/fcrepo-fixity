@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 
 import org.fcrepo.services.fixity.FixityService;
 import org.fcrepo.services.fixity.model.DailyStatistics;
-import org.fcrepo.services.fixity.model.FixityResult;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 
 @Named
 @Path("/results")
@@ -25,25 +25,25 @@ public class Results {
 	private FixityService service;
 
 	@GET
-	public List<FixityResult> getAllResults() {
+	public List<ObjectFixity> getAllResults() {
 		return service.getResults(0, 50);
 	}
 
 	@Path("/{offset}/{length}")
 	@GET
-	public List<FixityResult> getAllResultsWithOffset(@PathParam("offset") int offset, @PathParam("length") int length) {
+	public List<ObjectFixity> getAllResultsWithOffset(@PathParam("offset") int offset, @PathParam("length") int length) {
 		return service.getResults(offset, length);
 	}
 
 	@Path("/{pid}")
 	@GET
-	public List<FixityResult> getResults(@PathParam("pid") String pid) {
+	public List<ObjectFixity> getResults(@PathParam("pid") String pid) {
 		return service.getResults(pid);
 	}
 	
 	@Path("/details/{recordId}")
 	@GET
-	public FixityResult getResult(@PathParam("recordId") long recordId){
+	public ObjectFixity getResult(@PathParam("recordId") long recordId){
 		return service.getResult(recordId);
 	}
 

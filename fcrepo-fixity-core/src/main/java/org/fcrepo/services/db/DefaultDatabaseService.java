@@ -8,9 +8,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.fcrepo.services.fixity.model.DailyStatistics;
-import org.fcrepo.services.fixity.model.DatastreamFixityResult;
-import org.fcrepo.services.fixity.model.DatastreamFixityResult.ResultType;
-import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.DatastreamFixity;
+import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -31,7 +31,7 @@ public class DefaultDatabaseService implements DatabaseService {
 
 	@Override
 	@Transactional
-	public void addResult(FixityResult res) {
+	public void addResult(ObjectFixity res) {
 		Session sess = sessionFactory.openSession();
 		int errors = res.getErrors().size();
 		int successes = res.getSuccesses().size();
@@ -42,8 +42,8 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
-	public void addResults(Collection<FixityResult> results) {
-		for (FixityResult result : results) {
+	public void addResults(Collection<ObjectFixity> results) {
+		for (ObjectFixity result : results) {
 			this.addResult(result);
 		}
 	}
@@ -51,13 +51,13 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public List<FixityResult> getResults(String objectId) {
+	public List<ObjectFixity> getResults(String objectId) {
 		Session sess = sessionFactory.openSession();
-		List<FixityResult> results = sess.createCriteria(FixityResult.class)
+		List<ObjectFixity> results = sess.createCriteria(ObjectFixity.class)
 				.add(Restrictions.eq("pid", objectId))
 				.list();
 		/* initialize the collections */
-		for (FixityResult r : results) {
+		for (ObjectFixity r : results) {
 			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
 		}
@@ -67,14 +67,14 @@ public class DefaultDatabaseService implements DatabaseService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<FixityResult> getResults(int offset, int length) {
+	public List<ObjectFixity> getResults(int offset, int length) {
 		Session sess = sessionFactory.openSession();
-		List<FixityResult> results = sess.createCriteria(FixityResult.class)
+		List<ObjectFixity> results = sess.createCriteria(ObjectFixity.class)
 				.setFirstResult(offset)
 				.setFetchSize(length)
 				.list();
 		/* initialize the collections */
-		for (FixityResult r : results) {
+		for (ObjectFixity r : results) {
 			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
 		}
@@ -86,7 +86,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Transactional(readOnly = true)
 	public long getResultCount() {
 		Session sess = sessionFactory.openSession();
-		long value = (Long) sess.createCriteria(FixityResult.class)
+		long value = (Long) sess.createCriteria(ObjectFixity.class)
 				.setProjection(Projections.rowCount())
 				.uniqueResult();
 		sess.close();
@@ -97,7 +97,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Transactional(readOnly = true)
 	public long getSuccessCount() {
 		Session sess = sessionFactory.openSession();
-		long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
+		long value = (Long) sess.createCriteria(DatastreamFixity.class)
 				.add(Restrictions.eq("type", ResultType.SUCCESS))
 				.setProjection(Projections.rowCount())
 				.uniqueResult();
@@ -109,7 +109,7 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Transactional(readOnly = true)
 	public long getErrorCount() {
 		Session sess = sessionFactory.openSession();
-		Long value = (Long) sess.createCriteria(DatastreamFixityResult.class)
+		Long value = (Long) sess.createCriteria(DatastreamFixity.class)
 				.add(Restrictions.eq("type", ResultType.ERROR))
 				.setProjection(Projections.rowCount())
 				.uniqueResult();
@@ -158,9 +158,9 @@ public class DefaultDatabaseService implements DatabaseService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public FixityResult getResult(long recordId) {
+	public ObjectFixity getResult(long recordId) {
 		Session sess = sessionFactory.openSession();
-		FixityResult result = (FixityResult) sess.get(FixityResult.class, recordId);
+		ObjectFixity result = (ObjectFixity) sess.get(ObjectFixity.class, recordId);
 		Hibernate.initialize(result.getErrors());
 		Hibernate.initialize(result.getSuccesses());
 		sess.close();

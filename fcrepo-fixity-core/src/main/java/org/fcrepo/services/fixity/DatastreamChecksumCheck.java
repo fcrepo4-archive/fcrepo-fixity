@@ -15,8 +15,8 @@ import javax.inject.Named;
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.jaxb.responses.access.ObjectDatastreams;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
-import org.fcrepo.services.fixity.model.DatastreamFixityResult;
-import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.DatastreamFixity;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,34 +43,30 @@ public class DatastreamChecksumCheck implements FixityCheck {
 	}
 
 	@Override
-	public FixityResult check(String objectId) throws IOException, NoSuchAlgorithmException {
-		final List<DatastreamFixityResult> errors = new ArrayList<DatastreamFixityResult>();
-		final List<DatastreamFixityResult> successes = new ArrayList<DatastreamFixityResult>();
+	public ObjectFixity check(String objectId) throws IOException, NoSuchAlgorithmException {
+		final List<DatastreamFixity> errors = new ArrayList<DatastreamFixity>();
+		final List<DatastreamFixity> successes = new ArrayList<DatastreamFixity>();
 		final ObjectDatastreams datastreams = client.getObjectDatastreams(objectId);
 		for (ObjectDatastreams.DatastreamElement dsElement : datastreams.datastreams) {
-			logger.debug("verifying checksum of object "+ objectId +" datastream " + dsElement.dsid);
+			logger.debug("verifying checksum of object {} datastream {}", objectId, dsElement.dsid);
 			final String dsId = dsElement.dsid;
-			final DatastreamProfile ds = client.getDatastreamProfile(objectId, dsId);
-			final String calculated = createChecksum(ds, ds.dsChecksumType);
+			final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
 
-			/* strip the uri parts e.g. "urn:sha1:" of the checksum */
-			String checksum = ds.dsChecksum.toASCIIString();
-			checksum = checksum.substring(checksum.lastIndexOf(':') + 1);
-
-			/* check for equality */
-			if (!calculated.equals(checksum)) {
-				String details = "The calculated checksums of type " + ds.dsChecksumType + " for the datastream " + ds.dsID
-						+ " of the object "
-						+ objectId + " does not match the saved value: [" + calculated + " != " + ds.dsChecksum.toASCIIString() + "]";
-				DatastreamFixityResult err = DatastreamFixityResult.newError(dsId, new Date(), details);
-				errors.add(err);
-			} else {
-				String details = "Success for Checksum: " + ds.dsChecksum.toASCIIString();
-				DatastreamFixityResult success = DatastreamFixityResult.newSuccess(dsId, new Date(), details);
-				successes.add(success);
+			/* check for errors */
+			boolean error = false;
+			for (org.fcrepo.utils.FixityResult status: ds.statuses){
+				if (!status.validChecksum) {
+					error = errors.add(new DatastreamFixity(ds));
+				}
+                if (!status.validSize) {
+					error = errors.add(new DatastreamFixity(ds));
+                }
+			}
+			if (!error){
+				successes.add(new DatastreamFixity(ds));
 			}
 		}
-		return new FixityResult(objectId,new Date(), successes, errors);
+		return new ObjectFixity(objectId,new Date(), successes, errors);
 	}
 
 	private String createChecksum(DatastreamProfile ds, String dsChecksumType) throws NoSuchAlgorithmException, IOException {

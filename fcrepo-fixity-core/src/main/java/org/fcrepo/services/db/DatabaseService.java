@@ -4,17 +4,17 @@ import java.util.Collection;
 import java.util.List;
 
 import org.fcrepo.services.fixity.model.DailyStatistics;
-import org.fcrepo.services.fixity.model.FixityResult;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
 
 public interface DatabaseService {
-	void addResult(FixityResult res);
+	void addResult(ObjectFixity res);
 
-	List<FixityResult> getResults(String objectId);
+	List<ObjectFixity> getResults(String objectId);
 
-	void addResults(Collection<FixityResult> results);
+	void addResults(Collection<ObjectFixity> results);
 
-	List<FixityResult> getResults(int offset, int length);
+	List<ObjectFixity> getResults(int offset, int length);
 
 	long getResultCount();
 
@@ -26,5 +26,5 @@ public interface DatabaseService {
 	
 	List<DailyStatistics> getDailyStatistics();
 
-	FixityResult getResult(long recordId);
+	ObjectFixity getResult(long recordId);
 }
