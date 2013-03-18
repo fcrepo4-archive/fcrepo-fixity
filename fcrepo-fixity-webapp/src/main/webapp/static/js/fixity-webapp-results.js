@@ -14,7 +14,7 @@
 				dailyStats[i] = {
 						date : data[i]['stat-daily']['@date'],
 						successes : data[i]['stat-daily']['@successCount'],
-						errors : data[i]['stat-daily']['@errorCount']
+						errors : data[i]['stat-daily']['@errorCount'],
 						repairs : data[i]['stat-daily']['@repairCount']
 				}
 			}
@@ -74,7 +74,7 @@
 		generalStats = {
 			numObjects : parseInt(data['general-stat']['@object-count']),
 			numErrors : parseInt(data['general-stat']['@error-count']),
-			numSuccesses : parseInt(data['general-stat']['@success-count'])
+			numSuccesses : parseInt(data['general-stat']['@success-count']),
 			numRepairs : parseInt(data['general-stat']['@repair-count'])
 		}
 		return generalStats;
