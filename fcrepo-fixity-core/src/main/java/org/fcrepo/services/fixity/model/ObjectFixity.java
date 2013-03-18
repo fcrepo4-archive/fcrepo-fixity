@@ -19,6 +19,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
+
 @XmlRootElement(name = "fixity-result")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
@@ -35,6 +37,9 @@ public class ObjectFixity {
 
 	@XmlAttribute(name = "success")
 	private boolean success;
+	
+	@XmlAttribute(name = "repaired")
+	private boolean repaired;
 
 	@XmlAttribute(name = "timestamp")
 	private Date timestamp;
@@ -59,6 +64,10 @@ public class ObjectFixity {
 		this.pid = pid;
 		this.timestamp = timestamp;
 		this.success = (errors.size() == 0);
+		this.repaired = (!success);
+		for (DatastreamFixity df:errors){
+			this.repaired &= (df.getType() == ResultType.REPAIRED);
+		}
 		this.errors = errors;
 		this.successes = successes;
 	}
@@ -94,6 +103,10 @@ public class ObjectFixity {
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
+	
+	public void setRepaired(boolean repaired) {
+		this.repaired = repaired;
+	}
 
 	public void setErrors(List<DatastreamFixity> errors) {
 		this.errors = errors;
@@ -101,6 +114,10 @@ public class ObjectFixity {
 
 	public boolean isSuccess() {
 		return success;
+	}
+	
+	public boolean isRepaired() {
+		return repaired;
 	}
 
 	public List<DatastreamFixity> getErrors() {

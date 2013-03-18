@@ -33,9 +33,14 @@ public class DefaultDatabaseService implements DatabaseService {
 	@Transactional
 	public void addResult(ObjectFixity res) {
 		Session sess = sessionFactory.openSession();
-		int errors = res.getErrors().size();
+		int errors = 0;
+		int repairs = 0;
+		for (DatastreamFixity df: res.getErrors()){
+			if (df.getType() == ResultType.ERROR) errors++;
+			if (df.getType() == ResultType.REPAIRED) repairs++;
+		}
 		int successes = res.getSuccesses().size();
-		addStat(successes, errors);
+		addStat(successes, errors, repairs);
 		sess.save(res);
 		sess.flush();
 		sess.close();
@@ -60,6 +65,9 @@ public class DefaultDatabaseService implements DatabaseService {
 		for (ObjectFixity r : results) {
 			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
+			for (DatastreamFixity p:r.getErrors()){
+				Hibernate.initialize(p.getProblems());
+			}
 		}
 		sess.close();
 		return results;
@@ -77,6 +85,9 @@ public class DefaultDatabaseService implements DatabaseService {
 		for (ObjectFixity r : results) {
 			Hibernate.initialize(r.getSuccesses());
 			Hibernate.initialize(r.getErrors());
+			for (DatastreamFixity p:r.getErrors()){
+				Hibernate.initialize(p.getProblems());
+			}
 		}
 		sess.close();
 		return results;
@@ -118,12 +129,24 @@ public class DefaultDatabaseService implements DatabaseService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public long getRepairCount() {
+		Session sess = sessionFactory.openSession();
+		Long value = (Long) sess.createCriteria(DatastreamFixity.class)
+				.add(Restrictions.eq("type", ResultType.REPAIRED))
+				.setProjection(Projections.rowCount())
+				.uniqueResult();
+		sess.close();
+		return value;
+	}
+	@Override
 	@Transactional
-	public void addStat(int successCount, int errorCount) {
+	public void addStat(int successCount, int errorCount, int repairCount) {
 		Session sess = sessionFactory.openSession();
 		DailyStatistics stat = getDailyStat(new Date());
 		stat.setErrorCount(stat.getErrorCount() + errorCount);
 		stat.setSuccessCount(stat.getSuccessCount() + successCount);
+		stat.setRepairCount(stat.getRepairCount() + repairCount);
 		sess.saveOrUpdate(stat);
 		sess.flush();
 		sess.close();
@@ -140,6 +163,7 @@ public class DefaultDatabaseService implements DatabaseService {
 			stat.setDate(date);
 			stat.setErrorCount(0);
 			stat.setSuccessCount(0);
+			stat.setRepairCount(0);
 		}
 		sess.close();
 		return stat;
@@ -162,6 +186,9 @@ public class DefaultDatabaseService implements DatabaseService {
 		Session sess = sessionFactory.openSession();
 		ObjectFixity result = (ObjectFixity) sess.get(ObjectFixity.class, recordId);
 		Hibernate.initialize(result.getErrors());
+		for (DatastreamFixity p:result.getErrors()){
+			Hibernate.initialize(p.getProblems());
+		}
 		Hibernate.initialize(result.getSuccesses());
 		sess.close();
 		return result;

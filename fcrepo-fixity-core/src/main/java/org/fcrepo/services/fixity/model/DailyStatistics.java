@@ -32,6 +32,8 @@ public class DailyStatistics {
 	private int errorCount;
 	@XmlAttribute(name = "successCount")
 	private int successCount;
+	@XmlAttribute(name = "repairCount")
+	private int repairCount;
 
 	public long getId() {
 		return id;
@@ -63,6 +65,14 @@ public class DailyStatistics {
 
 	public void setSuccessCount(int successCount) {
 		this.successCount = successCount;
+	}
+	
+	public int getRepairCount() {
+		return repairCount;
+	}
+	
+	public void setRepairCount(int repairCount) {
+		this.repairCount = repairCount;
 	}
 
 }

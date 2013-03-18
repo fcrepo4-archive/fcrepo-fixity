@@ -54,7 +54,7 @@ public class DatastreamChecksumCheck implements FixityCheck {
 			final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
 
 			DatastreamFixity dsFixity = new DatastreamFixity(ds);
-			if (dsFixity.getType() == ResultType.ERROR){
+			if (dsFixity.getType() != ResultType.SUCCESS){
 				errors.add(dsFixity);
 			} else {
 				successes.add(dsFixity);

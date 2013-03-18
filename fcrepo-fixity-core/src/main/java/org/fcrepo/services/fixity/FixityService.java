@@ -156,6 +156,7 @@ public class FixityService {
 		stats.setNumObjects(databaseService.getResultCount());
 		stats.setErrorCount(databaseService.getErrorCount());
 		stats.setSuccessCount(databaseService.getSuccessCount());
+		stats.setRepairCount(databaseService.getRepairCount());
 		return stats;
 	}
 

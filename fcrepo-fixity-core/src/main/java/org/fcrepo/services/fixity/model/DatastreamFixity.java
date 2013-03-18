@@ -1,17 +1,23 @@
 package org.fcrepo.services.fixity.model;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -28,7 +34,7 @@ public class DatastreamFixity {
 
 	@XmlEnum
 	public enum ResultType {
-		SUCCESS, ERROR;
+		SUCCESS, ERROR, REPAIRED;
 	}
 
 	@Id
@@ -47,6 +53,12 @@ public class DatastreamFixity {
 
 	@XmlElement(name = "details")
 	private String details;
+	
+	@XmlElementWrapper(name = "problems")
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "PROBLEM_ID")
+	private List<FixityProblem> problems = new ArrayList<FixityProblem>();
+
 	
 	@Transient
 	private org.fcrepo.jaxb.responses.management.DatastreamFixity result;
@@ -68,20 +80,55 @@ public class DatastreamFixity {
 		this.datastreamId = result.dsId;
 		this.timestamp = result.timestamp;
 		this.type = ResultType.SUCCESS;
+		int aggregateStatus = FixityResult.SUCCESS;
 		for (FixityResult status:result.statuses){
-			if (!status.validChecksum){
-				details = checksumErrorDetails(result, status.dsChecksumType, status.dsChecksum, status.computedChecksum);
-				type = ResultType.ERROR;
-				break;
+			if ((status.status & FixityResult.BAD_CHECKSUM) == FixityResult.BAD_CHECKSUM){
+				FixityProblem problem = new FixityProblem();
+				problem.cacheId = status.storeIdentifier;
+				problem.details = checksumErrorDetails(result, status.dsChecksumType, status.dsChecksum, status.computedChecksum);
+				if ((status.status & FixityResult.REPAIRED) != FixityResult.REPAIRED) {
+					aggregateStatus = (FixityResult.BAD_CHECKSUM + FixityResult.BAD_SIZE);
+					aggregateStatus |= FixityResult.BAD_CHECKSUM;
+					problem.type = ResultType.ERROR;
+				} else {
+					if (aggregateStatus == FixityResult.SUCCESS) {
+						aggregateStatus |= status.status;
+					} else {
+						aggregateStatus &= status.status;
+					}
+					problem.type = ResultType.REPAIRED;
+				}
+				this.problems.add(problem);
 			}
-			if (!status.validSize){
-				details = sizeErrorDetails(result, status.dsSize, status.computedSize);
-				type = ResultType.ERROR;
-				break;
+			if ((status.status & FixityResult.BAD_SIZE) == FixityResult.BAD_SIZE){
+				FixityProblem problem = new FixityProblem();
+				problem.cacheId = status.storeIdentifier;
+				problem.details = sizeErrorDetails(result, status.dsSize, status.computedSize);
+				if ((status.status & FixityResult.REPAIRED) != FixityResult.REPAIRED) {
+					aggregateStatus = (FixityResult.BAD_CHECKSUM + FixityResult.BAD_SIZE);
+					aggregateStatus |= FixityResult.BAD_CHECKSUM;
+					problem.type = ResultType.ERROR;
+				} else {
+					if (aggregateStatus == FixityResult.SUCCESS) {
+						aggregateStatus |= status.status;
+					} else {
+						aggregateStatus &= status.status;
+					}
+					problem.type = ResultType.REPAIRED;
+				}
+				this.problems.add(problem);
 			}
 		}
-		if (type != ResultType.ERROR) {
+		if (aggregateStatus == FixityResult.SUCCESS) {
+			type = ResultType.SUCCESS;
 			details = successDetails(result);
+		}
+		else if ((aggregateStatus & FixityResult.REPAIRED) == FixityResult.REPAIRED) {
+			type = ResultType.REPAIRED;
+			details = "There were fixity problems detected, but they were repaired.";
+		} else {
+			type = ResultType.ERROR;
+			details = "There were fixity problems detected, and they were not repaired.";
 		}
 	}
 
@@ -119,6 +166,14 @@ public class DatastreamFixity {
 	
 	public void setDetails(String details) {
 		this.details = details;
+	}
+	
+	public List<FixityProblem> getProblems() {
+		return this.problems;
+	}
+	
+	public void setProblems(List<FixityProblem> problems) {
+		this.problems = problems;
 	}
 
 	private static String successDetails(org.fcrepo.jaxb.responses.management.DatastreamFixity result) {

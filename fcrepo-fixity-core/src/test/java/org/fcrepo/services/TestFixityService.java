@@ -1,6 +1,7 @@
 package org.fcrepo.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,9 @@ import org.fcrepo.jaxb.responses.access.ObjectProfile;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.DatastreamChecksumCheck;
 import org.fcrepo.services.fixity.FixityService;
+import org.fcrepo.services.fixity.model.DatastreamFixity;
+import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
+import org.fcrepo.services.fixity.model.FixityProblem;
 import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.fcrepo.utils.FixityResult;
 import org.junit.Test;
@@ -85,8 +89,7 @@ public class TestFixityService {
 		FixityResult success = new FixityResult(someData.length, ds.dsChecksum);
 		success.dsSize = someData.length;
 		success.dsChecksum = ds.dsChecksum;
-		success.validChecksum = true;
-		success.validSize = true;
+		success.status = FixityResult.SUCCESS;
 		fixity.statuses.add(success);
 		
 		when(client.getDatastreamFixity(obj.pid, dsElement.dsid)).thenReturn(fixity);
@@ -140,8 +143,12 @@ public class TestFixityService {
 		fixity.timestamp = new java.util.Date();
 		fixity.statuses = new java.util.ArrayList<FixityResult>();
 		FixityResult error = new FixityResult(someData.length - 2, expectedChecksum);
-		error.validChecksum = true;
-		error.validSize = false;
+		error.status = FixityResult.BAD_SIZE;
+		error.dsSize = someData.length;
+		error.dsChecksum = expectedChecksum;
+		fixity.statuses.add(error);
+		error = new FixityResult(someData.length - 2, expectedChecksum);
+		error.status = FixityResult.BAD_SIZE + FixityResult.REPAIRED;
 		error.dsSize = someData.length;
 		error.dsChecksum = expectedChecksum;
 		fixity.statuses.add(error);
@@ -164,10 +171,22 @@ public class TestFixityService {
 		List<ObjectFixity> results = service.getResults(ePid); 
 		assertEquals(1, results.size());
 		assertEquals(ePid, results.get(0).getPid());
-		System.out.println(results.get(0).getErrors().size());
 		assertEquals(1, results.get(0).getErrors().size());
-		assertEquals(eDsId, results.get(0).getErrors().get(0).getDatastreamId());
-		assertTrue(results.get(0).getErrors().get(0).getTimestamp() != null);
+		DatastreamFixity errorResult = results.get(0).getErrors().get(0);
+		assertEquals(eDsId, errorResult.getDatastreamId());
+		assertNotNull(errorResult.getTimestamp());
+		int numCauses = errorResult.getProblems().size();
+		assertEquals(2, numCauses);
+		int repaired = 0;
+		int errors = 0;
+		for (FixityProblem p:errorResult.getProblems()){
+			if (p.type == DatastreamFixity.ResultType.REPAIRED) {
+				repaired++;
+			} else errors++;
+		}
+		assertEquals(ResultType.ERROR, errorResult.getType());
+		assertEquals(1, repaired);
+		assertEquals(1, errors);
 	}
 
 }

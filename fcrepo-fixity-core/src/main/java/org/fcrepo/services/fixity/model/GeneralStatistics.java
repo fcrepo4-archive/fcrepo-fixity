@@ -14,6 +14,8 @@ public class GeneralStatistics {
 	private long errorCount;
 	@XmlAttribute(name = "success-count")
 	private long successCount;
+	@XmlAttribute(name = "repair-count")
+	private long repairCount;
 
 	public long getNumObjects() {
 		return numObjects;
@@ -37,6 +39,14 @@ public class GeneralStatistics {
 
 	public void setSuccessCount(long successCount) {
 		this.successCount = successCount;
+	}
+
+	public long getRepairCount() {
+		return this.repairCount;
+	}
+	
+	public void setRepairCount(long repairCount) {
+		this.repairCount = repairCount;
 	}
 
 }

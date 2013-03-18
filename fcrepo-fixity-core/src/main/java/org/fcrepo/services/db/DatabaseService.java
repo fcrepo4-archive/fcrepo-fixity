@@ -22,7 +22,9 @@ public interface DatabaseService {
 
 	long getSuccessCount();
 	
-	void addStat(int successCount, int errorCount);
+	long getRepairCount();
+
+	void addStat(int successCount, int errorCount, int repairCount);
 	
 	List<DailyStatistics> getDailyStatistics();
 

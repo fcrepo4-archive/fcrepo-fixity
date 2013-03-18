@@ -38,6 +38,7 @@
 				<value>org.fcrepo.services.fixity.model.DailyStatistics</value>
 				<value>org.fcrepo.services.fixity.model.ObjectFixity</value>
 				<value>org.fcrepo.services.fixity.model.DatastreamFixity</value>
+				<value>org.fcrepo.services.fixity.model.FixityProblem</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
