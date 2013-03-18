@@ -16,6 +16,7 @@ import org.fcrepo.client.FedoraClient;
 import org.fcrepo.jaxb.responses.access.ObjectDatastreams;
 import org.fcrepo.jaxb.responses.management.DatastreamProfile;
 import org.fcrepo.services.fixity.model.DatastreamFixity;
+import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
 import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,18 +53,11 @@ public class DatastreamChecksumCheck implements FixityCheck {
 			final String dsId = dsElement.dsid;
 			final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
 
-			/* check for errors */
-			boolean error = false;
-			for (org.fcrepo.utils.FixityResult status: ds.statuses){
-				if (!status.validChecksum) {
-					error = errors.add(new DatastreamFixity(ds));
-				}
-                if (!status.validSize) {
-					error = errors.add(new DatastreamFixity(ds));
-                }
-			}
-			if (!error){
-				successes.add(new DatastreamFixity(ds));
+			DatastreamFixity dsFixity = new DatastreamFixity(ds);
+			if (dsFixity.getType() == ResultType.ERROR){
+				errors.add(dsFixity);
+			} else {
+				successes.add(dsFixity);
 			}
 		}
 		return new ObjectFixity(objectId,new Date(), successes, errors);

@@ -16,44 +16,57 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.fcrepo.utils.FixityResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "datastream_results")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DatastreamFixity {
 
+	private static final Logger logger = LoggerFactory.getLogger(DatastreamFixity.class);
+
 	@XmlEnum
 	public enum ResultType {
 		SUCCESS, ERROR;
 	}
-
-//	public static DatastreamFixity newError(String datastreamId, Date timestamp, String details) {
-//		return new DatastreamFixity(ResultType.ERROR, timestamp, datastreamId, details);
-//	}
-//
-//	public static DatastreamFixity newSuccess(String datastreamId, Date timestamp, String details) {
-//		return new DatastreamFixity(ResultType.SUCCESS, timestamp, datastreamId, details);
-//	}
 
 	@Id
 	@GeneratedValue
 	@XmlAttribute(name = "record-id")
 	private long id;
 
+	@XmlAttribute(name = "type")
 	private ResultType type;
+	
+	@XmlAttribute(name = "timestamp")
+	private Date timestamp;
+	
+	@XmlAttribute(name = "datastream-id")
+	private String datastreamId;
 
+	@XmlElement(name = "details")
 	private String details;
 	
 	@Transient
 	private org.fcrepo.jaxb.responses.management.DatastreamFixity result;
 	
+    /**
+     * This constructor is used to deserialize from the results database
+     */
 	public DatastreamFixity() {
 		super();
 	}
 
+	/**
+	 * This constructor is used to adapt the repository fixity result to the the db serialization
+	 * @param result
+	 */
 	public DatastreamFixity(org.fcrepo.jaxb.responses.management.DatastreamFixity result) {
 		super();
 		this.result = result;
+		this.datastreamId = result.dsId;
+		this.timestamp = result.timestamp;
 		this.type = ResultType.SUCCESS;
 		for (FixityResult status:result.statuses){
 			if (!status.validChecksum){
@@ -72,43 +85,40 @@ public class DatastreamFixity {
 		}
 	}
 
-//	private DatastreamFixity(ResultType type, Date timestamp, String datastreamId, String details) {
-//		super();
-//		this.type = type;
-//		this.timestamp = timestamp;
-//		this.datastreamId = datastreamId;
-//		this.details = details;
-//	}
-//
-//	private DatastreamFixity(ResultType type, Date timestamp, String datastreamId) {
-//		super();
-//		this.type = type;
-//		this.timestamp = timestamp;
-//		this.datastreamId = datastreamId;
-//	}
-
 	public long getId() {
 		return id;
 	}
 
-	@XmlAttribute(name = "type")
 	public ResultType getType() {
 		return type;
 	}
+	
+	public void setType(ResultType type) {
+		this.type = type;
+	}
 
-	@XmlAttribute(name = "timestamp")
 	public Date getTimestamp() {
-		return (result != null) ? result.timestamp : null;
+		return timestamp;
+	}
+	
+	public void setTimestamp(Date timestamp){
+		this.timestamp = timestamp;
 	}
 
-	@XmlAttribute(name = "datastream-id")
 	public String getDatastreamId() {
-		return (result != null) ? result.dsId : null;
+		return datastreamId;
+	}
+	
+	public void setDatastreamId(String datastreamId) {
+		this.datastreamId = datastreamId;
 	}
 
-	@XmlElement(name = "details")
 	public String getDetails() {
 		return details;
+	}
+	
+	public void setDetails(String details) {
+		this.details = details;
 	}
 
 	private static String successDetails(org.fcrepo.jaxb.responses.management.DatastreamFixity result) {
@@ -125,7 +135,7 @@ public class DatastreamFixity {
 	
 	private static String sizeErrorDetails(org.fcrepo.jaxb.responses.management.DatastreamFixity result, long expected, long actual) {
     	String details = "The calculated size for datastream " + result.dsId + " of the object " + result.objectId +
-    			         " does not match the saved value: [" + expected + " != " + actual + "(expected)]"; 
+    			         " does not match the saved value: [" + actual + " != " + expected + "(expected)]"; 
 		return details;
 	}
 }

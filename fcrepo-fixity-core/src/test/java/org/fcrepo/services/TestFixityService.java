@@ -1,5 +1,6 @@
 package org.fcrepo.services;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,8 +77,6 @@ public class TestFixityService {
 
 		/* setup the client mock */
 		when(client.getObjectDatastreams(obj.pid)).thenReturn(datastreams);
-		when(client.getDatastreamProfile(obj.pid, dsElement.dsid)).thenReturn(ds);
-		when(client.getDatastreamContent(obj.pid, dsElement.dsid)).thenReturn(new ByteArrayInputStream(someData));
 		org.fcrepo.jaxb.responses.management.DatastreamFixity fixity = new org.fcrepo.jaxb.responses.management.DatastreamFixity();
 		fixity.dsId = dsElement.dsid;
 		fixity.objectId = obj.pid;
@@ -115,48 +114,43 @@ public class TestFixityService {
 	public void testChecksumFixityServiceError() throws Exception {
 
 		/* Mock object profile */
+		String ePid = "test:2";
+		String eDsId = "testds:2";
 		ObjectProfile obj = new ObjectProfile();
-		obj.pid = "test:2";
+		obj.pid = ePid;
 
 		/* Mock datastreams */
 		ObjectDatastreams datastreams = new ObjectDatastreams();
 		DatastreamElement dsElement = new DatastreamElement();
-		dsElement.dsid = "testds:2";
+		dsElement.dsid = eDsId;
 		datastreams.datastreams = new HashSet<DatastreamElement>();
 		datastreams.datastreams.add(dsElement);
 
-		/* mock datastream profile */
-		DatastreamProfile ds = new DatastreamProfile();
-		ds.dsID = dsElement.dsid;
-		ds.dsChecksum = URI.create("urn:sha1:" + "ABBA1");
-		ds.dsChecksumType = "SHA-1";
-		ds.pid = obj.pid;
+		URI expectedChecksum = URI.create("urn:sha1:ABBA1");
 
 		byte[] someData = new byte[16387];
 		new Random().nextBytes(someData);
 
 		/* setup the client mock */
-		when(client.getObjectDatastreams(obj.pid)).thenReturn(datastreams);
-		when(client.getDatastreamProfile(obj.pid, dsElement.dsid)).thenReturn(ds);
-		when(client.getDatastreamContent(obj.pid, dsElement.dsid)).thenReturn(new ByteArrayInputStream(someData));
+		when(client.getObjectDatastreams(ePid)).thenReturn(datastreams);
 
 		org.fcrepo.jaxb.responses.management.DatastreamFixity fixity = new org.fcrepo.jaxb.responses.management.DatastreamFixity();
-		fixity.dsId = dsElement.dsid;
-		fixity.objectId = obj.pid;
+		fixity.dsId = eDsId;
+		fixity.objectId = ePid;
 		fixity.timestamp = new java.util.Date();
 		fixity.statuses = new java.util.ArrayList<FixityResult>();
-		FixityResult error = new FixityResult(someData.length - 2, ds.dsChecksum);
+		FixityResult error = new FixityResult(someData.length - 2, expectedChecksum);
 		error.validChecksum = true;
 		error.validSize = false;
 		error.dsSize = someData.length;
-		error.dsChecksum = ds.dsChecksum;
+		error.dsChecksum = expectedChecksum;
 		fixity.statuses.add(error);
 		
 		
-		when(client.getDatastreamFixity(obj.pid, dsElement.dsid)).thenReturn(fixity);
+		when(client.getDatastreamFixity(ePid, eDsId)).thenReturn(fixity);
 
 		/* tell the service to check a specific object */
-		service.checkObject(obj.pid);
+		service.checkObject(ePid);
         
 		/* let the daemon respond to the request give it 15 secs max*/
 		long started = System.currentTimeMillis();
@@ -165,14 +159,14 @@ public class TestFixityService {
 				throw new Exception("Timeout while waiting for JMS queue");
 			}
 			Thread.sleep(500);
-		}while(service.getResults(obj.pid).size() == 0);
-		verify(client).getDatastreamFixity(obj.pid, dsElement.dsid);
-		List<ObjectFixity> results =service.getResults(obj.pid); 
-		assertTrue(results.size() == 1);
-		assertTrue(results.get(0).getPid().equals(obj.pid));
+		}while(service.getResults(ePid).size() == 0);
+		verify(client).getDatastreamFixity(ePid, eDsId);
+		List<ObjectFixity> results = service.getResults(ePid); 
+		assertEquals(1, results.size());
+		assertEquals(ePid, results.get(0).getPid());
 		System.out.println(results.get(0).getErrors().size());
-		assertTrue(results.get(0).getErrors().size() == 1);
-		assertTrue(results.get(0).getErrors().get(0).getDatastreamId().equals(ds.dsID));
+		assertEquals(1, results.get(0).getErrors().size());
+		assertEquals(eDsId, results.get(0).getErrors().get(0).getDatastreamId());
 		assertTrue(results.get(0).getErrors().get(0).getTimestamp() != null);
 	}
 
