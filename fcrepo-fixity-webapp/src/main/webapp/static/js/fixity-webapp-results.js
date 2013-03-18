@@ -15,6 +15,7 @@
 						date : data[i]['stat-daily']['@date'],
 						successes : data[i]['stat-daily']['@successCount'],
 						errors : data[i]['stat-daily']['@errorCount']
+						repairs : data[i]['stat-daily']['@repairCount']
 				}
 			}
 			createLineChart();
@@ -30,7 +31,7 @@
 				row[0] = this['fixity-result']['@record-id'];
 				row[1] = this["fixity-result"]['@pid'];
 				row[2] = this['fixity-result']['@timestamp'];
-				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : "Error";
+				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : (this["fixity-result"]['@repaired'] == "true") ? "Repaired" : "Error";
 				aaData[counter++] = row;
 			});
 
@@ -74,6 +75,7 @@
 			numObjects : parseInt(data['general-stat']['@object-count']),
 			numErrors : parseInt(data['general-stat']['@error-count']),
 			numSuccesses : parseInt(data['general-stat']['@success-count'])
+			numRepairs : parseInt(data['general-stat']['@repair-count'])
 		}
 		return generalStats;
 	}
@@ -83,17 +85,19 @@
 		r = Raphael("linechart");
 		errorValues = new Array();
 		successValues = new Array();
+		repairValues = new Array();
 		len = dailyStats.length;
 		xValues = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
 		for (i = 0;i<len;i++){
 			errorValues[i] = dailyStats[i].errors;
 			successValues[i] = dailyStats[i].successes;
+			repairValues[i] = dailyStats[i].repairs;
 		}
-		lines = r.linechart(60, 80, 500, 190 , xValues,[successValues,errorValues], {
+		lines = r.linechart(60, 80, 500, 190 , xValues,[successValues,errorValues,repairValues], {
 				axis : "0 0 1 1",
 				shade: true,
 				symbol: "circle",
-				colors: ["#00ff00","#ff0000"],
+				colors: ["#00ff00","#ff0000", '#ffff00'],
 				axisxstep : 1
 			});
 		label = r.label(138,40,"Errors and successes per day");
@@ -107,10 +111,13 @@
 		if (generalStats.numErrors > 0) {
 			chart_data[1] = generalStats.numErrors;
 		}
+		if (generalStats.numRepairs > 0) {
+			chart_data[2] = generalStats.numRepairs;
+		}
 		pie = r.piechart(290, 190, 120, chart_data, {
-			legend : [ "%%.%% - Success", "%%.%% - Error" ],
+			legend : [ "%%.%% - Success", "%%.%% - Error", "%%.%% - Repaired" ],
 			legendpos : "east",
-			colors : [ '#00ff00', '#ff0000' ]
+			colors : [ '#00ff00', '#ff0000', '#ffff00' ]
 		});
 		label = r.label(128,40,"Overall errors vs. successes");
 	}
