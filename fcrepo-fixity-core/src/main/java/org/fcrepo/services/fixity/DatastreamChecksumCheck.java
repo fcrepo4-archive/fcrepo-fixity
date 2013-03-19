@@ -50,17 +50,18 @@ public class DatastreamChecksumCheck implements FixityCheck {
 		final ObjectDatastreams datastreams = client.getObjectDatastreams(objectId);
 		if (datastreams == null || datastreams.datastreams == null){
 			logger.warn("There are no datastreams available for pid: " + objectId);
-		}
-		for (ObjectDatastreams.DatastreamElement dsElement : datastreams.datastreams) {
-			logger.debug("verifying checksum of object {} datastream {}", objectId, dsElement.dsid);
-			final String dsId = dsElement.dsid;
-			final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
-
-			DatastreamFixity dsFixity = new DatastreamFixity(ds);
-			if (dsFixity.getType() != ResultType.SUCCESS){
-				errors.add(dsFixity);
-			} else {
-				successes.add(dsFixity);
+		}else{
+			for (ObjectDatastreams.DatastreamElement dsElement : datastreams.datastreams) {
+				logger.debug("verifying checksum of object {} datastream {}", objectId, dsElement.dsid);
+				final String dsId = dsElement.dsid;
+				final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
+	
+				DatastreamFixity dsFixity = new DatastreamFixity(ds);
+				if (dsFixity.getType() != ResultType.SUCCESS){
+					errors.add(dsFixity);
+				} else {
+					successes.add(dsFixity);
+				}
 			}
 		}
 		return new ObjectFixity(objectId,new Date(), successes, errors);
