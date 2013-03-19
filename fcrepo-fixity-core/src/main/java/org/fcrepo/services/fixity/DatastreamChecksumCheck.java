@@ -48,6 +48,9 @@ public class DatastreamChecksumCheck implements FixityCheck {
 		final List<DatastreamFixity> errors = new ArrayList<DatastreamFixity>();
 		final List<DatastreamFixity> successes = new ArrayList<DatastreamFixity>();
 		final ObjectDatastreams datastreams = client.getObjectDatastreams(objectId);
+		if (datastreams == null || datastreams.datastreams == null){
+			logger.warn("There are no datastreams available for pid: " + objectId);
+		}
 		for (ObjectDatastreams.DatastreamElement dsElement : datastreams.datastreams) {
 			logger.debug("verifying checksum of object {} datastream {}", objectId, dsElement.dsid);
 			final String dsId = dsElement.dsid;
