@@ -30,7 +30,7 @@ The Java property `org.fcrepo.fixity.brokerurl` can be set to overrride the defa
 
 ## JSON/XML Endpoints
 
-The webapp supports the following operations:
+The webapp supports the following operations, and the fixity service will by default return JSON in order to request XML content from the fixity service ´-H "Accept:application/xml"´ can be used as an argument for cURL
 
 ### Get the first 50 fixity results
 
