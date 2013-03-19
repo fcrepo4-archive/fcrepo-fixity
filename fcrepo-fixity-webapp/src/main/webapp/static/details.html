@@ -12,7 +12,6 @@
 	$(document).ready(function() {
 	    var numErrors=0;
 	    var numSuccesses=0;
-	    $('#title').html('Fedora 4 - Fixity Check Details for ' + $.getUrlVar("pid"));
 		
 		$.extend({
 	        getUrlVars: function(){
@@ -30,6 +29,8 @@
 	          return $.getUrlVars()[name];
 	        }
 	      });
+
+		$('#title').html('Fedora 4 - Fixity Check Details for ' + $.getUrlVar("pid"));
 	
 	    
 		$.getJSON('../rest/results/details/' + $.getUrlVar("id"), function(data) {
