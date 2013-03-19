@@ -12,6 +12,7 @@
 	$(document).ready(function() {
 	    var numErrors=0;
 	    var numSuccesses=0;
+	    $('#title').html('Fedora 4 - Fixity Check Details for ' + $.getUrlVar("pid"));
 		
 		$.extend({
 	        getUrlVars: function(){
@@ -124,7 +125,7 @@
 </head>
 <body>
 	<div class="roundbox">
-		<h1>Fedora 4 - Fixity Check Details</h1>
+		<h1 id="title"></h1>
 	</div>
 	<div class="clearfix" id="wrap">
 		<div id="left_col">

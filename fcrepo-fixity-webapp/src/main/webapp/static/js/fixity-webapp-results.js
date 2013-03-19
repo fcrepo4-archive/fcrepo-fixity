@@ -55,7 +55,8 @@
 		
 			$('#results').delegate('tbody > tr > td', 'click', function () {
 				record_id = $(this).parent().children()[0].textContent;
-				window.location = 'details.html?id=' + record_id;
+				pid = $(this).parent().children()[1].textContent;
+				window.location = 'details.html?id=' + record_id + "&pid=" + pid;
 			});
 		});
 	}
