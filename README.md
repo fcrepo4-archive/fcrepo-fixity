@@ -28,4 +28,36 @@ The Java property `org.fcrepo.fixity.brokerurl` can be set to overrride the defa
 
 	MAVEN_OPTS="-Dorg.fcrepo.fixity.brokerurl=vm://fixitybroker"
 
-	  	
+## JSON/XML Endpoints
+
+The webapp supports the following operations:
+
+### Get the first 50 fixity results
+
+	curl "http://localhost:8081/rest/results"
+
+### Get fixity results by offset and length
+	
+	curl "http://localhost:8081/rest/results/0/10"
+
+### Get a specific fixity result
+
+	curl "http://localhost:8081/rest/results/testobj-1"
+
+### Get general fixity statistics
+
+	curl "http://localhost:8081/rest/results/statistics/general"
+
+### Get daily fixity statistics for the last 30 days
+
+	curl "http://localhost:8081/rest/results/statistics/daily"
+
+### Get fixity details for a specific fixity check
+
+	curl "http://localhost:8081/rest/results/details/1"
+
+### Queue a pid for a fixity check (hacky via url param atm)
+
+	curl -X POST "http://localhost:8081/rest/results/queue?pid=testobj-1"
+	
+	
