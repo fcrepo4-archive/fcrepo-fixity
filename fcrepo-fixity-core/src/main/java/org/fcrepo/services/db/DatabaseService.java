@@ -23,6 +23,8 @@ public interface DatabaseService {
 	long getSuccessCount();
 	
 	long getRepairCount();
+	
+	long getObjectCount();
 
 	void addStat(int successCount, int errorCount, int repairCount);
 	

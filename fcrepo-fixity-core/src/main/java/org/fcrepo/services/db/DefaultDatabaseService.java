@@ -182,6 +182,18 @@ public class DefaultDatabaseService implements DatabaseService {
 		return result;
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public long getObjectCount() {
+		Session sess = sessionFactory.openSession();
+		long count = (long) sess.createCriteria(ObjectFixity.class)
+			.setProjection(Projections.countDistinct("pid"))
+			.uniqueResult();
+		sess.close();
+		return count;
+	}
+	
+	
 	private void initializeObjectFixity(ObjectFixity oFixity) {
 		Hibernate.initialize(oFixity.getErrors());
 		for (DatastreamFixity p:oFixity.getErrors()){

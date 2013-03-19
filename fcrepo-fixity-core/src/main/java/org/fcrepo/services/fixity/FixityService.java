@@ -153,7 +153,7 @@ public class FixityService {
 	
 	public GeneralStatistics getStatistics(){
 		GeneralStatistics stats = new GeneralStatistics();
-		stats.setNumObjects(databaseService.getResultCount());
+		stats.setNumObjects(databaseService.getObjectCount());
 		stats.setErrorCount(databaseService.getErrorCount());
 		stats.setSuccessCount(databaseService.getSuccessCount());
 		stats.setRepairCount(databaseService.getRepairCount());
