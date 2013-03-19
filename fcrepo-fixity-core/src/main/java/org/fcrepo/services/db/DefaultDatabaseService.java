@@ -62,12 +62,8 @@ public class DefaultDatabaseService implements DatabaseService {
 				.add(Restrictions.eq("pid", objectId))
 				.list();
 		/* initialize the collections */
-		for (ObjectFixity r : results) {
-			Hibernate.initialize(r.getSuccesses());
-			Hibernate.initialize(r.getErrors());
-			for (DatastreamFixity p:r.getErrors()){
-				Hibernate.initialize(p.getProblems());
-			}
+		for (ObjectFixity result : results) {
+			initializeObjectFixity(result);
 		}
 		sess.close();
 		return results;
@@ -82,12 +78,8 @@ public class DefaultDatabaseService implements DatabaseService {
 				.setFetchSize(length)
 				.list();
 		/* initialize the collections */
-		for (ObjectFixity r : results) {
-			Hibernate.initialize(r.getSuccesses());
-			Hibernate.initialize(r.getErrors());
-			for (DatastreamFixity p:r.getErrors()){
-				Hibernate.initialize(p.getProblems());
-			}
+		for (ObjectFixity result : results) {
+			initializeObjectFixity(result);
 		}
 		sess.close();
 		return results;
@@ -185,12 +177,19 @@ public class DefaultDatabaseService implements DatabaseService {
 	public ObjectFixity getResult(long recordId) {
 		Session sess = sessionFactory.openSession();
 		ObjectFixity result = (ObjectFixity) sess.get(ObjectFixity.class, recordId);
-		Hibernate.initialize(result.getErrors());
-		for (DatastreamFixity p:result.getErrors()){
-			Hibernate.initialize(p.getProblems());
-		}
-		Hibernate.initialize(result.getSuccesses());
+		initializeObjectFixity(result);
 		sess.close();
 		return result;
+	}
+	
+	private void initializeObjectFixity(ObjectFixity oFixity) {
+		Hibernate.initialize(oFixity.getErrors());
+		for (DatastreamFixity p:oFixity.getErrors()){
+			Hibernate.initialize(p.getProblems());
+		}
+		Hibernate.initialize(oFixity.getSuccesses());
+		for (DatastreamFixity p:oFixity.getSuccesses()){
+			Hibernate.initialize(p.getProblems());
+		}
 	}
 }
