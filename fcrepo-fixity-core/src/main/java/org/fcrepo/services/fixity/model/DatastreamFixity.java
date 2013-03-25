@@ -3,6 +3,7 @@ package org.fcrepo.services.fixity.model;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -22,6 +23,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.fcrepo.utils.FixityResult;
+import org.fcrepo.utils.FixityResult.FixityState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,50 +82,52 @@ public class DatastreamFixity {
 		this.datastreamId = result.dsId;
 		this.timestamp = result.timestamp;
 		this.type = ResultType.SUCCESS;
-		int aggregateStatus = FixityResult.SUCCESS;
+		EnumSet<FixityState> aggregateStatus = EnumSet.noneOf(FixityResult.FixityState.class);
+		aggregateStatus.add(FixityResult.FixityState.SUCCESS);
 		for (FixityResult status:result.statuses){
-			if ((status.status & FixityResult.BAD_CHECKSUM) == FixityResult.BAD_CHECKSUM){
+			if ((status.status.contains(FixityResult.FixityState.BAD_CHECKSUM))){
+				aggregateStatus.remove(FixityResult.FixityState.SUCCESS);
+				aggregateStatus.add(FixityResult.FixityState.BAD_CHECKSUM);
 				FixityProblem problem = new FixityProblem();
 				problem.cacheId = status.storeIdentifier;
 				problem.details = checksumErrorDetails(result, status.dsChecksumType, status.dsChecksum, status.computedChecksum);
-				if ((status.status & FixityResult.REPAIRED) != FixityResult.REPAIRED) {
-					aggregateStatus = (FixityResult.BAD_CHECKSUM + FixityResult.BAD_SIZE);
-					aggregateStatus |= FixityResult.BAD_CHECKSUM;
+				if (!(status.status.contains(FixityResult.FixityState.REPAIRED))) {
+					aggregateStatus.remove(FixityResult.FixityState.REPAIRED);
 					problem.type = ResultType.ERROR;
 				} else {
-					if (aggregateStatus == FixityResult.SUCCESS) {
-						aggregateStatus |= status.status;
-					} else {
-						aggregateStatus &= status.status;
+					if (!aggregateStatus.contains(FixityResult.FixityState.BAD_CHECKSUM)
+					 && !aggregateStatus.contains(FixityResult.FixityState.BAD_SIZE)){
+						aggregateStatus.add(FixityResult.FixityState.REPAIRED);
 					}
+					aggregateStatus.add(FixityResult.FixityState.BAD_CHECKSUM);
 					problem.type = ResultType.REPAIRED;
 				}
 				this.problems.add(problem);
 			}
-			if ((status.status & FixityResult.BAD_SIZE) == FixityResult.BAD_SIZE){
+			if ((status.status.contains(FixityResult.FixityState.BAD_SIZE))){
+				aggregateStatus.remove(FixityResult.FixityState.SUCCESS);
 				FixityProblem problem = new FixityProblem();
 				problem.cacheId = status.storeIdentifier;
-				problem.details = sizeErrorDetails(result, status.dsSize, status.computedSize);
-				if ((status.status & FixityResult.REPAIRED) != FixityResult.REPAIRED) {
-					aggregateStatus = (FixityResult.BAD_CHECKSUM + FixityResult.BAD_SIZE);
-					aggregateStatus |= FixityResult.BAD_CHECKSUM;
+				problem.details = checksumErrorDetails(result, status.dsChecksumType, status.dsChecksum, status.computedChecksum);
+				if (!(status.status.contains(FixityResult.FixityState.REPAIRED))) {
+					aggregateStatus.remove(FixityResult.FixityState.REPAIRED);
 					problem.type = ResultType.ERROR;
 				} else {
-					if (aggregateStatus == FixityResult.SUCCESS) {
-						aggregateStatus |= status.status;
-					} else {
-						aggregateStatus &= status.status;
+					if (!aggregateStatus.contains(FixityResult.FixityState.BAD_CHECKSUM)
+					 && !aggregateStatus.contains(FixityResult.FixityState.BAD_SIZE)){
+						aggregateStatus.add(FixityResult.FixityState.REPAIRED);
 					}
 					problem.type = ResultType.REPAIRED;
 				}
+				aggregateStatus.add(FixityResult.FixityState.BAD_SIZE);
 				this.problems.add(problem);
 			}
 		}
-		if (aggregateStatus == FixityResult.SUCCESS) {
+		if (aggregateStatus.contains(FixityResult.FixityState.SUCCESS)) {
 			type = ResultType.SUCCESS;
 			details = successDetails(result);
 		}
-		else if ((aggregateStatus & FixityResult.REPAIRED) == FixityResult.REPAIRED) {
+		else if (aggregateStatus.contains(FixityResult.FixityState.REPAIRED)) {
 			type = ResultType.REPAIRED;
 			details = "There were fixity problems detected, but they were repaired.";
 		} else {

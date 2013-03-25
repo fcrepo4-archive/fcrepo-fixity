@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.security.MessageDigest;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +31,7 @@ import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
 import org.fcrepo.services.fixity.model.FixityProblem;
 import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.fcrepo.utils.FixityResult;
+import org.fcrepo.utils.FixityResult.FixityState;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -89,7 +91,9 @@ public class TestFixityService {
 		FixityResult success = new FixityResult(someData.length, ds.dsChecksum);
 		success.dsSize = someData.length;
 		success.dsChecksum = ds.dsChecksum;
-		success.status = FixityResult.SUCCESS;
+		EnumSet<FixityState> status = EnumSet.noneOf(FixityResult.FixityState.class);
+		status.add(FixityResult.FixityState.SUCCESS);
+		success.status = status;
 		fixity.statuses.add(success);
 		
 		when(client.getDatastreamFixity(obj.pid, dsElement.dsid)).thenReturn(fixity);
@@ -107,10 +111,12 @@ public class TestFixityService {
 		}while(service.getResults(obj.pid).size() == 0);
 		
 		/* check if there is a result in the database */
-		List<ObjectFixity> results =service.getResults(obj.pid); 
+		List<ObjectFixity> results = service.getResults(obj.pid); 
 		assertTrue(results.size() == 1);
-		assertTrue(results.get(0).getErrors().size() == 0);
-		assertTrue(results.get(0).getSuccesses().size() == 1);
+		int actual = results.get(0).getErrors().size();
+		assertEquals("Expected 0 errors; got " + actual, 0, actual);
+		actual = results.get(0).getSuccesses().size();
+		assertEquals("Expected 1 success; got " + actual, 1, actual);
 	}
 
 	@Test
@@ -143,12 +149,17 @@ public class TestFixityService {
 		fixity.timestamp = new java.util.Date();
 		fixity.statuses = new java.util.ArrayList<FixityResult>();
 		FixityResult error = new FixityResult(someData.length - 2, expectedChecksum);
-		error.status = FixityResult.BAD_SIZE;
+		EnumSet<FixityResult.FixityState> status = EnumSet.noneOf(FixityResult.FixityState.class);
+		status.add(FixityResult.FixityState.BAD_SIZE);
+		error.status = status;
 		error.dsSize = someData.length;
 		error.dsChecksum = expectedChecksum;
 		fixity.statuses.add(error);
 		error = new FixityResult(someData.length - 2, expectedChecksum);
-		error.status = FixityResult.BAD_SIZE + FixityResult.REPAIRED;
+		status = EnumSet.noneOf(FixityResult.FixityState.class);
+		status.add(FixityResult.FixityState.BAD_SIZE);
+		status.add(FixityResult.FixityState.REPAIRED);
+		error.status = status;
 		error.dsSize = someData.length;
 		error.dsChecksum = expectedChecksum;
 		fixity.statuses.add(error);
