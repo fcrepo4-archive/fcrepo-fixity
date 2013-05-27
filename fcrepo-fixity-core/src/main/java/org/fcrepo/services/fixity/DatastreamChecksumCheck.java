@@ -1,3 +1,4 @@
+
 package org.fcrepo.services.fixity;
 
 import java.io.IOException;
@@ -12,9 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.fcrepo.client.FedoraClient;
-import org.fcrepo.jaxb.responses.access.ObjectDatastreams;
-import org.fcrepo.jaxb.responses.management.DatastreamProfile;
+import org.fcrepo.services.fixity.model.DatastreamChecksum;
 import org.fcrepo.services.fixity.model.DatastreamFixity;
 import org.fcrepo.services.fixity.model.DatastreamFixity.ResultType;
 import org.fcrepo.services.fixity.model.ObjectFixity;
@@ -23,69 +22,67 @@ import org.slf4j.LoggerFactory;
 
 @Named
 public class DatastreamChecksumCheck implements FixityCheck {
-	
-	@Inject
-	private FedoraClient client;
-	
-	
-	private static final Logger logger = LoggerFactory.getLogger(DatastreamChecksumCheck.class);
 
-	public DatastreamChecksumCheck(FedoraClient client) {
-		super();
-		this.client = client;
-	}
+    private static final Logger logger = LoggerFactory
+            .getLogger(DatastreamChecksumCheck.class);
 
-	public DatastreamChecksumCheck() {
-		super();
-	}
+    @Inject
+    private FixityClient client;
 
-	public void setClient(FedoraClient client) {
-		this.client = client;
-	}
+    public void setClient(FixityClient client) {
+        this.client = client;
+    }
 
-	@Override
-	public ObjectFixity check(String objectId) throws IOException, NoSuchAlgorithmException {
-		final List<DatastreamFixity> errors = new ArrayList<DatastreamFixity>();
-		final List<DatastreamFixity> successes = new ArrayList<DatastreamFixity>();
-		final ObjectDatastreams datastreams = client.getObjectDatastreams(objectId);
-		if (datastreams == null || datastreams.datastreams == null){
-			logger.warn("There are no datastreams available for pid: " + objectId);
-		}else{
-			for (ObjectDatastreams.DatastreamElement dsElement : datastreams.datastreams) {
-				logger.debug("verifying checksum of object {} datastream {}", objectId, dsElement.dsid);
-				final String dsId = dsElement.dsid;
-				final org.fcrepo.jaxb.responses.management.DatastreamFixity ds = client.getDatastreamFixity(objectId, dsId);
-	
-				DatastreamFixity dsFixity = new DatastreamFixity(ds);
-				if (dsFixity.getType() != ResultType.SUCCESS){
-					errors.add(dsFixity);
-				} else {
-					successes.add(dsFixity);
-				}
-			}
-		}
-		return new ObjectFixity(objectId,new Date(), successes, errors);
-	}
+    @Override
+    public ObjectFixity check(String objectId) throws IOException,
+            NoSuchAlgorithmException {
+        final List<DatastreamFixity> errors = new ArrayList<DatastreamFixity>();
+        final List<DatastreamFixity> successes =
+                new ArrayList<DatastreamFixity>();
 
-	private String createChecksum(DatastreamProfile ds, String dsChecksumType) throws NoSuchAlgorithmException, IOException {
-		MessageDigest digest;
-		if (dsChecksumType.equalsIgnoreCase("sha-1")) {
-			digest = MessageDigest.getInstance("SHA-1");
-		} else if (dsChecksumType.equalsIgnoreCase("sha-256")) {
-			digest = MessageDigest.getInstance("SHA-256");
-		} else {
-			throw new IllegalArgumentException("Unable to create checksums of type " + dsChecksumType);
-		}
-		InputStream src = client.getDatastreamContent(ds.pid, ds.dsID);
-		if (src == null) {
-			throw new IOException("Unable to open datastream " + ds.pid + " - " + ds.dsID);
-		}
-		byte[] buf = new byte[4096];
-		int numRead;
-		while ((numRead = src.read(buf)) > 0) {
-			digest.update(buf, 0, numRead);
-		}
-		return new BigInteger(1, digest.digest()).toString(16);
-	}
+        final List<String> datastreamIds = client.getDatastreamIds(objectId);
+        if (datastreamIds == null || datastreamIds.size() == 0) {
+            logger.warn("There are no datastreams available for pid: " +
+                    objectId);
+        } else {
+            for (final String dsId : datastreamIds) {
+                logger.debug("verifying checksum of object {} datastream {}",
+                        objectId, dsId);
+                final DatastreamFixity fixity =
+                        client.getDatastreamFixity(objectId, dsId);
+                if (fixity.getType() != ResultType.SUCCESS) {
+                    errors.add(fixity);
+                } else {
+                    successes.add(fixity);
+                }
+            }
+        }
+        return new ObjectFixity(objectId, new Date(), successes, errors);
+    }
+
+    private String createChecksum(DatastreamChecksum dsCheck,
+            String dsChecksumType) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest;
+        if (dsChecksumType.equalsIgnoreCase("sha-1")) {
+            digest = MessageDigest.getInstance("SHA-1");
+        } else if (dsChecksumType.equalsIgnoreCase("sha-256")) {
+            digest = MessageDigest.getInstance("SHA-256");
+        } else {
+            throw new IllegalArgumentException(
+                    "Unable to create checksums of type " + dsChecksumType);
+        }
+        InputStream src =
+                client.getDatastreamContent(dsCheck.getPid(), dsCheck.getDsId());
+        if (src == null) {
+            throw new IOException("Unable to open datastream " +
+                    dsCheck.getPid() + " - " + dsCheck.getDsId());
+        }
+        byte[] buf = new byte[4096];
+        int numRead;
+        while ((numRead = src.read(buf)) > 0) {
+            digest.update(buf, 0, numRead);
+        }
+        return new BigInteger(1, digest.digest()).toString(16);
+    }
 
 }

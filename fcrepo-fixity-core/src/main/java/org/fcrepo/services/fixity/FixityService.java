@@ -14,11 +14,10 @@ import javax.jms.Session;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
-import org.fcrepo.client.FedoraClient;
 import org.fcrepo.services.db.DatabaseService;
 import org.fcrepo.services.fixity.model.DailyStatistics;
-import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.fcrepo.services.fixity.model.GeneralStatistics;
+import org.fcrepo.services.fixity.model.ObjectFixity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -26,17 +25,17 @@ import org.springframework.jms.core.MessageCreator;
 
 /**
  * A fixity service implementation This is a standalone service that checks the fixity values of a fedora datastream.
- * 
+ *
  * <p>
  * It is meant to be run via an {@link ExecutorService}:
- * 
+ *
  * <pre>
  * ExecutorService exec = Executors.newSingleThreadExecutor();
  * Future&lt;Integer&gt; task = exec.submit(fixtures);
  * </pre>
- * 
+ *
  * @author fasseg
- * 
+ *
  */
 @Named("fixityService")
 public class FixityService {
@@ -52,9 +51,9 @@ public class FixityService {
 
 	@Inject
 	private DatabaseService databaseService;
-	
+
 	@Inject
-	private FedoraClient fedora;
+	private FixityClient client;
 
 	private boolean shutdown = false;
 
@@ -69,7 +68,7 @@ public class FixityService {
 
 	public void processRequest(Message message) throws Exception {
 		try {
-			final String pid = (String) message.getStringProperty("pid");
+			final String pid = message.getStringProperty("pid");
 			/* pop an object id from the queue to check it */
 			final List<ObjectFixity> results = runChecks(pid);
 			logger.debug("gathered " + results.size() +
@@ -111,14 +110,14 @@ public class FixityService {
 
 	/**
 	 * Request to check an object. The objectId will be queued for work by the {@link FixityService}
-	 * 
+	 *
 	 * @param objectId
 	 * @throws IOException
 	 */
 	public synchronized void checkObject(String... pids) throws IOException {
 		if (pids.length == 1 && pids[0] == null){
 			/* no pids a re given so a list of all objects is queued */
-			List<String> allpids = fedora.getPids();
+			List<String> allpids = client.getPids();
 			if (allpids == null){
 				logger.warn("No objects could be discovered in fedora. Queued nothing.");
 				return;
@@ -139,7 +138,7 @@ public class FixityService {
 
 	/**
 	 * retrieve the list of results for a certain object from the result database
-	 * 
+	 *
 	 * @param pid
 	 * @return
 	 */
@@ -150,7 +149,7 @@ public class FixityService {
 	public List<ObjectFixity> getResults(int offset, int length) {
 		return databaseService.getResults(offset, length);
 	}
-	
+
 	public GeneralStatistics getStatistics(){
 		GeneralStatistics stats = new GeneralStatistics();
 		stats.setNumObjects(databaseService.getObjectCount());
@@ -167,6 +166,6 @@ public class FixityService {
 	public ObjectFixity getResult(long recordId) {
 		return databaseService.getResult(recordId);
 	}
-	
+
 
 }

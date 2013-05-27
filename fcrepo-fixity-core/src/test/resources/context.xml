@@ -14,7 +14,9 @@
 	http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
 
 	<!-- the required fedora clinet to request data -->
-	<bean id="fedoraClient" class="org.fcrepo.client.FedoraClient" />
+	<bean id="fedoraClient" class="org.fcrepo.services.fixity.FixityClient" >
+      <property name="serverAddress" value="http://localhost:8080/rest/"></property>
+    </bean>
 
 	<!--  Database configuration -->
 	<bean id="hsqlDatasource" class="org.apache.commons.dbcp.BasicDataSource"
