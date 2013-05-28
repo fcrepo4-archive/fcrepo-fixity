@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "datastream_results")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DatastreamFixity {
+public class DatastreamFixity{
 
 	private static final Logger logger = LoggerFactory.getLogger(DatastreamFixity.class);
 
@@ -63,7 +63,7 @@ public class DatastreamFixity {
 		super();
 	}
 
-	public long getId() {
+    public long getId() {
 		return id;
 	}
 
@@ -75,11 +75,11 @@ public class DatastreamFixity {
 		this.type = type;
 	}
 
-	public Date getTimestamp() {
+    public Date getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp){
+    public void setTimestamp(Date timestamp){
 		this.timestamp = timestamp;
 	}
 
