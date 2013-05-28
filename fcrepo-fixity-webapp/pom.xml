@@ -7,7 +7,7 @@
     <artifactId>fcrepo-fixity</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  
+
   <artifactId>fcrepo-fixity-webapp</artifactId>
   <packaging>war</packaging>
 
@@ -20,6 +20,38 @@
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <stopKey>keyfoo</stopKey>
+          <stopPort>9988</stopPort>
+          <webAppConfig>
+            <contextPath>/fixity</contextPath>
+          </webAppConfig>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <scanIntervalSeconds>0</scanIntervalSeconds>
+              <daemon>true</daemon>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-jetty</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -51,25 +83,25 @@
       <artifactId>spring-web</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.jboss.resteasy</groupId>
-    	<artifactId>resteasy-jaxrs</artifactId>
-    	<version>2.3.5.Final</version>
-    	<exclusions>
-    		<exclusion>
-    			<artifactId>commons-logging</artifactId>
-    			<groupId>commons-logging</groupId>
-    		</exclusion>
-    	</exclusions>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>2.3.5.Final</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-    	<groupId>javax.ws.rs</groupId>
-    	<artifactId>jsr311-api</artifactId>
-    	<version>1.1.1</version>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
-    	<groupId>org.jboss.resteasy</groupId>
-    	<artifactId>resteasy-spring</artifactId>
-    	<version>2.3.5.Final</version>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-spring</artifactId>
+      <version>2.3.5.Final</version>
     </dependency>
   </dependencies>
 </project>
