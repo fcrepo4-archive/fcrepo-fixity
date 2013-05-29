@@ -60,13 +60,13 @@ public class TestFixityService {
         new Random().nextBytes(someData);
 
         /* setup the client mock */
-        when(client.getDatastreamIds(ePid)).thenReturn(Arrays.asList(eDsId));
+        when(client.getDatastreamUris(ePid)).thenReturn(Arrays.asList(eDsId));
 
         DatastreamFixity fixity = new DatastreamFixity();
         fixity.setDatastreamId(eDsId);
         fixity.setTimestamp(new Date());
         fixity.setType(ResultType.SUCCESS);
-        when(client.getDatastreamFixity(ePid, eDsId)).thenReturn(fixity);
+        when(client.getDatastreamFixity(eDsId)).thenReturn(fixity);
 
         /* tell the service to check a specific object */
         service.checkObject(ePid);
@@ -80,7 +80,7 @@ public class TestFixityService {
             Thread.sleep(500);
         } while (service.getResults(ePid).size() == 0);
 
-        verify(client).getDatastreamFixity(ePid, eDsId);
+        verify(client).getDatastreamFixity(eDsId);
 
         List<ObjectFixity> results = service.getResults(ePid);
         assertEquals(1, results.size());
@@ -103,7 +103,7 @@ public class TestFixityService {
         new Random().nextBytes(someData);
 
         /* setup the client mock */
-        when(client.getDatastreamIds(ePid)).thenReturn(Arrays.asList(eDsId));
+        when(client.getDatastreamUris(ePid)).thenReturn(Arrays.asList(eDsId));
 
         DatastreamFixity fixity = new DatastreamFixity();
         fixity.setDatastreamId(eDsId);
@@ -122,7 +122,7 @@ public class TestFixityService {
 
         fixity.setProblems(Arrays.asList(prob1, prob2));
 
-        when(client.getDatastreamFixity(ePid, eDsId)).thenReturn(fixity);
+        when(client.getDatastreamFixity(eDsId)).thenReturn(fixity);
 
         /* tell the service to check a specific object */
         service.checkObject(ePid);
@@ -136,7 +136,7 @@ public class TestFixityService {
             Thread.sleep(500);
         } while (service.getResults(ePid).size() == 0);
 
-        verify(client).getDatastreamFixity(ePid, eDsId);
+        verify(client).getDatastreamFixity(eDsId);
 
         List<ObjectFixity> results = service.getResults(ePid);
         assertEquals(1, results.size());

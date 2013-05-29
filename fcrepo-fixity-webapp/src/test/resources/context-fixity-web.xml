@@ -7,9 +7,9 @@
 
     <!-- the required fedora client to request data -->
     <bean id="fedoraClient" class="org.fcrepo.services.fixity.FixityClient" >
-      <property name="serverAddress" value="http://localhost:8080/rest/"></property>
+      <property name="serverAddress" value="http://localhost:8080/fcrepo/rest/"></property>
     </bean>
     
-    <context:annotation-config />
+	<context:annotation-config />
 	<context:component-scan base-package="org.fcrepo.web.resources" />
 </beans>

@@ -124,6 +124,7 @@ public class FixityService {
 			}
 			pids = allpids.toArray(new String[allpids.size()]);
 		}
+		logger.debug(pids.length + " objects have been queued for fixity checks");
 		for (final String pid : pids) {
 			fixityJmsTemplate.send(new MessageCreator() {
 				@Override

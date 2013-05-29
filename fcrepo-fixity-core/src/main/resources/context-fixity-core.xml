@@ -82,8 +82,4 @@
 		p:connectionFactory-ref="fixityJmsConnectionFactory"
 		p:defaultDestination-ref="fixityQueue" />
 
-    <!-- the required fedora client to request data -->
-    <bean id="fedoraClient" class="org.fcrepo.services.fixity.FixityClient" >
-      <property name="serverAddress" value="http://localhost:8080/rest/"></property>
-    </bean>
 </beans>

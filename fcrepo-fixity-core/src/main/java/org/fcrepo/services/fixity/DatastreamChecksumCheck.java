@@ -40,16 +40,16 @@ public class DatastreamChecksumCheck implements FixityCheck {
         final List<DatastreamFixity> successes =
                 new ArrayList<DatastreamFixity>();
 
-        final List<String> datastreamIds = client.getDatastreamIds(objectId);
-        if (datastreamIds == null || datastreamIds.size() == 0) {
+        final List<String> datastreamUris = client.getDatastreamUris(objectId);
+        if (datastreamUris == null || datastreamUris.size() == 0) {
             logger.warn("There are no datastreams available for pid: " +
                     objectId);
         } else {
-            for (final String dsId : datastreamIds) {
+            for (final String dsUri : datastreamUris) {
                 logger.debug("verifying checksum of object {} datastream {}",
-                        objectId, dsId);
+                        objectId, dsUri);
                 final DatastreamFixity fixity =
-                        client.getDatastreamFixity(objectId, dsId);
+                        client.getDatastreamFixity(dsUri);
                 if (fixity.getType() != ResultType.SUCCESS) {
                     errors.add(fixity);
                 } else {
