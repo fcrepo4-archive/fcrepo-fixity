@@ -50,11 +50,12 @@ public class FixityClient {
 
     public DatastreamChecksum getDatastreamChecksum(String pid, String dsId)
             throws IOException {
-        final HttpGet get = new HttpGet(serverAddress + "objects/" + pid + "/" + dsId);
-        try{
+        final HttpGet get =
+                new HttpGet(serverAddress + "objects/" + pid + "/" + dsId);
+        try {
             final HttpResponse resp = client.execute(get);
             return null;
-        }finally{
+        } finally {
             get.releaseConnection();
         }
     }

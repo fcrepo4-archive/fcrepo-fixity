@@ -8,6 +8,7 @@
 	<script src="js/raphael.js"></script>
 	<script src="js/g.raphael-min.js"></script>
 	<script src="js/g.pie-min.js"></script>
+	<script src="js/fixity-webapp-details.js"></script>
 	<script>
 	$(document).ready(function() {
 	    var numErrors=0;
@@ -51,9 +52,7 @@
 					numErrors++;
 					row[0] = value['@record-id'];
 					row[1] = value['@datastream-id'];
-					row[2] = value['@timestamp'];
-					row[3] = value['@type'];
-					row[4] = value['details'];
+					row[2] = value['@type'];
 					aaData[counter++] = row;
 				});
 			}
@@ -72,9 +71,7 @@
 						numSuccesses++;
 						row[0] = value['@record-id'];
 						row[1] = value['@datastream-id'];
-						row[2] = value['@timestamp'];
-						row[3] = value['@type'];
-						row[4] = value['details'];
+						row[2] = value['@type'];
 						aaData[counter++] = row;
 				});
 			}
@@ -84,39 +81,13 @@
 				iDisplayLength: 25,
 				bJQueryUI : true,
 				aoColumns : [ {sWwidth : "5%"},
-				              {sWidth : "30%"},
-				              {sWidth : "35%"},
-				              {sWwidth : "10%"},
-				              {sWwidth : "20%"}]
+				              {sWidth : "55%"},
+				              {sWidth : "45%"}]
 			});
 			createPieChart(numSuccesses, numErrors);
 		});
 	});
 	
-	function createPieChart(numSuccesses, numErrors) {
-		$('#piechart').empty();
-		var r = Raphael("piechart");
-		var chart_data = new Array();
-		var colors = new Array();
-		var legend = new Array();
-		var count = 0;
-		if (numSuccesses > 0){
-			chart_data[count] = numSuccesses;
-			legend[count] = '%%.%% - Success'; 
-			colors[count++] = '#00ff00'; 
-		}
-		if (numErrors > 0) {
-			chart_data[count] = numErrors;
-			legend[count] = '%%.%% - Error';
-			colors[count++] = '#ff0000'; 
-		}
-		pie = r.piechart(290, 190, 120, chart_data, {
-			legend : legend,
-			legendpos : "east",
-			colors : colors
-		});
-		label = r.label(128,40,"Overall errors vs. successes");
-	}
 	</script>
 	<style type="text/css">
 		@import "css/overcast/jquery-ui-1.10.1.custom.min.css";
@@ -139,9 +110,7 @@
 						<tr>
 							<th>Id</th>
 							<th>Datastream id</th>
-							<th>Timestamp</th> 
 							<th>Result</th>
-							<th>Details</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -150,9 +119,7 @@
 						<tr>
 							<th>Id</th>
 							<th>Datastream id</th>
-							<th>Timestamp</th> 
 							<th>Result</th>
-							<th>Details</th>
 						</tr>
 					</tfoot>
 				</table>
