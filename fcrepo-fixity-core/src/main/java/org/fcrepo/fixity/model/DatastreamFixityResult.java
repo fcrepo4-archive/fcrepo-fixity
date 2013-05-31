@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.fcrepo.fixity.model;
 
