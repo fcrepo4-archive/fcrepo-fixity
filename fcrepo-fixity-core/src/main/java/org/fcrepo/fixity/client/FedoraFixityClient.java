@@ -8,13 +8,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.jena.riot.RDFDataMgr;
+import org.fcrepo.RdfLexicon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -26,16 +31,10 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  */
 public class FedoraFixityClient {
 
-    private final static String PREDICATE_PREFIX =
-            "info:fedora/fedora-system:def/internal";
-
-    private final static String PREDICATE_STATUS = PREDICATE_PREFIX + "#status";
-
-    private final static String PREDICATE_HASPARENT = PREDICATE_PREFIX +
-            "#hasParent";
-
     private static final Logger logger = LoggerFactory
             .getLogger(FedoraFixityClient.class);
+
+    private final HttpClient client = new DefaultHttpClient();
 
     /**
      * Fetch all the identifiers of objects which have a given parent
@@ -55,8 +54,7 @@ public class FedoraFixityClient {
              * #hasParent in order to discover objects
              */
             final StmtIterator stmts =
-                    model.listStatements(null, model
-                            .createProperty(PREDICATE_HASPARENT), model
+                    model.listStatements(null, RdfLexicon.HAS_PARENT, model
                             .createResource(parentUri));
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
@@ -69,4 +67,45 @@ public class FedoraFixityClient {
             search.releaseConnection();
         }
     }
+
+    /**
+     * Request a fixity check execution from Fedora
+     * @param uri the URI of the Fedora object
+     */
+    public void requestFixityCheck(String uri) throws IOException {
+        /* parse the fixity part of the RDF response */
+        final Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, uri + "/fcr:fixity");
+
+        final StmtIterator sts =
+                model.listStatements(model.createResource(uri),
+                        RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
+        if (!sts.hasNext()) {
+            throw new IOException("No fixity information available for " + uri);
+        }
+        Statement st = sts.next();
+        final Resource res = st.getObject().asResource();
+
+        /* parse the checksum from the model */
+        st =
+                model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
+                        (RDFNode) null).next();
+        final String checksum = st.getObject().asResource().getURI();
+
+        /* parse the status */
+        st =
+                model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
+                        (RDFNode) null).next();
+        final String state = st.getObject().asLiteral().getString();
+
+        /* parse the location */
+        st =
+                model.listStatements(res, RdfLexicon.HAS_LOCATION,
+                        (RDFNode) null).next();
+        final String location = st.getObject().asResource().getURI();
+
+        logger.debug("Found fixity information: [{}, {}, {}]", state, checksum,
+                location);
+    }
+
 }

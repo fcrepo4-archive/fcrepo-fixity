@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.jms.listener.adapter.ListenerExecutionFailedException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -61,7 +62,7 @@ public class FixityService {
      */
     public void queueFixityCheck(final String uri) {
 
-        /* send a JMS message for each object */
+        /* send a JMS message to the fixity queue for each object */
         this.fixityJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -78,6 +79,25 @@ public class FixityService {
      */
     public void consumeFixityMessage(String uri) throws JMSException {
         logger.debug("received fixity request for object {}", uri);
+        try {
+            this.checkObjectFixity(uri);
+        } catch (IOException e) {
+            /* rethrow the exception as a Spring JMS Exception */
+            logger.error(e.getMessage(), e);
+            throw new ListenerExecutionFailedException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Request fixity check execution from the Fedora repository
+     */
+    private void checkObjectFixity(String uri) throws IOException{
+        /* fetch a list of the object's datastreams for getting their fixity information */
+        List<String> datastreamUris = this.fixityClient.retrieveUris(uri);
+        logger.debug("discovered {} datastream URIs for Object {}", datastreamUris.size(), uri);
+
+        /* for each of the child datastreams queue a fixity check by calling the corresponding Fedora endpoint */
+        this.fixityClient.requestFixityCheck(uri);
     }
 
 }
