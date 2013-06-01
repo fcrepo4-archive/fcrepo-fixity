@@ -72,10 +72,11 @@ public class FixityService {
         });
     }
 
-    /*
+    /**
      * Consume a fixity message published to the JMS queue and act on fixity check requests
+     * @param uri the text of the {@link Message} which is supposed to be a object uri
      */
-    private void consumeFixityMessage(String uri) throws JMSException {
+    public void consumeFixityMessage(String uri) throws JMSException {
         logger.debug("received fixity request for object {}", uri);
     }
 
