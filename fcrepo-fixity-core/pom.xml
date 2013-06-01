@@ -30,6 +30,10 @@
           <artifactId>slf4j-log4j12</artifactId>
           <groupId>org.slf4j</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -132,5 +136,20 @@
       </exclusions>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.6.2.201302030002</version>
+        <configuration>
+          <includes>
+            <include>org.fcrepo.fixity.*</include>
+          </includes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

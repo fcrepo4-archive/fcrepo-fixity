@@ -7,7 +7,6 @@ package org.fcrepo.fixity.service;
 import java.io.IOException;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Service;
 
 /**
  * This class is responsible for producing and consuming fixity messages form the JMS Queue
@@ -26,7 +26,7 @@ import org.springframework.jms.core.MessageCreator;
  * @author frank asseg
  *
  */
-@Named("fixityService")
+@Service
 public class FixityService {
 
     private final String defaultParentUri =

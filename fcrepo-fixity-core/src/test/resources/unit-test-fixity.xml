@@ -13,7 +13,7 @@
   <bean id="fedoraFixityClient" class="org.fcrepo.fixity.client.FedoraFixityClient" />
 
   <context:annotation-config />
-
+  
   <context:component-scan base-package="org.fcrepo.fixity.service" />
 
 
@@ -22,8 +22,8 @@
   <amq:queue id="fixityQueue" physicalName="org.fcrepo.services.fixity.queue" />
 
   <amq:connectionFactory id="fixityJmsFactory"
-    brokerURL="vm://localhost" />
-
+    brokerURL="vm://localhost?broker.persistence=false" />
+  
   <bean id="fixityJmsConnectionFactory"
     class="org.springframework.jms.connection.SingleConnectionFactory"
     p:targetConnectionFactory-ref="fixityJmsFactory" />
