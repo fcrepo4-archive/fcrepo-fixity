@@ -14,6 +14,11 @@
   <name>fcrepo-fixity-core</name>
   <dependencies>
     <dependency>
+      <groupId>org.fcrepo</groupId>
+      <artifactId>fcrepo-kernel</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
@@ -144,9 +149,7 @@
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.6.2.201302030002</version>
         <configuration>
-          <includes>
-            <include>org.fcrepo.fixity.*</include>
-          </includes>
+          <skip>true</skip>
         </configuration>
       </plugin>
     </plugins>
