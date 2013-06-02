@@ -90,6 +90,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
                     .uniqueResult();
             if (stat == null) {
                 stat = new DailyStatistics();
+                stat.setStatisticsDate(new Date());
             }
             return stat;
         } finally {
@@ -257,7 +258,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     @Override
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
-    public List<DailyStatistics> getFixityStatistics() {
+    public List<DailyStatistics> getDailyStatistics() {
         final Session sess = sessionFactory.openSession();
         try {
             return sess.createCriteria(DailyStatistics.class)

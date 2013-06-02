@@ -87,7 +87,7 @@ public class FixityResults {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<DailyStatistics> getDailyStatistics() {
-        return databaseService.getFixityStatistics();
+        return databaseService.getDailyStatistics();
     }
 
     @Path("/statistics")

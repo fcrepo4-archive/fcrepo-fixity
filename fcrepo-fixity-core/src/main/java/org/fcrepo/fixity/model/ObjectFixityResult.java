@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.fcrepo.fixity.service.FixityService;
@@ -37,34 +37,37 @@ public class ObjectFixityResult {
     public static enum FixityResult {
         SUCCESS, ERROR, REPAIRED;
     }
-
     @Id
     @GeneratedValue
     @Column(name = "OBJECT_FIXITY_ID")
     @XmlAttribute(name = "id")
     private long resultId;
 
+    @Column(name="OBJECT_FIXITY_STATE")
+    @XmlAttribute(name="state")
+    private FixityResult state;
+
     @Column(name = "OBJECT_URI")
     @XmlAttribute(name = "uri")
     private String uri;
 
-    @Column(name = "TIMESTAMP")
+    @Column(name = "OBJECT_FIXITY_TIMESTAMP")
     @XmlAttribute(name = "timestamp")
     private Date timeStamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @XmlElementWrapper(name = "successes", namespace = FixityService.NAMESPACE_FIXITY)
+    @XmlElement(name="successes",namespace=FixityService.NAMESPACE_FIXITY)
     private List<DatastreamFixitySuccess> successes;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @XmlElementWrapper(name = "errors", namespace = FixityService.NAMESPACE_FIXITY)
+    @XmlElement(name="errors",namespace=FixityService.NAMESPACE_FIXITY)
     private List<DatastreamFixityError> errors;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @XmlElementWrapper(name = "repairs", namespace = FixityService.NAMESPACE_FIXITY)
+    @XmlElement(name="repairs",namespace=FixityService.NAMESPACE_FIXITY)
     private List<DatastreamFixityRepaired> repairs;
 
     public Date getTimeStamp() {
@@ -113,6 +116,20 @@ public class ObjectFixityResult {
 
     public void setRepairs(List<DatastreamFixityRepaired> repairs) {
         this.repairs = repairs;
+    }
+
+    public FixityResult getState() {
+        return state;
+    }
+
+
+    public void setState(FixityResult state) {
+        this.state = state;
+    }
+
+
+    public List<DatastreamFixityRepaired> getRepairs() {
+        return repairs;
     }
 
     /**

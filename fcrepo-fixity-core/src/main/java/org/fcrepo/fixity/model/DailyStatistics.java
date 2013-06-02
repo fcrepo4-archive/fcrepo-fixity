@@ -10,13 +10,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.fcrepo.fixity.service.FixityService;
-import org.hibernate.annotations.Type;
 
 /**
  * @author frank asseg
@@ -42,7 +43,7 @@ public class DailyStatistics {
     @XmlAttribute(name="repair-count")
     private long repairCount;
 
-    @Type(type="date")
+    @Temporal(TemporalType.DATE)
     @XmlAttribute(name="date")
     private Date statisticsDate;
 

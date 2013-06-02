@@ -27,12 +27,14 @@
 			var aaData = new Array();
 			counter = 0;
 			$.each(data,function() {
-				var row = new Array();
-				row[0] = this['fixity-result']['@record-id'];
-				row[1] = this["fixity-result"]['@pid'];
-				row[2] = this['fixity-result']['@timestamp'];
-				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : (this["fixity-result"]['@repaired'] == "true") ? "Repaired" : "Error";
-				aaData[counter++] = row;
+				for (var i =0;i<this.length;i++){
+					var row = new Array();
+					row[0] = this[i]['@id'];
+					row[1] = this[i]['@uri'];
+					row[2] = this[i]['@timestamp'];
+					row[3] = (this[i]['@success'] == "true") ? "Success" : (this[i]['@repaired'] == "true") ? "Repaired" : "Error";
+					aaData[counter++] = row;
+				}
 			});
 
 			$('#results').dataTable({
@@ -73,10 +75,10 @@
 	
 	function createStatistics(data) {
 		generalStats = {
-			numObjects : parseInt(data['general-stat']['@object-count']),
-			numErrors : parseInt(data['general-stat']['@error-count']),
-			numSuccesses : parseInt(data['general-stat']['@success-count']),
-			numRepairs : parseInt(data['general-stat']['@repair-count'])
+			numObjects : parseInt(data['@object-count']),
+			numErrors : parseInt(data['@error-count']),
+			numSuccesses : parseInt(data['@success-count']),
+			numRepairs : parseInt(data['@repair-count'])
 		};
 		return generalStats;
 	}

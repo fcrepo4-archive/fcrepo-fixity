@@ -21,6 +21,7 @@ import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.DatastreamFixitySuccess;
 import org.fcrepo.fixity.model.ObjectFixityResult;
+import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,14 +169,22 @@ public class FixityService {
         final ObjectFixityResult result = new ObjectFixityResult();
         result.setTimeStamp(new Date());
         result.setUri(uri);
-        if (!errors.isEmpty()) {
-            result.setErrors(errors);
+
+        /*
+         * order is important here , since erros override repaires and both
+         * override successes
+         */
+        if (!successes.isEmpty()) {
+            result.setSuccesses(successes);
+            result.setState(FixityResult.SUCCESS);
         }
         if (!repairs.isEmpty()) {
             result.setRepairs(repairs);
+            result.setState(FixityResult.REPAIRED);
         }
-        if (!successes.isEmpty()) {
-            result.setSuccesses(successes);
+        if (!errors.isEmpty()) {
+            result.setErrors(errors);
+            result.setState(FixityResult.ERROR);
         }
 
         return result;

@@ -181,7 +181,7 @@ public class FixityDatabaseServiceIT {
         /* persists the object by calling the service method */
         this.service.addResults(Arrays.asList(result));
 
-        List<DailyStatistics> stats = this.service.getFixityStatistics();
+        List<DailyStatistics> stats = this.service.getDailyStatistics();
         assertEquals(1, stats.size());
         assertEquals(1, stats.get(0).getErrorCount());
         assertEquals(1, stats.get(0).getSuccessCount());

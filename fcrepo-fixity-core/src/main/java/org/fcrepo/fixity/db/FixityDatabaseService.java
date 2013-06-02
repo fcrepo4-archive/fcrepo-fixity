@@ -85,7 +85,7 @@ public interface FixityDatabaseService {
      * Retrieve a {@link List} of {@link DailyStatistics} form the database
      * @return The {@link DailyStatistics}s
      */
-    List<DailyStatistics> getFixityStatistics();
+    List<DailyStatistics> getDailyStatistics();
 
     /**
      * Retrieve a distinct result from the database
