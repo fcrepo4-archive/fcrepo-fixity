@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/integration-tests/test-container.xml")
+@ContextConfiguration(locations={"/integration-tests/test-container.xml", "/integration-tests/fixity.xml"})
 public class FedoraFixityClientIT{
 
     private final FedoraFixityClient fixityClient = new FedoraFixityClient();

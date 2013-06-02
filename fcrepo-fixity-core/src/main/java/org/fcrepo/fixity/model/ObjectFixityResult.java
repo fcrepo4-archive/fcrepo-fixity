@@ -8,11 +8,16 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * @author frank asseg
@@ -27,22 +32,28 @@ public class ObjectFixityResult {
 
     @Id
     @GeneratedValue
+    @Column(name="OBJECT_FIXITY_ID")
     private long resultId;
 
+    @Column(name="OBJECT_URI")
     private String uri;
 
+    @Column(name="TIMESTAMP")
     private Date timeStamp;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="RESULT_ID")
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @Fetch(FetchMode.SUBSELECT)
     private List<DatastreamFixityResult> successes;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="RESULT_ID")
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @Fetch(FetchMode.SUBSELECT)
     private List<DatastreamFixityResult> errors;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="RESULT_ID")
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @Fetch(FetchMode.SUBSELECT)
     private List<DatastreamFixityResult> repairs;
 
     public Date getTimeStamp() {

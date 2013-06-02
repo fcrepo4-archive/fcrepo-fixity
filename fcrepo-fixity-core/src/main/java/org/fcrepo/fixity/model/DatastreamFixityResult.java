@@ -4,6 +4,7 @@
 
 package org.fcrepo.fixity.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,11 +20,18 @@ public class DatastreamFixityResult {
 
     @Id
     @GeneratedValue
+    @Column(name = "DS_FIXITY_ID")
     private long resultId;
 
+    @Column(name = "DS_FIXITY_RESULT_TYPE")
     private FixityResult resultType;
 
+    @Column(name = "DS_URI")
     private String uri;
+
+    public DatastreamFixityResult(){
+        super();
+    }
 
     public DatastreamFixityResult(String uri, FixityResult resultType) {
         super();

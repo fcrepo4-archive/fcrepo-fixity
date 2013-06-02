@@ -92,4 +92,15 @@ public interface FixityDatabaseService {
      */
     ObjectFixityResult getResult(long resultId);
 
+    /**
+     * Remove a distinct result from the database
+     * @param resultId the result id
+     */
+    void deleteResult(long resultId);
+
+    /**
+     * Delete All results from the database
+     */
+    void deleteAllResults();
+
 }

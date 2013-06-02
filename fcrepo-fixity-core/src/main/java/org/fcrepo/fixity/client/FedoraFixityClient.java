@@ -17,7 +17,7 @@ import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -32,7 +32,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * @author frank asseg
  *
  */
-@Component
+@Service("fixityClient")
 public class FedoraFixityClient {
 
     private static final Logger logger = LoggerFactory
