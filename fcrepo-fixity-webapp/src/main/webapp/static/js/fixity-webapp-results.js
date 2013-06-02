@@ -9,13 +9,14 @@
 		});
 
 		$.getJSON('../fixity-results/statistics/daily', function (data) {
-			len = data.length;
+			var stats = data['statistics']; 
+			len = stats.length;
 			for (var i=0;i<len;i++){
 				dailyStats[i] = {
-						date : data[i]['stat-daily']['@date'],
-						successes : data[i]['stat-daily']['@successCount'],
-						errors : data[i]['stat-daily']['@errorCount'],
-						repairs : data[i]['stat-daily']['@repairCount']
+						date : stats[i]['@date'],
+						successes : stats[i]['@success-count'],
+						errors : stats[i]['@error-count'],
+						repairs : stats[i]['@repair-count']
 				};
 			}
 			createLineChart();
