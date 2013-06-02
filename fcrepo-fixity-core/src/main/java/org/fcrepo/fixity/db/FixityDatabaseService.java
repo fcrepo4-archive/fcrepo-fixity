@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.fcrepo.fixity.model.DailyStatistics;
+import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.ObjectFixityResult;
 import org.fcrepo.fixity.model.Statistics;
 
@@ -125,5 +126,11 @@ public interface FixityDatabaseService {
      * @param repairs the repair count to add
      */
     void addFixityStatistics(int sucesses, int errors, int repairs);
+
+    /**
+     * @param id
+     * @return
+     */
+    DatastreamFixityResult getDatastreamFixityResult(long id);
 
 }

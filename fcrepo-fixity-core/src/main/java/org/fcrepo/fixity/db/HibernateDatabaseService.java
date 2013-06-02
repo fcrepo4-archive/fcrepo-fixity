@@ -348,4 +348,18 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         stats.setSuccessCount(getSuccessCount());
         return stats;
     }
+
+    /* (non-Javadoc)
+     * @see org.fcrepo.fixity.db.FixityDatabaseService#getDatastreamFixityResult(long)
+     */
+    @Override
+    public DatastreamFixityResult getDatastreamFixityResult(long id) {
+        final Session sess = sessionFactory.openSession();
+        try {
+            return (DatastreamFixityResult) sess.get(DatastreamFixityResult.class, id);
+        } finally {
+            sess.close();
+        }
+
+    }
 }

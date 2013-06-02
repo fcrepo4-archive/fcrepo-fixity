@@ -13,6 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.hibernate.annotations.DiscriminatorOptions;
 
@@ -25,6 +29,9 @@ import org.hibernate.annotations.DiscriminatorOptions;
 @DiscriminatorColumn(name="RESULT_DISCRIMINATOR",discriminatorType=DiscriminatorType.INTEGER)
 @DiscriminatorOptions(force=true)
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@XmlRootElement
+@XmlSeeAlso({DatastreamFixitySuccess.class, DatastreamFixityError.class, DatastreamFixityRepaired.class})
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class DatastreamFixityResult {
 
     public enum ResultType {

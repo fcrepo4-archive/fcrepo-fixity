@@ -6,12 +6,16 @@ package org.fcrepo.fixity.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.fcrepo.fixity.service.FixityService;
 
 /**
  * @author frank asseg
  *
  */
 @Entity
+@XmlRootElement(name="error", namespace=FixityService.NAMESPACE_FIXITY)
 public class DatastreamFixityError extends DatastreamFixityResult {
 
     public DatastreamFixityError() {

@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.fcrepo.fixity.db.FixityDatabaseService;
 import org.fcrepo.fixity.model.DailyStatistics;
+import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.ObjectFixityResult;
 import org.fcrepo.fixity.model.Statistics;
 import org.fcrepo.fixity.service.FixityService;
@@ -50,6 +51,13 @@ public class FixityResults {
             int offset, @PathParam("length")
             int length) {
         return databaseService.getResults(offset, length);
+    }
+
+    @Path("/datastream/details/{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    @GET
+    public DatastreamFixityResult getDatastreamFixityResult(@PathParam("id") final long id) {
+        return databaseService.getDatastreamFixityResult(id);
     }
 
     @Path("/{pid}")
