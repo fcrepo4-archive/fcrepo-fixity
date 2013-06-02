@@ -6,6 +6,6 @@
 
   <context:annotation-config />
 
-  <context:component-scan base-package="org.fcrepo.fixity.web.resources" />
+  <context:component-scan base-package="org.fcrepo.fixity.web" />
 
 </beans>
