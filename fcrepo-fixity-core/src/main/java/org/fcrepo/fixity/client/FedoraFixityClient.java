@@ -13,6 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
+import org.fcrepo.fixity.model.DatastreamFixityResult;
+import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,43 +71,55 @@ public class FedoraFixityClient {
     }
 
     /**
-     * Request a fixity check execution from Fedora
-     * @param uri the URI of the Fedora object
+     * Request a datastream fixity check execution from Fedora an
+     * @param uri the URI of the Fedora datastream
      */
-    public void requestFixityCheck(String uri) throws IOException {
-        /* parse the fixity part of the RDF response */
-        final Model model = ModelFactory.createDefaultModel();
-        RDFDataMgr.read(model, uri + "/fcr:fixity");
+    public List<DatastreamFixityResult> requestFixityChecks(
+            final List<String> datastreamUris) throws IOException {
 
-        final StmtIterator sts =
-                model.listStatements(model.createResource(uri),
-                        RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
-        if (!sts.hasNext()) {
-            throw new IOException("No fixity information available for " + uri);
+        final List<DatastreamFixityResult> results = new ArrayList<>();
+        for (final String uri : datastreamUris) {
+            /* parse the fixity part of the RDF response */
+            final Model model = ModelFactory.createDefaultModel();
+            RDFDataMgr.read(model, uri + "/fcr:fixity");
+
+            final StmtIterator sts =
+                    model.listStatements(model.createResource(uri),
+                            RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
+            if (!sts.hasNext()) {
+                throw new IOException("No fixity information available for " +
+                        uri);
+            }
+            Statement st = sts.next();
+            final Resource res = st.getObject().asResource();
+
+            /* parse the checksum from the model */
+            st =
+                    model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
+                            (RDFNode) null).next();
+            final String checksum = st.getObject().asResource().getURI();
+
+            /* parse the status */
+            st =
+                    model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
+                            (RDFNode) null).next();
+            final String state = st.getObject().asLiteral().getString();
+
+            /* parse the location */
+            st =
+                    model.listStatements(res, RdfLexicon.HAS_LOCATION,
+                            (RDFNode) null).next();
+            final String location = st.getObject().asResource().getURI();
+
+            logger.debug("Found fixity information: [{}, {}, {}]", state,
+                    checksum, location);
+
+            /* create a datastream fixity result object which get returned */
+            results.add(new DatastreamFixityResult(uri, FixityResult
+                    .valueOf(state)));
+
         }
-        Statement st = sts.next();
-        final Resource res = st.getObject().asResource();
-
-        /* parse the checksum from the model */
-        st =
-                model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
-                        (RDFNode) null).next();
-        final String checksum = st.getObject().asResource().getURI();
-
-        /* parse the status */
-        st =
-                model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
-                        (RDFNode) null).next();
-        final String state = st.getObject().asLiteral().getString();
-
-        /* parse the location */
-        st =
-                model.listStatements(res, RdfLexicon.HAS_LOCATION,
-                        (RDFNode) null).next();
-        final String location = st.getObject().asResource().getURI();
-
-        logger.debug("Found fixity information: [{}, {}, {}]", state, checksum,
-                location);
+        return results;
     }
 
 }

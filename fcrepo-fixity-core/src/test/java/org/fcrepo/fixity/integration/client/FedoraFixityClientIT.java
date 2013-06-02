@@ -6,6 +6,7 @@ package org.fcrepo.fixity.integration.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -15,6 +16,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.fcrepo.fixity.client.FedoraFixityClient;
+import org.fcrepo.fixity.model.DatastreamFixityResult;
+import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,7 +52,7 @@ public class FedoraFixityClientIT{
     }
 
     @Test
-    public void testQueueFixityCheck() throws Exception {
+    public void testQueueDatastreamFixityChecks() throws Exception {
         /* create a new item in the objects folder */
         HttpPost postObject = new HttpPost(serverAddress + "rest/objects/fcr:new");
         HttpResponse resp = this.httpClient.execute(postObject);
@@ -70,7 +73,9 @@ public class FedoraFixityClientIT{
         postDs.releaseConnection();
 
         /* queue a fixity check for the datastream uris */
-        this.fixityClient.requestFixityCheck(objectUri + "/ds1");
-        this.fixityClient.requestFixityCheck(objectUri + "/ds1");
+        List<DatastreamFixityResult> results = this.fixityClient.requestFixityChecks(Arrays.asList(objectUri + "/ds1",objectUri + "/ds1"));
+        assertTrue(2 == results.size());
+        assertTrue(results.get(0).getResultType() == FixityResult.SUCCESS);
+        assertTrue(results.get(1).getResultType() == FixityResult.SUCCESS);
     }
 }
