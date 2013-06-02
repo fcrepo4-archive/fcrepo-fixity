@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import org.fcrepo.fixity.client.FedoraFixityClient;
+import org.fcrepo.fixity.db.FixityDatabaseService;
+import org.fcrepo.fixity.model.ObjectFixityResult;
 import org.fcrepo.fixity.service.FixityService;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,14 +40,17 @@ public class FixityServiceTest {
     @Test
     public void testConsumeFixityMessage() throws Exception {
         FedoraFixityClient mockClient = Mockito.mock(FedoraFixityClient.class);
+        FixityDatabaseService mockDb= Mockito.mock(FixityDatabaseService.class);
         String parentUri = "http://localhost:8080/objects/testobj1";
 
+        FixityServiceTest.setField(fixityService, "databaseService", mockDb);
         FixityServiceTest.setField(fixityService, "fixityClient", mockClient);
         Mockito.when(mockClient.retrieveUris(Mockito.any(String.class))).thenReturn(Arrays.asList(parentUri + "/ds1", parentUri + "/ds2"));
 
         fixityService.consumeFixityMessage(parentUri);
 
         Mockito.verify(mockClient).retrieveUris(parentUri);
+        Mockito.verify(mockDb).addResult(Mockito.any(ObjectFixityResult.class));
     }
 
     private static void

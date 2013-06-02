@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:tx="http://www.springframework.org/schema/tx"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:amq="http://activemq.apache.org/schema/core"
+  xmlns:p="http://www.springframework.org/schema/p" xmlns:jms="http://www.springframework.org/schema/jms"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+    http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+  <!-- Hibernate configuration for the database services -->
   <bean id="hsqlDatasource" class="org.apache.commons.dbcp.BasicDataSource"
     destroy-method="close">
     <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
@@ -15,7 +20,6 @@
     <property name="password" value="" />
   </bean>
 
-  <!-- hibernate session factory configuration -->
   <bean id="sessionFactory"
     class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="hsqlDatasource" />
@@ -41,9 +45,30 @@
     </property>
   </bean>
 
-  <context:component-scan
-    base-package="org.fcrepo.services.db" />
-
   <tx:annotation-driven transaction-manager="txManager" />
+  <!-- END hibernate configuration -->
 
+  <!-- JMS configuration for the fixity queue -->
+  <amq:queue id="fixityQueue" physicalName="org.fcrepo.services.fixity.queue" />
+
+  <amq:connectionFactory id="fixityJmsFactory"
+    brokerURL="vm://localhost" />
+
+  <bean id="fixityJmsConnectionFactory"
+    class="org.springframework.jms.connection.SingleConnectionFactory"
+    p:targetConnectionFactory-ref="fixityJmsFactory" />
+
+  <bean id="fixityJmsTemplate" class="org.springframework.jms.core.JmsTemplate"
+    p:connectionFactory-ref="fixityJmsConnectionFactory"
+    p:defaultDestination-ref="fixityQueue" />
+
+  <jms:listener-container connection-factory="fixityJmsConnectionFactory">
+    <jms:listener destination="org.fcrepo.services.fixity.queue"
+      ref="fixityService" method="consumeFixityMessage" />
+  </jms:listener-container>
+  <!-- END JMS config -->
+
+  <context:annotation-config />
+  
+  <context:component-scan base-package="org.fcrepo.fixity"/>
 </beans>

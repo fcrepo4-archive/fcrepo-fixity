@@ -10,8 +10,8 @@
     init-method="start" destroy-method="stop">
     <property name="port" value="8080" />
     <property name="contextConfigLocations"
-      value="classpath:integration-tests/repo.xml, classpath:integration-tests/rest.xml, classpath:integration-tests/eventing.xml, classpath:integration-tests/hibernate.xml" />
+      value="classpath:integration-tests/repo.xml, classpath:integration-tests/rest.xml, classpath:integration-tests/eventing.xml, classpath:integration-tests/fixity.xml" />
     <property name="packagesToScan"
-      value="org.fcrepo.api, org.fcrepo.responses, org.fcrepo.exceptionhandlers" />
+      value="org.fcrepo.api, org.fcrepo.responses, org.fcrepo.exceptionhandlers, org.fcrepo.fixity" />
   </bean>
 </beans>

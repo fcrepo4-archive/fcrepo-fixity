@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @author frank asseg
  *
  */
-@Service
+@Service("fixityService")
 public class FixityService {
 
     private final String defaultParentUri =
