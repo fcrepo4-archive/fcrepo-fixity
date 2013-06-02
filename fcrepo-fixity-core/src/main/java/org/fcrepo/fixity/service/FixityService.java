@@ -9,15 +9,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
 import org.fcrepo.fixity.client.FedoraFixityClient;
 import org.fcrepo.fixity.db.FixityDatabaseService;
+import org.fcrepo.fixity.model.DatastreamFixityError;
+import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
+import org.fcrepo.fixity.model.DatastreamFixitySuccess;
 import org.fcrepo.fixity.model.ObjectFixityResult;
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +39,10 @@ import org.springframework.stereotype.Service;
 @Service("fixityService")
 public class FixityService {
 
-    private final String defaultParentUri =
-            "http://localhost:8080/rest/objects";
+    public static final String NAMESPACE_FIXITY =
+            "http://fcrepo.org/fcrepo4/fixity";
+
+    private String fedoraFolderUri;
 
     @Autowired
     private JmsTemplate fixityJmsTemplate;
@@ -52,13 +57,33 @@ public class FixityService {
             .getLogger(FixityService.class);
 
     /**
+     * @param fedoraFolderUri the Uri of the default parent folder in fedora 4
+     */
+    public void setFedoraFolderUri(String fedoraFolderUri) {
+        this.fedoraFolderUri = fedoraFolderUri;
+    }
+
+    @PostConstruct
+    private void afterPropertiesSet() throws IllegalStateException {
+        if (fedoraFolderUri == null) {
+            throw new IllegalStateException(
+                    "fedoraFolderUri property has to be set via spring configuration");
+        }
+    }
+
+    /**
      * Queue a List of object URIs for fixity checks
      * @param uri the uri of the object to queue
      */
-    public void queueFixityCheck(List<String> uris) throws IOException {
+    public void queueFixityChecks(List<String> uris) throws IOException {
         if (uris == null) {
             /* no pid was given, so queue all objects */
-            uris = fixityClient.retrieveUris(this.defaultParentUri);
+            uris = fixityClient.retrieveUris(this.fedoraFolderUri);
+            if (uris == null) {
+                logger.warn("Fixity check was requested for all objects, but no objects could be discovered in the repository at " +
+                        this.fedoraFolderUri);
+                return;
+            }
         }
         for (String uri : uris) {
             this.queueFixityCheck(uri);
@@ -89,7 +114,10 @@ public class FixityService {
     public void consumeFixityMessage(String uri) throws JMSException {
         logger.debug("received fixity request for object {}", uri);
         try {
-            /* queue a fixity check and retrieve the new results from the repository */
+            /*
+             * queue a fixity check and retrieve the new results from the
+             * repository
+             */
             final ObjectFixityResult result = this.checkObjectFixity(uri);
             /* save the new result to the database */
             this.databaseService.addResult(result);
@@ -103,7 +131,8 @@ public class FixityService {
     /**
      * Request fixity check execution from the Fedora repository
      */
-    private ObjectFixityResult checkObjectFixity(final String uri) throws IOException {
+    private ObjectFixityResult checkObjectFixity(final String uri)
+            throws IOException {
         /*
          * fetch a list of the object's datastreams for getting their fixity
          * information
@@ -118,20 +147,20 @@ public class FixityService {
          */
         final List<DatastreamFixityResult> datastreamResults =
                 this.fixityClient.requestFixityChecks(datastreamUris);
-        final List<DatastreamFixityResult> errors = new ArrayList<>();
-        final List<DatastreamFixityResult> repairs = new ArrayList<>();
-        final List<DatastreamFixityResult> successes = new ArrayList<>();
+        final List<DatastreamFixityError> errors = new ArrayList<>();
+        final List<DatastreamFixityRepaired> repairs = new ArrayList<>();
+        final List<DatastreamFixitySuccess> successes = new ArrayList<>();
         for (DatastreamFixityResult dr : datastreamResults) {
-            if (dr.getResultType() == FixityResult.SUCCESS) {
-                successes.add(dr);
-            } else if (dr.getResultType() == FixityResult.REPAIRED) {
-                repairs.add(dr);
-            } else if (dr.getResultType() == FixityResult.ERROR) {
-                errors.add(dr);
+            if (dr instanceof DatastreamFixitySuccess) {
+                successes.add((DatastreamFixitySuccess) dr);
+            } else if (dr instanceof DatastreamFixityRepaired) {
+                repairs.add((DatastreamFixityRepaired) dr);
+            } else if (dr instanceof DatastreamFixityError) {
+                errors.add((DatastreamFixityError) dr);
             } else {
                 logger.error(
                         "Unable to handle result type of datasstream fixity result: {}",
-                        dr.getResultType());
+                        dr.getType());
             }
         }
 
@@ -139,14 +168,14 @@ public class FixityService {
         final ObjectFixityResult result = new ObjectFixityResult();
         result.setTimeStamp(new Date());
         result.setUri(uri);
-        if (!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             result.setErrors(errors);
         }
-        if (!repairs.isEmpty()){
+        if (!repairs.isEmpty()) {
             result.setRepairs(repairs);
         }
-        if (!successes.isEmpty()){
-            result.setErrors(successes);
+        if (!successes.isEmpty()) {
+            result.setSuccesses(successes);
         }
 
         return result;

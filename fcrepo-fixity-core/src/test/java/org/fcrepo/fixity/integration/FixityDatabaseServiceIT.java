@@ -12,10 +12,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.fcrepo.fixity.db.FixityDatabaseService;
-import org.fcrepo.fixity.model.DatastreamFixityResult;
-import org.fcrepo.fixity.model.FixityStatistics;
+import org.fcrepo.fixity.model.DatastreamFixityError;
+import org.fcrepo.fixity.model.DatastreamFixityRepaired;
+import org.fcrepo.fixity.model.DatastreamFixitySuccess;
+import org.fcrepo.fixity.model.DailyStatistics;
 import org.fcrepo.fixity.model.ObjectFixityResult;
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +46,8 @@ public class FixityDatabaseServiceIT {
         /* ceate a ObjectFixityResult to persist in the database */
         String uri = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result = new ObjectFixityResult();
-        DatastreamFixityResult success =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success =
+                new DatastreamFixitySuccess(uri + "/testds1");
         result.setUri(uri);
         result.setSuccesses(Arrays.asList(success));
         result.setTimeStamp(new Date());
@@ -58,23 +58,22 @@ public class FixityDatabaseServiceIT {
 
     @Test
     public void testAddAndRetrieveResult() throws Exception {
-        /* ceate a ObjectFixityResult to persist in the database */
+        /* create a ObjectFixityResult to persist in the database */
         String uri = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result = new ObjectFixityResult();
-        DatastreamFixityResult success =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success =
+                new DatastreamFixitySuccess(uri + "/testds1");
         result.setUri(uri);
         result.setSuccesses(Arrays.asList(success));
         result.setTimeStamp(new Date());
 
-        /* persists the object by calling the service method */
+        /* persist the object by calling the service method */
         this.service.addResult(result);
 
         /* fetch the result via the object uri */
         List<ObjectFixityResult> fetched = this.service.getResults(uri);
 
-        assertEquals(1,fetched.size());
+        assertEquals(1, fetched.size());
         assertEquals(uri, fetched.get(0).getUri());
     }
 
@@ -83,18 +82,16 @@ public class FixityDatabaseServiceIT {
         /* ceate two ObjectFixityResults to persist in the database */
         String uri_1 = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result_1 = new ObjectFixityResult();
-        DatastreamFixityResult success_1 =
-                new DatastreamFixityResult(uri_1 + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success_1 =
+                new DatastreamFixitySuccess(uri_1 + "/testds1");
         result_1.setUri(uri_1);
         result_1.setSuccesses(Arrays.asList(success_1));
         result_1.setTimeStamp(new Date());
 
         String uri_2 = "http://localhost:8080/rest/objects/testobj2";
         ObjectFixityResult result_2 = new ObjectFixityResult();
-        DatastreamFixityResult success_2 =
-                new DatastreamFixityResult(uri_2 + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success_2 =
+                new DatastreamFixitySuccess(uri_2 + "/testds1");
         result_2.setUri(uri_2);
         result_2.setSuccesses(Arrays.asList(success_2));
         result_2.setTimeStamp(new Date());
@@ -109,18 +106,16 @@ public class FixityDatabaseServiceIT {
         /* ceate two ObjectFixityResults to persist in the database */
         String uri_1 = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result_1 = new ObjectFixityResult();
-        DatastreamFixityResult success_1 =
-                new DatastreamFixityResult(uri_1 + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success_1 =
+                new DatastreamFixitySuccess(uri_1 + "/testds1");
         result_1.setUri(uri_1);
         result_1.setSuccesses(Arrays.asList(success_1));
         result_1.setTimeStamp(new Date());
 
         String uri_2 = "http://localhost:8080/rest/objects/testobj2";
         ObjectFixityResult result_2 = new ObjectFixityResult();
-        DatastreamFixityResult success_2 =
-                new DatastreamFixityResult(uri_2 + "/testds1",
-                        FixityResult.SUCCESS);
+        DatastreamFixitySuccess success_2 =
+                new DatastreamFixitySuccess(uri_2 + "/testds1");
         result_2.setUri(uri_2);
         result_2.setSuccesses(Arrays.asList(success_2));
         result_2.setTimeStamp(new Date());
@@ -140,14 +135,12 @@ public class FixityDatabaseServiceIT {
         /* ceate two ObjectFixityResults to persist in the database */
         String uri = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result = new ObjectFixityResult();
-        DatastreamFixityResult success =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.SUCCESS);
-        DatastreamFixityResult error =
-                new DatastreamFixityResult(uri + "/testds1", FixityResult.ERROR);
-        DatastreamFixityResult repair =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.REPAIRED);
+        DatastreamFixitySuccess success =
+                new DatastreamFixitySuccess(uri + "/testds1");
+        DatastreamFixityError error =
+                new DatastreamFixityError(uri + "/testds1");
+        DatastreamFixityRepaired repair =
+                new DatastreamFixityRepaired(uri + "/testds1");
         result.setUri(uri);
         result.setSuccesses(Arrays.asList(success));
         result.setErrors(Arrays.asList(error));
@@ -173,14 +166,12 @@ public class FixityDatabaseServiceIT {
         /* ceate two ObjectFixityResults to persist in the database */
         String uri = "http://localhost:8080/rest/objects/testobj1";
         ObjectFixityResult result = new ObjectFixityResult();
-        DatastreamFixityResult success =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.SUCCESS);
-        DatastreamFixityResult error =
-                new DatastreamFixityResult(uri + "/testds1", FixityResult.ERROR);
-        DatastreamFixityResult repair =
-                new DatastreamFixityResult(uri + "/testds1",
-                        FixityResult.REPAIRED);
+        DatastreamFixitySuccess success =
+                new DatastreamFixitySuccess(uri + "/testds1");
+        DatastreamFixityError error =
+                new DatastreamFixityError(uri + "/testds1");
+        DatastreamFixityRepaired repair =
+                new DatastreamFixityRepaired(uri + "/testds1");
         result.setUri(uri);
         result.setSuccesses(Arrays.asList(success));
         result.setErrors(Arrays.asList(error));
@@ -190,7 +181,7 @@ public class FixityDatabaseServiceIT {
         /* persists the object by calling the service method */
         this.service.addResults(Arrays.asList(result));
 
-        List<FixityStatistics> stats = this.service.getFixityStatistics();
+        List<DailyStatistics> stats = this.service.getFixityStatistics();
         assertEquals(1, stats.size());
         assertEquals(1, stats.get(0).getErrorCount());
         assertEquals(1, stats.get(0).getSuccessCount());

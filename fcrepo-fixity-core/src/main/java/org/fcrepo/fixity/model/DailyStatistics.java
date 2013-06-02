@@ -10,7 +10,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.fcrepo.fixity.service.FixityService;
 import org.hibernate.annotations.Type;
 
 /**
@@ -19,19 +24,26 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="FIXITY_STATS")
-public class FixityStatistics {
+@XmlRootElement(name="statistics",namespace=FixityService.NAMESPACE_FIXITY)
+@XmlAccessorType(XmlAccessType.FIELD)
+public class DailyStatistics {
 
     @Id
     @GeneratedValue
+    @XmlAttribute(name="id")
     private long statisticId;
 
+    @XmlAttribute(name="success-count")
     private long successCount;
 
+    @XmlAttribute(name="error-count")
     private long errorCount;
 
+    @XmlAttribute(name="repair-count")
     private long repairCount;
 
     @Type(type="date")
+    @XmlAttribute(name="date")
     private Date statisticsDate;
 
     public Date getStatisticsDate() {

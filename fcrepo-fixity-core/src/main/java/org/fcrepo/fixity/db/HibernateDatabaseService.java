@@ -8,10 +8,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.fcrepo.fixity.model.DailyStatistics;
+import org.fcrepo.fixity.model.DatastreamFixityError;
+import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
-import org.fcrepo.fixity.model.FixityStatistics;
+import org.fcrepo.fixity.model.DatastreamFixitySuccess;
 import org.fcrepo.fixity.model.ObjectFixityResult;
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
+import org.fcrepo.fixity.model.Statistics;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
@@ -64,7 +67,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
             final int repairs) {
         final Session sess = this.sessionFactory.openSession();
         try {
-            final FixityStatistics stat =
+            final DailyStatistics stat =
                     this.getFixityStatisticForDate(new Date());
             stat.setErrorCount(stat.getErrorCount() + errors);
             stat.setRepairCount(stat.getRepairCount() + repairs);
@@ -78,15 +81,15 @@ public class HibernateDatabaseService implements FixityDatabaseService {
 
     @Override
     @Transactional
-    public  FixityStatistics getFixityStatisticForDate(Date date) {
+    public DailyStatistics getFixityStatisticForDate(Date date) {
         final Session sess = this.sessionFactory.openSession();
         try {
-            FixityStatistics stat = (FixityStatistics) sess.createCriteria(
-                    FixityStatistics.class)
+            DailyStatistics stat = (DailyStatistics) sess.createCriteria(
+                    DailyStatistics.class)
                     .add(Restrictions.eq("statisticsDate", date))
                     .uniqueResult();
             if (stat == null) {
-                stat = new FixityStatistics();
+                stat = new DailyStatistics();
             }
             return stat;
         } finally {
@@ -105,8 +108,9 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public List<ObjectFixityResult> getResults(String uri) {
         Session sess = sessionFactory.openSession();
         try {
-            return sess.createCriteria(ObjectFixityResult.class).add(
-                    Restrictions.eq("uri", uri)).list();
+            return sess.createCriteria(ObjectFixityResult.class)
+                    .add(Restrictions.eq("uri", uri))
+                    .list();
         } finally {
             sess.close();
         }
@@ -171,8 +175,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public long getErrorCount() {
         final Session sess = sessionFactory.openSession();
         try {
-            return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", FixityResult.ERROR))
+            return (Long) sess.createCriteria(DatastreamFixityError.class)
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -189,8 +192,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public long getSuccessCount() {
         final Session sess = sessionFactory.openSession();
         try {
-            return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", FixityResult.SUCCESS))
+            return (Long) sess.createCriteria(DatastreamFixitySuccess.class)
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -207,8 +209,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public long getRepairCount() {
         final Session sess = sessionFactory.openSession();
         try {
-            return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", FixityResult.REPAIRED))
+            return (Long) sess.createCriteria(DatastreamFixityRepaired.class)
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -239,7 +240,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addStat(FixityStatistics stat) {
+    public void addStat(DailyStatistics stat) {
         final Session sess = sessionFactory.openSession();
         try {
             sess.save(stat);
@@ -256,10 +257,10 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     @Override
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
-    public List<FixityStatistics> getFixityStatistics() {
+    public List<DailyStatistics> getFixityStatistics() {
         final Session sess = sessionFactory.openSession();
         try {
-            return sess.createCriteria(FixityStatistics.class)
+            return sess.createCriteria(DailyStatistics.class)
                     .list();
         } finally {
             sess.close();
@@ -294,11 +295,16 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         try {
             /* truncate all tables */
             sess.createQuery(
-                    String.format("delete from " + DatastreamFixityResult.class.getSimpleName()))
+                    String.format("delete from " +
+                            DatastreamFixityResult.class.getSimpleName()))
                     .executeUpdate();
-            sess.createQuery(String.format("delete from " + ObjectFixityResult.class.getSimpleName()))
+            sess.createQuery(
+                    String.format("delete from " +
+                            ObjectFixityResult.class.getSimpleName()))
                     .executeUpdate();
-            sess.createQuery(String.format("delete from " + FixityStatistics.class.getSimpleName()))
+            sess.createQuery(
+                    String.format("delete from " +
+                            DailyStatistics.class.getSimpleName()))
                     .executeUpdate();
             sess.flush();
         } catch (Exception e) {
@@ -326,5 +332,19 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         } finally {
             sess.close();
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.fcrepo.fixity.db.FixityDatabaseService#getStatistics()
+     */
+    @Override
+    public Statistics getStatistics() {
+        Statistics stats = new Statistics();
+        stats.setErrorCount(getErrorCount());
+        stats.setNumObjects(getObjectCount());
+        stats.setRepairCount(getRepairCount());
+        stats.setSuccessCount(getSuccessCount());
+        return stats;
     }
 }

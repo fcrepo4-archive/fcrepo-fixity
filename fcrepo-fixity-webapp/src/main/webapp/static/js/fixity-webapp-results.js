@@ -3,12 +3,12 @@
 	
 	
 	function updateStatistics(){
-		$.getJSON('../rest/results/statistics/general', function (data) {
+		$.getJSON('../fixity-results/statistics', function (data) {
 			generalStats = createStatistics(data);
 			createPieChart();
 		});
 
-		$.getJSON('../rest/results/statistics/daily', function (data) {
+		$.getJSON('../fixity-results/statistics/daily', function (data) {
 			len = data.length;
 			for (var i=0;i<len;i++){
 				dailyStats[i] = {
@@ -23,7 +23,7 @@
 	}
 
 	function updateTable(){
-		$.getJSON('../rest/results', function(data) {
+		$.getJSON('../fixity-results', function(data) {
 			var aaData = new Array();
 			counter = 0;
 			$.each(data,function() {
@@ -62,7 +62,7 @@
 	}
 	
 	function queuePid(pid){
-		var path = '../rest/results/queue';
+		var path = '../fixity-results/queue';
 		if (pid != "All Objects"){
 			path = '../rest/results/queue?pid=' + pid;
 		}

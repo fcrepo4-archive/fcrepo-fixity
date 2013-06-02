@@ -29,7 +29,7 @@ public class FixityServiceTest{
         JmsTemplate mockJms = Mockito.mock(JmsTemplate.class);
         TestHelper.setField(this.fixityService, "fixityJmsTemplate", mockJms);
 
-        this.fixityService.queueFixityCheck(Arrays.asList("/objects/testob1", "/objects/testob2"));
+        this.fixityService.queueFixityChecks(Arrays.asList("/objects/testob1", "/objects/testob2"));
 
         /* check that a JMS message is actually queued via the service's JmsTemplate */
         Mockito.verify(mockJms, Mockito.times(2)).send(Mockito.any(MessageCreator.class));

@@ -17,7 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.fcrepo.fixity.client.FedoraFixityClient;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
+import org.fcrepo.fixity.model.DatastreamFixityResult.ResultType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -75,7 +75,7 @@ public class FedoraFixityClientIT{
         /* queue a fixity check for the datastream uris */
         List<DatastreamFixityResult> results = this.fixityClient.requestFixityChecks(Arrays.asList(objectUri + "/ds1",objectUri + "/ds1"));
         assertTrue(2 == results.size());
-        assertTrue(results.get(0).getResultType() == FixityResult.SUCCESS);
-        assertTrue(results.get(1).getResultType() == FixityResult.SUCCESS);
+        assertTrue(results.get(0).getType() == ResultType.SUCCESS);
+        assertTrue(results.get(1).getType() == ResultType.SUCCESS);
     }
 }

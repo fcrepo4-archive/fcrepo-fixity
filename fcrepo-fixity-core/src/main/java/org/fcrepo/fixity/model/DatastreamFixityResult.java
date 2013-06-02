@@ -5,48 +5,53 @@
 package org.fcrepo.fixity.model;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * @author frank asseg
  *
  */
 @Entity
-@Table(name="FIXITY_DATATSTREAMS")
-public class DatastreamFixityResult {
+@Table(name="FIXITY_DATASTREAM_RESULTS")
+@DiscriminatorColumn(name="RESULT_DISCRIMINATOR",discriminatorType=DiscriminatorType.INTEGER)
+@DiscriminatorOptions(force=true)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+public abstract class DatastreamFixityResult {
+
+    public enum ResultType {
+        SUCCESS, ERROR, REPAIRED;
+    }
 
     @Id
     @GeneratedValue
-    @Column(name = "DS_FIXITY_ID")
+    @Column(name = "RESULT_ID")
     private long resultId;
-
-    @Column(name = "DS_FIXITY_RESULT_TYPE")
-    private FixityResult resultType;
 
     @Column(name = "DS_URI")
     private String uri;
 
-    public DatastreamFixityResult(){
-        super();
+    @Column(name = "RESULT_TYPE")
+    private ResultType type;
+
+    protected DatastreamFixityResult() {
     }
 
-    public DatastreamFixityResult(String uri, FixityResult resultType) {
-        super();
-        this.resultType = resultType;
+    protected DatastreamFixityResult(ResultType type) {
+        this.type = type;
+    }
+
+    protected DatastreamFixityResult(String uri, ResultType type) {
+        this.type = type;
         this.uri = uri;
-    }
-
-    public FixityResult getResultType() {
-        return resultType;
-    }
-
-    public void setResultType(FixityResult resultType) {
-        this.resultType = resultType;
     }
 
     public String getUri() {
@@ -55,5 +60,17 @@ public class DatastreamFixityResult {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public long getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(long resultId) {
+        this.resultId = resultId;
+    }
+
+    public ResultType getType() {
+        return type;
     }
 }

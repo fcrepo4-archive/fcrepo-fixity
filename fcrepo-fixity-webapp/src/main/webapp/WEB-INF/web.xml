@@ -14,14 +14,21 @@
     <param-value>classpath:fixity.xml classpath:rest.xml</param-value>
   </context-param>
 
-  <servlet>
-    <servlet-name>Jersey</servlet-name>
-    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
 
-  <servlet-mapping>
-    <servlet-name>Jersey</servlet-name>
-    <url-pattern>/*</url-pattern>
-  </servlet-mapping>
+   <filter>
+      <filter-name>jerseyFilter</filter-name>
+      <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
+      <init-param>
+         <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+         <param-value>/static/.*</param-value>
+      </init-param>
+   </filter>
+   
+   <filter-mapping>
+      <filter-name>jerseyFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+   </filter-mapping>
 </web-app>

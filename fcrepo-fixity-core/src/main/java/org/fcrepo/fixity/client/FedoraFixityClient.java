@@ -11,8 +11,11 @@ import java.util.List;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
+import org.fcrepo.fixity.model.DatastreamFixityError;
+import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
-import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
+import org.fcrepo.fixity.model.DatastreamFixityResult.ResultType;
+import org.fcrepo.fixity.model.DatastreamFixitySuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +44,7 @@ public class FedoraFixityClient {
      * @param parentUri The URI of the parent (e.g. http://localhost:8080/rest/objects)
      * @return A {@link List} containing the URIs of the child objects
      */
-    public List<String> retrieveUris(final String parentUri) throws IOException {
+    public List<String> retrieveUris(String parentUri) throws IOException {
         /* fetch a RDF Description of the parent form the repository */
         final HttpGet search = new HttpGet(parentUri);
         try {
@@ -112,10 +115,21 @@ public class FedoraFixityClient {
             logger.debug("Found fixity information: [{}, {}, {}]", state,
                     checksum, location);
 
-            /* create a datastream fixity result object which get returned */
-            results.add(new DatastreamFixityResult(uri, FixityResult
-                    .valueOf(state)));
-
+            ResultType type = ResultType.valueOf(state);
+            switch (type) {
+                case ERROR:
+                    results.add(new DatastreamFixityError(uri));
+                    break;
+                case SUCCESS:
+                    results.add(new DatastreamFixitySuccess(uri));
+                    break;
+                case REPAIRED:
+                    results.add(new DatastreamFixityRepaired(uri));
+                    break;
+                default:
+                    throw new IOException(
+                            "Unabel to handle results of unkwonn type");
+            }
         }
         return results;
     }

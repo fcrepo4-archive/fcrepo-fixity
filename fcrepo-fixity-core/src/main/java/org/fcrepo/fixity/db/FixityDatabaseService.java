@@ -8,8 +8,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.fcrepo.fixity.model.FixityStatistics;
+import org.fcrepo.fixity.model.DailyStatistics;
 import org.fcrepo.fixity.model.ObjectFixityResult;
+import org.fcrepo.fixity.model.Statistics;
 
 /**
  * @author frank asseg
@@ -75,16 +76,16 @@ public interface FixityDatabaseService {
     long getObjectCount();
 
     /**
-     * Add a {@link FixityStatistics} record to the database
-     * @param stat the {@link FixityStatistics} to add to the db
+     * Add a {@link DailyStatistics} record to the database
+     * @param stat the {@link DailyStatistics} to add to the db
      */
-    void addStat(FixityStatistics stat);
+    void addStat(DailyStatistics stat);
 
     /**
-     * Retrieve a {@link List} of {@link FixityStatistics} form the database
-     * @return The {@link FixityStatistics}s
+     * Retrieve a {@link List} of {@link DailyStatistics} form the database
+     * @return The {@link DailyStatistics}s
      */
-    List<FixityStatistics> getFixityStatistics();
+    List<DailyStatistics> getFixityStatistics();
 
     /**
      * Retrieve a distinct result from the database
@@ -105,14 +106,20 @@ public interface FixityDatabaseService {
     void deleteAllResults();
 
     /**
-     * Retrieve the {@link FixityStatistics} for a certain day
+     * Retrieve the {@link DailyStatistics} for a certain day
      * @param date the date
-     * @return a {@link FixityStatistics} objects
+     * @return a {@link DailyStatistics} objects
      */
-    FixityStatistics getFixityStatisticForDate(Date date);
+    DailyStatistics getFixityStatisticForDate(Date date);
 
     /**
-     * Update the {@link FixityStatistics} for today
+     * Retrieve the general {@link Statistics}
+     * @return a {@link Statistics} objects
+     */
+    Statistics getStatistics();
+
+    /**
+     * Update the {@link DailyStatistics} for today
      * @param sucesses the success count to add
      * @param errors the errors count to add
      * @param repairs the repair count to add

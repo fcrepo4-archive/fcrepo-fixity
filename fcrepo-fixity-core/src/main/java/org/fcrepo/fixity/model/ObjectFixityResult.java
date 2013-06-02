@@ -16,16 +16,22 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.fcrepo.fixity.service.FixityService;
 
 /**
  * @author frank asseg
  *
  */
 @Entity
-@Table(name="FIXITY_OBJECTS")
+@Table(name = "FIXITY_OBJECTS")
+@XmlRootElement(name = "object-fixity-result", namespace = FixityService.NAMESPACE_FIXITY)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ObjectFixityResult {
 
     public static enum FixityResult {
@@ -34,29 +40,32 @@ public class ObjectFixityResult {
 
     @Id
     @GeneratedValue
-    @Column(name="OBJECT_FIXITY_ID")
+    @Column(name = "OBJECT_FIXITY_ID")
+    @XmlAttribute(name = "id")
     private long resultId;
 
-    @Column(name="OBJECT_URI")
+    @Column(name = "OBJECT_URI")
+    @XmlAttribute(name = "uri")
     private String uri;
 
-    @Column(name="TIMESTAMP")
+    @Column(name = "TIMESTAMP")
+    @XmlAttribute(name = "timestamp")
     private Date timeStamp;
 
-    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @Fetch(FetchMode.SUBSELECT)
-    private List<DatastreamFixityResult> successes;
+    @XmlElementWrapper(name = "successes", namespace = FixityService.NAMESPACE_FIXITY)
+    private List<DatastreamFixitySuccess> successes;
 
-    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @Fetch(FetchMode.SUBSELECT)
-    private List<DatastreamFixityResult> errors;
+    @XmlElementWrapper(name = "errors", namespace = FixityService.NAMESPACE_FIXITY)
+    private List<DatastreamFixityError> errors;
 
-    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="OBJECT_FIXITY_ID")
-    @Fetch(FetchMode.SUBSELECT)
-    private List<DatastreamFixityResult> repairs;
+    @XmlElementWrapper(name = "repairs", namespace = FixityService.NAMESPACE_FIXITY)
+    private List<DatastreamFixityRepaired> repairs;
 
     public Date getTimeStamp() {
         return timeStamp;
@@ -82,27 +91,27 @@ public class ObjectFixityResult {
         this.uri = uri;
     }
 
-    public List<DatastreamFixityResult> getSuccesses() {
+    public List<DatastreamFixitySuccess> getSuccesses() {
         return successes;
     }
 
-    public void setSuccesses(List<DatastreamFixityResult> successes) {
+    public void setSuccesses(List<DatastreamFixitySuccess> successes) {
         this.successes = successes;
     }
 
-    public List<DatastreamFixityResult> getErrors() {
+    public List<DatastreamFixityError> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<DatastreamFixityResult> errors) {
+    public void setErrors(List<DatastreamFixityError> errors) {
         this.errors = errors;
     }
 
-    public List<DatastreamFixityResult> getRepairs() {
+    public List<DatastreamFixityRepaired> getRepaired() {
         return repairs;
     }
 
-    public void setRepairs(List<DatastreamFixityResult> repairs) {
+    public void setRepairs(List<DatastreamFixityRepaired> repairs) {
         this.repairs = repairs;
     }
 

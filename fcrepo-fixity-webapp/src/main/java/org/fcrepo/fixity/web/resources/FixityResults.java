@@ -1,6 +1,7 @@
 /**
  *
  */
+
 package org.fcrepo.fixity.web.resources;
 
 import java.io.IOException;
@@ -10,16 +11,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.fcrepo.fixity.db.FixityDatabaseService;
-import org.fcrepo.fixity.model.FixityStatistics;
+import org.fcrepo.fixity.model.DailyStatistics;
 import org.fcrepo.fixity.model.ObjectFixityResult;
+import org.fcrepo.fixity.model.Statistics;
 import org.fcrepo.fixity.service.FixityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 /**
  * @author frank asseg
@@ -41,33 +43,57 @@ public class FixityResults {
     }
 
     @Path("/{offset}/{length}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     @GET
-    public List<ObjectFixityResult> getAllResultsWithOffset(@PathParam("offset") int offset, @PathParam("length") int length) {
+    public List<ObjectFixityResult> getAllResultsWithOffset(
+            @PathParam("offset")
+            int offset, @PathParam("length")
+            int length) {
         return databaseService.getResults(offset, length);
     }
 
     @Path("/{pid}")
     @GET
-    public List<ObjectFixityResult> getResults(@PathParam("uri") String uri) {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    public List<ObjectFixityResult> getResults(@PathParam("uri")
+    String uri) {
         return databaseService.getResults(uri);
     }
 
     @Path("/details/{recordId}")
     @GET
-    public ObjectFixityResult getResult(@PathParam("recordId") long recordId){
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    public ObjectFixityResult getResult(@PathParam("recordId")
+    long recordId) {
         return databaseService.getResult(recordId);
     }
 
     @Path("/queue")
     @POST
-    public Response queueFixityCheck(@QueryParam("uri") String uri) throws IOException {
+    public Response queueFixityChecks() throws IOException {
+        fixityService.queueFixityChecks(null);
+        return Response.ok().build();
+    }
+
+    @Path("/queue/{uri}")
+    @POST
+    public Response queueFixityChecks(@PathParam("uri")
+    final String uri) throws IOException {
         fixityService.queueFixityCheck(uri);
         return Response.ok().build();
     }
 
     @Path("/statistics/daily")
     @GET
-    public List<FixityStatistics> getDailyStatistics(){
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    public List<DailyStatistics> getDailyStatistics() {
         return databaseService.getFixityStatistics();
+    }
+
+    @Path("/statistics")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    public Statistics getStatistics() {
+        return databaseService.getStatistics();
     }
 }
