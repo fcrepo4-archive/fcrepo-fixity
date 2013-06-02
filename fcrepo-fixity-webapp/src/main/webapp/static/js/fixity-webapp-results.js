@@ -10,13 +10,13 @@
 
 		$.getJSON('../rest/results/statistics/daily', function (data) {
 			len = data.length;
-			for (i=0;i<len;i++){
+			for (var i=0;i<len;i++){
 				dailyStats[i] = {
 						date : data[i]['stat-daily']['@date'],
 						successes : data[i]['stat-daily']['@successCount'],
 						errors : data[i]['stat-daily']['@errorCount'],
 						repairs : data[i]['stat-daily']['@repairCount']
-				}
+				};
 			}
 			createLineChart();
 		});
@@ -77,7 +77,7 @@
 			numErrors : parseInt(data['general-stat']['@error-count']),
 			numSuccesses : parseInt(data['general-stat']['@success-count']),
 			numRepairs : parseInt(data['general-stat']['@repair-count'])
-		}
+		};
 		return generalStats;
 	}
 
@@ -89,7 +89,7 @@
 		repairValues = new Array();
 		len = dailyStats.length;
 		xValues = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
-		for (i = 0;i<len;i++){
+		for (var i = 0;i<len;i++){
 			errorValues[i] = dailyStats[i].errors;
 			successValues[i] = dailyStats[i].successes;
 			repairValues[i] = dailyStats[i].repairs;

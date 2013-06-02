@@ -5,11 +5,13 @@
 package org.fcrepo.fixity.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.FixityStatistics;
 import org.fcrepo.fixity.model.ObjectFixityResult;
+import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * @author frank asseg
  *
@@ -29,7 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("fixityDatabaseService")
 public class HibernateDatabaseService implements FixityDatabaseService {
 
-    private static final Logger logger = LoggerFactory.getLogger(HibernateDatabaseService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(HibernateDatabaseService.class);
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -43,10 +45,50 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     @Override
     @Transactional
     public void addResult(final ObjectFixityResult res) {
-        Session sess = sessionFactory.openSession();
+        final Session sess = this.sessionFactory.openSession();
         try {
+            /* save the fixity result */
             sess.save(res);
+            /* update today's statistics */
+            addFixityStatistics(res.getSuccessCount(), res.getErrorCount(), res
+                    .getRepairCount());
             sess.flush();
+        } finally {
+            sess.close();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void addFixityStatistics(final int sucesses, final int errors,
+            final int repairs) {
+        final Session sess = this.sessionFactory.openSession();
+        try {
+            final FixityStatistics stat =
+                    this.getFixityStatisticForDate(new Date());
+            stat.setErrorCount(stat.getErrorCount() + errors);
+            stat.setRepairCount(stat.getRepairCount() + repairs);
+            stat.setSuccessCount(stat.getSuccessCount() + sucesses);
+            sess.saveOrUpdate(stat);
+            sess.flush();
+        } finally {
+            sess.close();
+        }
+    }
+
+    @Override
+    @Transactional
+    public  FixityStatistics getFixityStatisticForDate(Date date) {
+        final Session sess = this.sessionFactory.openSession();
+        try {
+            FixityStatistics stat = (FixityStatistics) sess.createCriteria(
+                    FixityStatistics.class)
+                    .add(Restrictions.eq("statisticsDate", date))
+                    .uniqueResult();
+            if (stat == null) {
+                stat = new FixityStatistics();
+            }
+            return stat;
         } finally {
             sess.close();
         }
@@ -130,7 +172,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", "ERROR"))
+                    .add(Restrictions.eq("resultType", FixityResult.ERROR))
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -148,7 +190,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", "SUCCESS"))
+                    .add(Restrictions.eq("resultType", FixityResult.SUCCESS))
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -166,7 +208,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixityResult.class)
-                    .add(Restrictions.eq("resultType", "REPAIR"))
+                    .add(Restrictions.eq("resultType", FixityResult.REPAIRED))
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } finally {
@@ -246,16 +288,21 @@ public class HibernateDatabaseService implements FixityDatabaseService {
      * @see org.fcrepo.fixity.db.FixityDatabaseService#deleteAllResults()
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteAllResults() {
         final Session sess = sessionFactory.openSession();
         try {
-            /* truncate the whole table and let hibernate remove the orphans */
-            sess.createQuery(String.format("delete from DatastreamFixityResult")).executeUpdate();
-            sess.createQuery(String.format("delete from ObjectFixityResult")).executeUpdate();
+            /* truncate all tables */
+            sess.createQuery(
+                    String.format("delete from " + DatastreamFixityResult.class.getSimpleName()))
+                    .executeUpdate();
+            sess.createQuery(String.format("delete from " + ObjectFixityResult.class.getSimpleName()))
+                    .executeUpdate();
+            sess.createQuery(String.format("delete from " + FixityStatistics.class.getSimpleName()))
+                    .executeUpdate();
             sess.flush();
-        }catch(Exception e){
-            logger.error(e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw e;
         } finally {
             sess.close();
@@ -267,11 +314,14 @@ public class HibernateDatabaseService implements FixityDatabaseService {
      * @see org.fcrepo.fixity.db.FixityDatabaseService#deleteResult(long)
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteResult(long resultId) {
         final Session sess = sessionFactory.openSession();
         try {
-            sess.createQuery(String.format("delete from ObjectFixityResult o where o.resultId='%s'",resultId)).executeUpdate();
+            sess.createQuery(
+                    String.format(
+                            "delete from ObjectFixityResult o where o.resultId='%s'",
+                            resultId)).executeUpdate();
             sess.flush();
         } finally {
             sess.close();

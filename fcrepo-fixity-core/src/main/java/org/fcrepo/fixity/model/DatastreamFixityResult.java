@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 
@@ -16,6 +17,7 @@ import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
  *
  */
 @Entity
+@Table(name="FIXITY_DATATSTREAMS")
 public class DatastreamFixityResult {
 
     @Id

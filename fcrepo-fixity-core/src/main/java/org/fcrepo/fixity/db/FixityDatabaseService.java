@@ -5,6 +5,7 @@
 package org.fcrepo.fixity.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.fcrepo.fixity.model.FixityStatistics;
@@ -102,5 +103,20 @@ public interface FixityDatabaseService {
      * Delete All results from the database
      */
     void deleteAllResults();
+
+    /**
+     * Retrieve the {@link FixityStatistics} for a certain day
+     * @param date the date
+     * @return a {@link FixityStatistics} objects
+     */
+    FixityStatistics getFixityStatisticForDate(Date date);
+
+    /**
+     * Update the {@link FixityStatistics} for today
+     * @param sucesses the success count to add
+     * @param errors the errors count to add
+     * @param repairs the repair count to add
+     */
+    void addFixityStatistics(int sucesses, int errors, int repairs);
 
 }

@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
@@ -37,8 +35,6 @@ public class FedoraFixityClient {
 
     private static final Logger logger = LoggerFactory
             .getLogger(FedoraFixityClient.class);
-
-    private final HttpClient client = new DefaultHttpClient();
 
     /**
      * Fetch all the identifiers of objects which have a given parent

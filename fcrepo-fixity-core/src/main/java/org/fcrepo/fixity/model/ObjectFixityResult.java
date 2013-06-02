@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -24,6 +25,7 @@ import org.hibernate.annotations.FetchMode;
  *
  */
 @Entity
+@Table(name="FIXITY_OBJECTS")
 public class ObjectFixityResult {
 
     public static enum FixityResult {
@@ -102,5 +104,29 @@ public class ObjectFixityResult {
 
     public void setRepairs(List<DatastreamFixityResult> repairs) {
         this.repairs = repairs;
+    }
+
+    /**
+     * Get the number of successes
+     * @return the number of successes
+     */
+    public int getSuccessCount() {
+        return (successes == null) ? 0 : successes.size();
+    }
+
+    /**
+     * Get the number of errors
+     * @return the number of errors
+     */
+    public int getErrorCount() {
+        return (errors == null) ? 0 : errors.size();
+    }
+
+    /**
+     * Get the number of repairs
+     * @return the number of repairs
+     */
+    public int getRepairCount() {
+        return (repairs == null) ? 0 : repairs.size();
     }
 }

@@ -4,15 +4,21 @@
 
 package org.fcrepo.fixity.model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * @author frank asseg
  *
  */
 @Entity
+@Table(name="FIXITY_STATS")
 public class FixityStatistics {
 
     @Id
@@ -24,6 +30,17 @@ public class FixityStatistics {
     private long errorCount;
 
     private long repairCount;
+
+    @Type(type="date")
+    private Date statisticsDate;
+
+    public Date getStatisticsDate() {
+        return statisticsDate;
+    }
+
+    public void setStatisticsDate(Date statisticsDate) {
+        this.statisticsDate = statisticsDate;
+    }
 
     public long getSuccessCount() {
         return successCount;
