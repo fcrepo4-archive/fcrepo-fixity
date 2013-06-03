@@ -34,7 +34,7 @@ public class FedoraFixityClientIT{
 
     private final FedoraFixityClient fixityClient = new FedoraFixityClient();
 
-    private static final String serverAddress = "http://localhost:8080/";
+    private final String serverAddress = "http://localhost:" + (System.getProperty("test.port") != null ? System.getProperty("test.port") : 8080) + "/";
 
     private final HttpClient httpClient = new DefaultHttpClient();
 
