@@ -3,35 +3,38 @@
 	
 	
 	function updateStatistics(){
-		$.getJSON('../rest/results/statistics/general', function (data) {
+		$.getJSON('../fixity-results/statistics', function (data) {
 			generalStats = createStatistics(data);
 			createPieChart();
 		});
 
-		$.getJSON('../rest/results/statistics/daily', function (data) {
+		$.getJSON('../fixity-results/statistics-daily', function (data) {
 			len = data.length;
-			for (i=0;i<len;i++){
+			if (len == 0) {
+				return;
+			}
+			for (var i=0;i<len;i++){
 				dailyStats[i] = {
-						date : data[i]['stat-daily']['@date'],
-						successes : data[i]['stat-daily']['@successCount'],
-						errors : data[i]['stat-daily']['@errorCount'],
-						repairs : data[i]['stat-daily']['@repairCount']
-				}
+						date : data[i]['date'],
+						successes : data[i]['success-count'],
+						errors : data[i]['error-count'],
+						repairs : data[i]['repair-count']
+				};
 			}
 			createLineChart();
 		});
 	}
 
 	function updateTable(){
-		$.getJSON('../rest/results', function(data) {
+		$.getJSON('../fixity-results', function(data) {
 			var aaData = new Array();
 			counter = 0;
 			$.each(data,function() {
 				var row = new Array();
-				row[0] = this['fixity-result']['@record-id'];
-				row[1] = this["fixity-result"]['@pid'];
-				row[2] = this['fixity-result']['@timestamp'];
-				row[3] = (this["fixity-result"]['@success'] == "true") ? "Success" : (this["fixity-result"]['@repaired'] == "true") ? "Repaired" : "Error";
+				row[0] = this['id'];
+				row[1] = this['uri'];
+				row[2] = this['timestamp'];
+				row[3] = (this['state'] == "SUCCESS") ? "Success" : (this['state'] == "REPAIRED") ? "Repaired" : "Error";
 				aaData[counter++] = row;
 			});
 
@@ -62,7 +65,7 @@
 	}
 	
 	function queuePid(pid){
-		var path = '../rest/results/queue';
+		var path = '../fixity-results/queue';
 		if (pid != "All Objects"){
 			path = '../rest/results/queue?pid=' + pid;
 		}
@@ -73,11 +76,11 @@
 	
 	function createStatistics(data) {
 		generalStats = {
-			numObjects : parseInt(data['general-stat']['@object-count']),
-			numErrors : parseInt(data['general-stat']['@error-count']),
-			numSuccesses : parseInt(data['general-stat']['@success-count']),
-			numRepairs : parseInt(data['general-stat']['@repair-count'])
-		}
+			numObjects : parseInt(data['object-count']),
+			numErrors : parseInt(data['error-count']),
+			numSuccesses : parseInt(data['success-count']),
+			numRepairs : parseInt(data['repair-count'])
+		};
 		return generalStats;
 	}
 
@@ -89,7 +92,7 @@
 		repairValues = new Array();
 		len = dailyStats.length;
 		xValues = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
-		for (i = 0;i<len;i++){
+		for (var i = 0;i<len;i++){
 			errorValues[i] = dailyStats[i].errors;
 			successValues[i] = dailyStats[i].successes;
 			repairValues[i] = dailyStats[i].repairs;
