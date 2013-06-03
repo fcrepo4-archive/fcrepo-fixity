@@ -261,8 +261,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public List<DailyStatistics> getDailyStatistics() {
         final Session sess = sessionFactory.openSession();
         try {
-            return sess.createCriteria(DailyStatistics.class)
-                    .list();
+            return  sess.createCriteria(DailyStatistics.class).list();
         } finally {
             sess.close();
         }

@@ -5,6 +5,7 @@
 package org.fcrepo.fixity.integration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -12,10 +13,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.fcrepo.fixity.db.FixityDatabaseService;
+import org.fcrepo.fixity.model.DailyStatistics;
 import org.fcrepo.fixity.model.DatastreamFixityError;
 import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixitySuccess;
-import org.fcrepo.fixity.model.DailyStatistics;
 import org.fcrepo.fixity.model.ObjectFixityResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -186,5 +187,12 @@ public class FixityDatabaseServiceIT {
         assertEquals(1, stats.get(0).getErrorCount());
         assertEquals(1, stats.get(0).getSuccessCount());
         assertEquals(1, stats.get(0).getRepairCount());
+    }
+    @Test
+    public void testRetrieveEmptyStatistics() throws Exception {
+        /* ceate two ObjectFixityResults to persist in the database */
+        List<DailyStatistics> stats = this.service.getDailyStatistics();
+        assertNotNull(stats);
+        assertEquals(0, stats.size());
     }
 }

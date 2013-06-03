@@ -91,7 +91,7 @@ public class FixityResults {
         return Response.ok().build();
     }
 
-    @Path("/statistics/daily")
+    @Path("/statistics-daily")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<DailyStatistics> getDailyStatistics() {

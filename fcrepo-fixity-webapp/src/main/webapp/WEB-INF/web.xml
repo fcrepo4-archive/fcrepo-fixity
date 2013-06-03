@@ -18,17 +18,21 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-   <filter>
-      <filter-name>jerseyFilter</filter-name>
-      <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
-      <init-param>
-         <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-         <param-value>/static/.*</param-value>
-      </init-param>
-   </filter>
-   
-   <filter-mapping>
-      <filter-name>jerseyFilter</filter-name>
-      <url-pattern>/*</url-pattern>
-   </filter-mapping>
+  <filter>
+    <filter-name>jerseyFilter</filter-name>
+    <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+      <param-value>/static/.*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.fcrepo.fixity.model;org.codehaus.jackson.jaxrs</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>jerseyFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 </web-app>

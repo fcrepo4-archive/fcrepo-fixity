@@ -8,15 +8,17 @@
 			createPieChart();
 		});
 
-		$.getJSON('../fixity-results/statistics/daily', function (data) {
-			var stats = data['statistics']; 
-			len = stats.length;
+		$.getJSON('../fixity-results/statistics-daily', function (data) {
+			len = data.length;
+			if (len == 0) {
+				return;
+			}
 			for (var i=0;i<len;i++){
 				dailyStats[i] = {
-						date : stats[i]['@date'],
-						successes : stats[i]['@success-count'],
-						errors : stats[i]['@error-count'],
-						repairs : stats[i]['@repair-count']
+						date : data[i]['date'],
+						successes : data[i]['success-count'],
+						errors : data[i]['error-count'],
+						repairs : data[i]['repair-count']
 				};
 			}
 			createLineChart();
@@ -28,14 +30,12 @@
 			var aaData = new Array();
 			counter = 0;
 			$.each(data,function() {
-				for (var i =0;i<this.length;i++){
-					var row = new Array();
-					row[0] = this[i]['@id'];
-					row[1] = this[i]['@uri'];
-					row[2] = this[i]['@timestamp'];
-					row[3] = (this[i]['@success'] == "true") ? "Success" : (this[i]['@repaired'] == "true") ? "Repaired" : "Error";
-					aaData[counter++] = row;
-				}
+				var row = new Array();
+				row[0] = this['id'];
+				row[1] = this['uri'];
+				row[2] = this['timestamp'];
+				row[3] = (this['state'] == "SUCCESS") ? "Success" : (this['state'] == "REPAIRED") ? "Repaired" : "Error";
+				aaData[counter++] = row;
 			});
 
 			$('#results').dataTable({
@@ -76,10 +76,10 @@
 	
 	function createStatistics(data) {
 		generalStats = {
-			numObjects : parseInt(data['@object-count']),
-			numErrors : parseInt(data['@error-count']),
-			numSuccesses : parseInt(data['@success-count']),
-			numRepairs : parseInt(data['@repair-count'])
+			numObjects : parseInt(data['object-count']),
+			numErrors : parseInt(data['error-count']),
+			numSuccesses : parseInt(data['success-count']),
+			numRepairs : parseInt(data['repair-count'])
 		};
 		return generalStats;
 	}
