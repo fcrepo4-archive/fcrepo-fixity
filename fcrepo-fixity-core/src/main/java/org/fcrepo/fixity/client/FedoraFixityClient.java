@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
 import org.fcrepo.fixity.model.DatastreamFixityError;
@@ -50,7 +51,11 @@ public class FedoraFixityClient {
         try {
             /* parse the RDF N3 response using Apache Jena */
             final Model model = ModelFactory.createDefaultModel();
-            RDFDataMgr.read(model, parentUri);
+            try{
+                RDFDataMgr.read(model, parentUri);
+            }catch (HttpException e){
+                throw new IOException("Unable to fetch uris from " + parentUri,e);
+            }
 
             /*
              * and iterate over all the elements which contain the predicate
