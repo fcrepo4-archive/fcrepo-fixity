@@ -15,7 +15,7 @@ import org.fcrepo.fixity.service.FixityService;
  *
  */
 @Entity
-@XmlRootElement(name="error", namespace=FixityService.NAMESPACE_FIXITY)
+@XmlRootElement(name="error", namespace=FixityService.FIXITY_NAMESPACE)
 public class DatastreamFixityError extends DatastreamFixityResult {
 
     public DatastreamFixityError() {

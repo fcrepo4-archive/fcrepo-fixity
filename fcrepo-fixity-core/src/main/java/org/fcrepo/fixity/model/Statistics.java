@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.fcrepo.fixity.service.FixityService;
 
-@XmlRootElement(name = "general-stat", namespace = FixityService.NAMESPACE_FIXITY)
+@XmlRootElement(name = "general-stat", namespace = FixityService.FIXITY_NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Statistics {
 

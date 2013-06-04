@@ -73,9 +73,7 @@
   </jms:listener-container>
   <!-- END JMS config -->
 
-  <bean id="fixityService" class="org.fcrepo.fixity.service.FixityService">
-      <property name="fedoraFolderUri" value="http://localhost:8080/fcrepo/rest/objects" />
-  </bean>
+  <bean id="fixityService" class="org.fcrepo.fixity.service.FixityService"/>
 
   <context:annotation-config />
   

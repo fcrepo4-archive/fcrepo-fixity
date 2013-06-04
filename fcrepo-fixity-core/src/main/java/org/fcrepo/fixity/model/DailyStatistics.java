@@ -25,7 +25,7 @@ import org.fcrepo.fixity.service.FixityService;
  */
 @Entity
 @Table(name="FIXITY_STATS")
-@XmlRootElement(name="statistics",namespace=FixityService.NAMESPACE_FIXITY)
+@XmlRootElement(name="statistics",namespace=FixityService.FIXITY_NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DailyStatistics {
 

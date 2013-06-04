@@ -25,6 +25,7 @@ import org.fcrepo.fixity.model.ObjectFixityResult.FixityResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.listener.adapter.ListenerExecutionFailedException;
@@ -40,9 +41,10 @@ import org.springframework.stereotype.Service;
 @Service("fixityService")
 public class FixityService {
 
-    public static final String NAMESPACE_FIXITY =
+    public static final String FIXITY_NAMESPACE =
             "http://fcrepo.org/fcrepo4/fixity";
 
+    @Value("#{systemProperties['org.fcrepo.fixity.fcrepo.url']}")
     private String fedoraFolderUri;
 
     @Autowired
@@ -68,7 +70,7 @@ public class FixityService {
     private void afterPropertiesSet() throws IllegalStateException {
         if (fedoraFolderUri == null) {
             throw new IllegalStateException(
-                    "fedoraFolderUri property has to be set via spring configuration");
+                    "fedoraFolderUri property has to be set via spring configuration or the system property 'org.fcrepo.fixity.fcrepo.url' to e.g. 'http://{fedora-host}:{port}/rest/objects");
         }
     }
 
