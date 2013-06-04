@@ -39,6 +39,7 @@ public class FixityResults {
     private FixityDatabaseService databaseService;
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<ObjectFixityResult> getAllResults() {
         return databaseService.getResults(0, 50);
     }
