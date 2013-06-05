@@ -55,6 +55,7 @@ public class FedoraFixityClient {
             try {
                 RDFDataMgr.read(model, parentUri);
             } catch (HttpException e) {
+                stmts.close();
                 throw new IOException("Unable to fetch uris from " + parentUri,
                         e);
             }
@@ -94,6 +95,7 @@ public class FedoraFixityClient {
                 sts = model.listStatements(model.createResource(uri),
                         RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
                 if (!sts.hasNext()) {
+                    sts.close();
                     throw new IOException("No fixity information available for " +
                             uri);
                 }
