@@ -68,7 +68,7 @@ public class FedoraFixityClient {
                     .createResource(parentUri));
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
-                Statement st = stmts.next();
+                Statement st = stmts.next(); //NOSONAR
                 uris.add(st.getSubject().getURI());
             }
             return uris;
@@ -99,7 +99,7 @@ public class FedoraFixityClient {
                     throw new IOException("No fixity information available for " +
                             uri);
                 }
-                Statement st = sts.next();
+                Statement st = sts.next();  //NOSONAR
                 final Resource res = st.getObject().asResource();
 
                 /* parse the checksum from the model */
