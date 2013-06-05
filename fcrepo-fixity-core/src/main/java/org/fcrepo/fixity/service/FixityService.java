@@ -56,7 +56,7 @@ public class FixityService {
     @Autowired
     private FixityDatabaseService databaseService;
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(FixityService.class);
 
     /**
@@ -67,7 +67,7 @@ public class FixityService {
     }
 
     @PostConstruct
-    public void afterPropertiesSet() throws IllegalStateException {
+    public void afterPropertiesSet(){
         if (fedoraFolderUri == null) {
             throw new IllegalStateException(
                     "fedoraFolderUri property has to be set via spring configuration or the system property 'org.fcrepo.fixity.fcrepo.url' to e.g. 'http://{fedora-host}:{port}/rest/objects");
@@ -84,7 +84,7 @@ public class FixityService {
             /* no pid was given, so queue all objects */
             queueElements = fixityClient.retrieveUris(this.fedoraFolderUri);
             if (queueElements == null) {
-                logger.warn("Fixity check was requested for all objects, but no objects could be discovered in the repository at " +
+                LOG.warn("Fixity check was requested for all objects, but no objects could be discovered in the repository at " +
                         this.fedoraFolderUri);
                 return;
             }
@@ -118,7 +118,7 @@ public class FixityService {
      * @param uri the text of the {@link Message} which is supposed to be a object uri
      */
     public void consumeFixityMessage(String uri) throws JMSException {
-        logger.debug("received fixity request for object {}", uri);
+        LOG.debug("received fixity request for object {}", uri);
         try {
             /*
              * queue a fixity check and retrieve the new results from the
@@ -129,7 +129,7 @@ public class FixityService {
             this.databaseService.addResult(result);
         } catch (IOException e) {
             /* rethrow the exception as a Spring JMS Exception */
-            logger.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             throw new ListenerExecutionFailedException(e.getMessage(), e);
         }
     }
@@ -144,7 +144,7 @@ public class FixityService {
          * information
          */
         final List<String> datastreamUris = this.fixityClient.retrieveUris(uri);
-        logger.debug("discovered {} datastream URIs for Object {}",
+        LOG.debug("discovered {} datastream URIs for Object {}",
                 datastreamUris.size(), uri);
 
         /*
@@ -164,7 +164,7 @@ public class FixityService {
             } else if (dr instanceof DatastreamFixityError) {
                 errors.add((DatastreamFixityError) dr);
             } else {
-                logger.error(
+                LOG.error(
                         "Unable to handle result type of datasstream fixity result: {}",
                         dr.getType());
             }

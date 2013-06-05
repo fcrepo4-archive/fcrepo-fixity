@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("fixityDatabaseService")
 public class HibernateDatabaseService implements FixityDatabaseService {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(HibernateDatabaseService.class);
 
     @Autowired
@@ -308,7 +308,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
                     .executeUpdate();
             sess.flush();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             throw e;
         } finally {
             sess.close();

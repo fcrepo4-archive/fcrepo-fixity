@@ -4,7 +4,6 @@
 
 package org.fcrepo.fixity.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,17 +59,17 @@ public class ObjectFixityResult {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="successes",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
+    @XmlElement(name="successes",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
     private List<DatastreamFixitySuccess> successes;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="errors",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
+    @XmlElement(name="errors",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
     private List<DatastreamFixityError> errors;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="repairs",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
+    @XmlElement(name="repairs",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
     private List<DatastreamFixityRepaired> repairs;
 
     public Date getTimeStamp() {

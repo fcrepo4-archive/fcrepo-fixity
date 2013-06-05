@@ -37,7 +37,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 @Service("fixityClient")
 public class FedoraFixityClient {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(FedoraFixityClient.class);
 
     /**
@@ -48,30 +48,31 @@ public class FedoraFixityClient {
     public List<String> retrieveUris(String parentUri) throws IOException {
         /* fetch a RDF Description of the parent form the repository */
         final HttpGet search = new HttpGet(parentUri);
+        StmtIterator stmts = null;
         try {
             /* parse the RDF N3 response using Apache Jena */
             final Model model = ModelFactory.createDefaultModel();
-            try{
+            try {
                 RDFDataMgr.read(model, parentUri);
-            }catch (HttpException e){
-                throw new IOException("Unable to fetch uris from " + parentUri,e);
+            } catch (HttpException e) {
+                throw new IOException("Unable to fetch uris from " + parentUri,
+                        e);
             }
 
             /*
              * and iterate over all the elements which contain the predicate
              * #hasParent in order to discover objects
              */
-            final StmtIterator stmts =
-                    model.listStatements(null, RdfLexicon.HAS_PARENT, model
-                            .createResource(parentUri));
+            stmts = model.listStatements(null, RdfLexicon.HAS_PARENT, model
+                    .createResource(parentUri));
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
-                final Statement st = stmts.next();
+                Statement st = stmts.next();
                 uris.add(st.getSubject().getURI());
             }
-
             return uris;
         } finally {
+            stmts.close();
             search.releaseConnection();
         }
     }
@@ -88,52 +89,55 @@ public class FedoraFixityClient {
             /* parse the fixity part of the RDF response */
             final Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, uri + "/fcr:fixity");
+            StmtIterator sts=null;
+            try{
+                sts = model.listStatements(model.createResource(uri),
+                        RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
+                if (!sts.hasNext()) {
+                    throw new IOException("No fixity information available for " +
+                            uri);
+                }
+                Statement st = sts.next();
+                final Resource res = st.getObject().asResource();
 
-            final StmtIterator sts =
-                    model.listStatements(model.createResource(uri),
-                            RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
-            if (!sts.hasNext()) {
-                throw new IOException("No fixity information available for " +
-                        uri);
-            }
-            Statement st = sts.next();
-            final Resource res = st.getObject().asResource();
+                /* parse the checksum from the model */
+                st =
+                        model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
+                                (RDFNode) null).next();
+                final String checksum = st.getObject().asResource().getURI();
 
-            /* parse the checksum from the model */
-            st =
-                    model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
-                            (RDFNode) null).next();
-            final String checksum = st.getObject().asResource().getURI();
+                /* parse the status */
+                st =
+                        model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
+                                (RDFNode) null).next();
+                final String state = st.getObject().asLiteral().getString();
 
-            /* parse the status */
-            st =
-                    model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
-                            (RDFNode) null).next();
-            final String state = st.getObject().asLiteral().getString();
+                /* parse the location */
+                st =
+                        model.listStatements(res, RdfLexicon.HAS_LOCATION,
+                                (RDFNode) null).next();
+                final String location = st.getObject().asResource().getURI();
 
-            /* parse the location */
-            st =
-                    model.listStatements(res, RdfLexicon.HAS_LOCATION,
-                            (RDFNode) null).next();
-            final String location = st.getObject().asResource().getURI();
+                LOG.debug("Found fixity information: [{}, {}, {}]", state,
+                        checksum, location);
 
-            logger.debug("Found fixity information: [{}, {}, {}]", state,
-                    checksum, location);
-
-            ResultType type = ResultType.valueOf(state);
-            switch (type) {
-                case ERROR:
-                    results.add(new DatastreamFixityError(uri));
-                    break;
-                case SUCCESS:
-                    results.add(new DatastreamFixitySuccess(uri));
-                    break;
-                case REPAIRED:
-                    results.add(new DatastreamFixityRepaired(uri));
-                    break;
-                default:
-                    throw new IOException(
-                            "Unabel to handle results of unkwonn type");
+                ResultType type = ResultType.valueOf(state);
+                switch (type) {
+                    case ERROR:
+                        results.add(new DatastreamFixityError(uri));
+                        break;
+                    case SUCCESS:
+                        results.add(new DatastreamFixitySuccess(uri));
+                        break;
+                    case REPAIRED:
+                        results.add(new DatastreamFixityRepaired(uri));
+                        break;
+                    default:
+                        throw new IOException(
+                                "Unabel to handle results of unkwonn type");
+                }
+            }finally{
+                sts.close();
             }
         }
         return results;

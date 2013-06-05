@@ -32,6 +32,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class FixityResults {
 
+    private static final int MAX_RESULTS = 50;
+
     @Autowired
     private FixityService fixityService;
 
@@ -41,7 +43,7 @@ public class FixityResults {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<ObjectFixityResult> getAllResults() {
-        return databaseService.getResults(0, 50);
+        return databaseService.getResults(0, MAX_RESULTS);
     }
 
     @Path("/{offset}/{length}")
