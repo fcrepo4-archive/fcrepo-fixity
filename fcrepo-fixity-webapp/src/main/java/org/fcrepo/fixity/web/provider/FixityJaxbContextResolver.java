@@ -41,7 +41,7 @@ public class FixityJaxbContextResolver implements ContextResolver<JAXBContext> {
                             DatastreamFixitySuccess.class,
                             ObjectFixityResult.class);
         } catch (JAXBException e) {
-            throw new RuntimeException("Not able to instantiate Jaxb context");
+            throw new IllegalStateException("Not able to instantiate Jaxb context",e);
         }
     }
 

@@ -35,12 +35,14 @@ import org.fcrepo.fixity.service.FixityService;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ObjectFixityResult {
 
+    private static final String COLUMN_OBJECT_FIXITY_ID = "OBJECT_FIXITY_ID";
+
     public static enum FixityResult {
         SUCCESS, ERROR, REPAIRED;
     }
     @Id
     @GeneratedValue
-    @Column(name = "OBJECT_FIXITY_ID")
+    @Column(name = COLUMN_OBJECT_FIXITY_ID)
     @XmlAttribute(name = "id")
     private long resultId;
 
@@ -57,17 +59,17 @@ public class ObjectFixityResult {
     private Date timeStamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
     @XmlElement(name="successes",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
     private List<DatastreamFixitySuccess> successes;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
     @XmlElement(name="errors",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
     private List<DatastreamFixityError> errors;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="OBJECT_FIXITY_ID")
+    @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
     @XmlElement(name="repairs",namespace=FixityService.FIXITY_NAMESPACE,type=ArrayList.class)
     private List<DatastreamFixityRepaired> repairs;
 

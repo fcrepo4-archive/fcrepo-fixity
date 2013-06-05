@@ -24,27 +24,27 @@ import org.fcrepo.fixity.service.FixityService;
  *
  */
 @Entity
-@Table(name="FIXITY_STATS")
-@XmlRootElement(name="statistics",namespace=FixityService.FIXITY_NAMESPACE)
+@Table(name = "FIXITY_STATS")
+@XmlRootElement(name = "statistics", namespace = FixityService.FIXITY_NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DailyStatistics {
 
     @Id
     @GeneratedValue
-    @XmlAttribute(name="id")
+    @XmlAttribute(name = "id")
     private long statisticId;
 
-    @XmlAttribute(name="success-count")
+    @XmlAttribute(name = "success-count")
     private long successCount;
 
-    @XmlAttribute(name="error-count")
+    @XmlAttribute(name = "error-count")
     private long errorCount;
 
-    @XmlAttribute(name="repair-count")
+    @XmlAttribute(name = "repair-count")
     private long repairCount;
 
     @Temporal(TemporalType.DATE)
-    @XmlAttribute(name="date")
+    @XmlAttribute(name = "date")
     private Date statisticsDate;
 
     public Date getStatisticsDate() {
@@ -77,6 +77,14 @@ public class DailyStatistics {
 
     public void setRepairCount(long repairCount) {
         this.repairCount = repairCount;
+    }
+
+    public long getStatisticId() {
+        return statisticId;
+    }
+
+    public void setStatisticId(long statisticId) {
+        this.statisticId = statisticId;
     }
 
 }

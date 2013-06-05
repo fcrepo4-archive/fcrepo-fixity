@@ -67,7 +67,7 @@ public class FixityService {
     }
 
     @PostConstruct
-    private void afterPropertiesSet() throws IllegalStateException {
+    public void afterPropertiesSet() throws IllegalStateException {
         if (fedoraFolderUri == null) {
             throw new IllegalStateException(
                     "fedoraFolderUri property has to be set via spring configuration or the system property 'org.fcrepo.fixity.fcrepo.url' to e.g. 'http://{fedora-host}:{port}/rest/objects");
@@ -78,17 +78,20 @@ public class FixityService {
      * Queue a List of object URIs for fixity checks
      * @param uri the uri of the object to queue
      */
-    public void queueFixityChecks(List<String> uris) throws IOException {
-        if (uris == null) {
+    public void queueFixityChecks(final List<String> uris) throws IOException {
+        List<String> queueElements = uris;
+        if (queueElements == null) {
             /* no pid was given, so queue all objects */
-            uris = fixityClient.retrieveUris(this.fedoraFolderUri);
-            if (uris == null) {
+            queueElements = fixityClient.retrieveUris(this.fedoraFolderUri);
+            if (queueElements == null) {
                 logger.warn("Fixity check was requested for all objects, but no objects could be discovered in the repository at " +
                         this.fedoraFolderUri);
                 return;
             }
+        }else{
+            queueElements = uris;
         }
-        for (String uri : uris) {
+        for (String uri : queueElements) {
             this.queueFixityCheck(uri);
         }
     }
