@@ -126,7 +126,9 @@ public class FixityService {
              */
             final ObjectFixityResult result = this.checkObjectFixity(uri);
             /* save the new result to the database */
-            this.databaseService.addResult(result);
+            if (result != null){
+                this.databaseService.addResult(result);
+            }
         } catch (IOException e) {
             /* rethrow the exception as a Spring JMS Exception */
             LOG.error(e.getMessage(), e);
@@ -136,6 +138,7 @@ public class FixityService {
 
     /**
      * Request fixity check execution from the Fedora repository
+     * @return the {@link ObjectFixityResult} or null if no result could be created
      */
     private ObjectFixityResult checkObjectFixity(final String uri)
             throws IOException {
@@ -147,6 +150,10 @@ public class FixityService {
         LOG.debug("discovered {} datastream URIs for Object {}",
                 datastreamUris.size(), uri);
 
+        if (datastreamUris.isEmpty()){
+            LOG.warn("Unable to generate fixity result for object without datastreams");
+            return null;
+        }
         /*
          * for each of the child datastreams queue a fixity check by calling the
          * corresponding Fedora endpoint

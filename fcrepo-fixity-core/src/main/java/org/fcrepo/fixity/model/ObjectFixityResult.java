@@ -4,6 +4,7 @@
 
 package org.fcrepo.fixity.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import org.fcrepo.fixity.service.FixityService;
  *
  */
 @Entity
-@Table(name = "FIXITY_OBJECTS")
+@Table(name = "FIXITY_OBJECT_RESULTS")
 @XmlRootElement(name = "object-fixity-result", namespace = FixityService.FIXITY_NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ObjectFixityResult {
@@ -59,17 +60,20 @@ public class ObjectFixityResult {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="successes",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
+    @XmlElement(name="successes",namespace=FixityService.FIXITY_NAMESPACE
+        ,type=ArrayList.class) //NOSONAR
     private List<DatastreamFixitySuccess> successes;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="errors",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
+    @XmlElement(name="errors",namespace=FixityService.FIXITY_NAMESPACE
+        ,type=ArrayList.class) //NOSONAR
     private List<DatastreamFixityError> errors;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name=COLUMN_OBJECT_FIXITY_ID)
-    @XmlElement(name="repairs",namespace=FixityService.FIXITY_NAMESPACE,type=List.class)
+    @XmlElement(name="repairs",namespace=FixityService.FIXITY_NAMESPACE
+        ,type=ArrayList.class) //NOSONAR
     private List<DatastreamFixityRepaired> repairs;
 
     public Date getTimeStamp() {

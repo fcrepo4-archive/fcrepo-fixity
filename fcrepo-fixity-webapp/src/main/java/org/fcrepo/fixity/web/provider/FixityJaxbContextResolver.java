@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package org.fcrepo.fixity.web.provider;
 
@@ -18,29 +15,30 @@ import org.fcrepo.fixity.model.DatastreamFixityResult;
 import org.fcrepo.fixity.model.DatastreamFixitySuccess;
 import org.fcrepo.fixity.model.ObjectFixityResult;
 import org.fcrepo.fixity.model.Statistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * @author frank asseg
- *
- */
 @Provider
-@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 @Component
+@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 public class FixityJaxbContextResolver implements ContextResolver<JAXBContext> {
 
     private final JAXBContext context;
 
+    private static final Logger LOG =
+            LoggerFactory.getLogger(FixityJaxbContextResolver.class);
+
     public FixityJaxbContextResolver() {
         try {
+
             context =
                     JAXBContext.newInstance(DailyStatistics.class,
                             Statistics.class, DatastreamFixityResult.class,
-                            DatastreamFixityError.class,
-                            DatastreamFixityRepaired.class,
-                            DatastreamFixitySuccess.class,
-                            ObjectFixityResult.class);
+                            DatastreamFixityError.class, DatastreamFixityRepaired.class,
+                            DatastreamFixitySuccess.class, ObjectFixityResult.class);
         } catch (JAXBException e) {
+            LOG.error(e.getMessage(),e);
             throw new IllegalStateException("Not able to instantiate Jaxb context",e);
         }
     }

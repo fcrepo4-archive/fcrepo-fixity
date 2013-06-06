@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.client.methods.HttpGet;
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
@@ -47,7 +46,6 @@ public class FedoraFixityClient {
      */
     public List<String> retrieveUris(String parentUri) throws IOException {
         /* fetch a RDF Description of the parent form the repository */
-        final HttpGet search = new HttpGet(parentUri);
         StmtIterator stmts = null;
         try {
             /* parse the RDF N3 response using Apache Jena */
@@ -64,17 +62,17 @@ public class FedoraFixityClient {
              * and iterate over all the elements which contain the predicate
              * #hasParent in order to discover objects
              */
-            stmts = model.listStatements(null, RdfLexicon.HAS_PARENT, model
-                    .createResource(parentUri));
+            stmts = model.listStatements(model.createResource(parentUri), RdfLexicon.HAS_CHILD, (RDFNode) null);
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
                 Statement st = stmts.next(); //NOSONAR
-                uris.add(st.getSubject().getURI());
+                String uri = st.getObject().asResource().getURI();
+                uris.add(uri);
+                LOG.debug("adding '" + uri + "' to retrieveUris results");
             }
             return uris;
         } finally {
             stmts.close();
-            search.releaseConnection();
         }
     }
 

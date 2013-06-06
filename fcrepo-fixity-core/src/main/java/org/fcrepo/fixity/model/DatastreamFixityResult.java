@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import org.fcrepo.fixity.service.FixityService;
 import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
@@ -29,7 +30,7 @@ import org.hibernate.annotations.DiscriminatorOptions;
 @DiscriminatorColumn(name="RESULT_DISCRIMINATOR",discriminatorType=DiscriminatorType.INTEGER)
 @DiscriminatorOptions(force=true)
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@XmlRootElement
+@XmlRootElement(name="datastream-fixity-result", namespace = FixityService.FIXITY_NAMESPACE)
 @XmlSeeAlso({DatastreamFixitySuccess.class, DatastreamFixityError.class, DatastreamFixityRepaired.class})
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class DatastreamFixityResult {
