@@ -45,11 +45,11 @@ public class FixityServiceTest{
 
         /* setup an appropriate response from the mock */
         String parentUri = "http://localhost:8080/objects/testobj1";
-        Mockito.when(mockClient.retrieveUris(Mockito.any(String.class))).thenReturn(Arrays.asList(parentUri + "/ds1", parentUri + "/ds2"));
+        Mockito.when(mockClient.retrieveDatatstreamUris(Mockito.any(String.class))).thenReturn(Arrays.asList(parentUri + "/ds1", parentUri + "/ds2"));
 
         this.fixityService.consumeFixityMessage(parentUri);
 
-        Mockito.verify(mockClient).retrieveUris(parentUri);
+        Mockito.verify(mockClient).retrieveDatatstreamUris(parentUri);
         Mockito.verify(mockDb).addResult(Mockito.any(ObjectFixityResult.class));
     }
 }

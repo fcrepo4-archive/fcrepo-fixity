@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.atlas.web.HttpException;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.fcrepo.RdfLexicon;
 import org.fcrepo.fixity.model.DatastreamFixityError;
@@ -45,13 +46,17 @@ public class FedoraFixityClient {
      * @return A {@link List} containing the URIs of the child objects
      */
     public List<String> retrieveUris(String parentUri) throws IOException {
+        return retrieveUris(parentUri,parentUri);
+    }
+
+    public List<String> retrieveUris(String sourceUri, String parentUri) throws IOException {
         /* fetch a RDF Description of the parent form the repository */
         StmtIterator stmts = null;
         try {
             /* parse the RDF N3 response using Apache Jena */
             final Model model = ModelFactory.createDefaultModel();
             try {
-                RDFDataMgr.read(model, parentUri);
+                RDFDataMgr.read(model, sourceUri, Lang.N3);
             } catch (HttpException e) {
                 stmts.close();
                 throw new IOException("Unable to fetch uris from " + parentUri,
@@ -73,8 +78,13 @@ public class FedoraFixityClient {
                 LOG.debug("adding '" + uri + "' to retrieveUris results");
             }
             return uris;
+        } catch (IOException e) {
+            LOG.error("Unable to fetch object urls", e);
+            throw e;
         } finally {
-            stmts.close();
+            if (stmts != null) {
+                stmts.close();
+            }
         }
     }
 
@@ -89,7 +99,7 @@ public class FedoraFixityClient {
         for (final String uri : datastreamUris) {
             /* parse the fixity part of the RDF response */
             final Model model = ModelFactory.createDefaultModel();
-            RDFDataMgr.read(model, uri + "/fcr:fixity");
+            RDFDataMgr.read(model, uri + "/fcr:fixity",Lang.N3);
             StmtIterator sts = null;
             try {
                 sts = model.listStatements(model.createResource(uri),
@@ -141,7 +151,9 @@ public class FedoraFixityClient {
                                 "Unable to handle results of unknown type");
                 }
             } finally {
-                sts.close();
+                if (sts != null) {
+                    sts.close();
+                }
             }
         }
         return results;
@@ -155,18 +167,19 @@ public class FedoraFixityClient {
         final Model model = ModelFactory.createDefaultModel();
         RDFDataMgr.read(model, objectUri);
         final StmtIterator sts =
-                model.listStatements(null, RdfLexicon.HAS_MIXIN_TYPE,
-                        "fedora:datastream");
+                model.listStatements(null, RdfLexicon.HAS_MIXIN_TYPE, "fedora:datastream");
         try {
             List<String> result = new ArrayList<>();
             while (sts.hasNext()) {
                 final Statement st = sts.next(); //NOSONAR
-                final String dsUri = st.getResource().getURI();
+                final String dsUri = st.getSubject().asResource().getURI();
                 result.add(dsUri);
             }
             return result;
         } finally {
-            sts.close();
+            if (sts != null) {
+                sts.close();
+            }
         }
     }
 }

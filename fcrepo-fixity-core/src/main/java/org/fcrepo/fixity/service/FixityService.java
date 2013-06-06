@@ -146,7 +146,7 @@ public class FixityService {
          * fetch a list of the object's datastreams for getting their fixity
          * information
          */
-        final List<String> datastreamUris = this.fixityClient.retrieveUris(uri);
+        final List<String> datastreamUris = this.fixityClient.retrieveDatatstreamUris(uri);
         LOG.debug("discovered {} datastream URIs for Object {}",
                 datastreamUris.size(), uri);
 
