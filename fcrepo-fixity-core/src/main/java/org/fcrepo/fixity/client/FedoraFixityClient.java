@@ -62,7 +62,9 @@ public class FedoraFixityClient {
              * and iterate over all the elements which contain the predicate
              * #hasParent in order to discover objects
              */
-            stmts = model.listStatements(model.createResource(parentUri), RdfLexicon.HAS_CHILD, (RDFNode) null);
+            stmts =
+                    model.listStatements(model.createResource(parentUri),
+                            RdfLexicon.HAS_CHILD, (RDFNode) null);
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
                 Statement st = stmts.next(); //NOSONAR
@@ -88,21 +90,23 @@ public class FedoraFixityClient {
             /* parse the fixity part of the RDF response */
             final Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, uri + "/fcr:fixity");
-            StmtIterator sts=null;
-            try{
+            StmtIterator sts = null;
+            try {
                 sts = model.listStatements(model.createResource(uri),
                         RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
                 if (!sts.hasNext()) {
                     sts.close();
-                    throw new IOException("No fixity information available for " +
-                            uri);
+                    throw new IOException(
+                            "No fixity information available for " +
+                                    uri);
                 }
-                Statement st = sts.next();  //NOSONAR
+                Statement st = sts.next(); //NOSONAR
                 final Resource res = st.getObject().asResource();
 
                 /* parse the checksum from the model */
                 st =
-                        model.listStatements(res, RdfLexicon.HAS_COMPUTED_CHECKSUM,
+                        model.listStatements(res,
+                                RdfLexicon.HAS_COMPUTED_CHECKSUM,
                                 (RDFNode) null).next();
                 final String checksum = st.getObject().asResource().getURI();
 
@@ -134,13 +138,35 @@ public class FedoraFixityClient {
                         break;
                     default:
                         throw new IOException(
-                                "Unabel to handle results of unkwonn type");
+                                "Unable to handle results of unknown type");
                 }
-            }finally{
+            } finally {
                 sts.close();
             }
         }
         return results;
     }
 
+    /**
+     * @param objectUri
+     * @return
+     */
+    public List<String> retrieveDatatstreamUris(String objectUri) {
+        final Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, objectUri);
+        final StmtIterator sts =
+                model.listStatements(null, RdfLexicon.HAS_MIXIN_TYPE,
+                        "fedora:datastream");
+        try {
+            List<String> result = new ArrayList<>();
+            while (sts.hasNext()) {
+                final Statement st = sts.next(); //NOSONAR
+                final String dsUri = st.getResource().getURI();
+                result.add(dsUri);
+            }
+            return result;
+        } finally {
+            sts.close();
+        }
+    }
 }
