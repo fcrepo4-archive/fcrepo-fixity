@@ -1,0 +1,251 @@
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9>
+      <info:fedora/exportsAs>
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/fcr:export> ;
+      <info:fedora/hasVersions>
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/fcr:versions> .
+@prefix dc:      <http://purl.org/dc/terms/> .
+@prefix nt:      <http://www.jcp.org/jcr/nt/1.0> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix fedora-internal:  <info:fedora/fedora-system:def/internal#> .
+@prefix test:    <info:fedora/test/> .
+@prefix xs:      <http://www.w3.org/2001/XMLSchema> .
+@prefix image:   <http://www.modeshape.org/images/1.0> .
+@prefix xml:     <http://www.w3.org/XML/1998/namespace> .
+@prefix fedorarelsext:  <info:fedora/fedora-system:def/relations-external#> .
+@prefix mix:     <http://www.jcp.org/jcr/mix/1.0> .
+@prefix mode:    <http://www.modeshape.org/1.0> .
+@prefix sv:      <http://www.jcp.org/jcr/sv/1.0> .
+@prefix xsi:     <http://www.w3.org/2001/XMLSchema-instance> .
+@prefix fedora:  <info:fedora/> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds3>
+      fedora-internal:baseVersion
+              <info:fedora/jcr:system/jcr:versionStorage/63/51/c4/6351c4c2f9adb489d3ee6b87f5cd4c47e228e5ea/jcr:rootVersion> ;
+      fedora-internal:created
+              "2013-06-06T17:31:37.713+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:createdby
+              "<anonymous>" ;
+      fedora-internal:hasContent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds3/fcr:content> ;
+      fedora-internal:hasParent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9> ;
+      fedora-internal:isCheckedOut
+              "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:37.627+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mixinTypes
+              "fedora:datastream" , "fedora:resource" ;
+      fedora-internal:predecessors
+              <info:fedora/jcr:system/jcr:versionStorage/63/51/c4/6351c4c2f9adb489d3ee6b87f5cd4c47e228e5ea/jcr:rootVersion> ;
+      fedora-internal:primaryType
+              "nt:file" ;
+      fedora-internal:uuid
+              "39f5340b-06ca-493e-8ebe-151376448cf1" ;
+      fedora-internal:versionHistory
+              <info:fedora/jcr:system/jcr:versionStorage/63/51/c4/6351c4c2f9adb489d3ee6b87f5cd4c47e228e5ea> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9>
+      fedora-internal:baseVersion
+              <info:fedora/jcr:system/jcr:versionStorage/f5/d9/ef/f5d9ef6c72e6666885765bcafd8b1bc9553277f2/jcr:rootVersion> ;
+      fedora-internal:created
+              "2013-06-06T17:23:56.197+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:createdby
+              "<anonymous>" ;
+      fedora-internal:hasChild
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds3> , <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds1> , <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds2> , <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds4> ;
+      fedora-internal:hasParent
+              <http://localhost:8080/fcrepo/rest/objects> ;
+      fedora-internal:isCheckedOut
+              "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:46.553+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mixinTypes
+              "fedora:resource" , "fedora:object" ;
+      fedora-internal:numberOfChildren
+              "4"^^<http://www.w3.org/2001/XMLSchema#long> ;
+      fedora-internal:predecessors
+              <info:fedora/jcr:system/jcr:versionStorage/f5/d9/ef/f5d9ef6c72e6666885765bcafd8b1bc9553277f2/jcr:rootVersion> ;
+      fedora-internal:primaryType
+              "nt:folder" ;
+      fedora-internal:uuid
+              "8ee3e314-0d87-4189-a1a6-66189ec7ce81" ;
+      fedora-internal:versionHistory
+              <info:fedora/jcr:system/jcr:versionStorage/f5/d9/ef/f5d9ef6c72e6666885765bcafd8b1bc9553277f2> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds4/fcr:content>
+      fedora:digest <urn:sha1:271415213f58bc7d4f144167549513f713a33e96> ;
+      fedora-internal:hasLocation
+              "/org.modeshape.jcr.value.binary.infinispan.InfinispanBinaryStore:FedoraRepositoryBinaryData:org.infinispan.loaders.file.FileCacheStore:target/FedoraRepositoryBinaryData/storage" ;
+      fedora-internal:isContentOf
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds4> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:46.553+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mimeType
+              "application/x-www-form-urlencoded" ;
+      fedora-internal:mixinTypes
+              "fedora:binary" ;
+      fedora-internal:primaryType
+              "nt:resource" ;
+      fedora:size "5"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds2/fcr:content>
+      fedora:digest <urn:sha1:62cdb7020ff920e5aa642c3d4066950dd1f01f4d> ;
+      fedora-internal:hasLocation
+              "/org.modeshape.jcr.value.binary.infinispan.InfinispanBinaryStore:FedoraRepositoryBinaryData:org.infinispan.loaders.file.FileCacheStore:target/FedoraRepositoryBinaryData/storage" ;
+      fedora-internal:isContentOf
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds2> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:31.030+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mimeType
+              "application/x-www-form-urlencoded" ;
+      fedora-internal:mixinTypes
+              "fedora:binary" ;
+      fedora-internal:primaryType
+              "nt:resource" ;
+      fedora:size "3"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://localhost:8080/fcrepo/rest/objects>
+      fedora-internal:created
+              "2013-06-06T16:42:13.517+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:primaryType
+              "nt:folder" .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds1/fcr:content>
+      fedora:digest <urn:sha1:0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33> ;
+      fedora-internal:hasLocation
+              "/org.modeshape.jcr.value.binary.infinispan.InfinispanBinaryStore:FedoraRepositoryBinaryData:org.infinispan.loaders.file.FileCacheStore:target/FedoraRepositoryBinaryData/storage" ;
+      fedora-internal:isContentOf
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds1> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:23.111+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mimeType
+              "application/x-www-form-urlencoded" ;
+      fedora-internal:mixinTypes
+              "fedora:binary" ;
+      fedora-internal:primaryType
+              "nt:resource" ;
+      fedora:size "3"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds1>
+      fedora-internal:baseVersion
+              <info:fedora/jcr:system/jcr:versionStorage/3c/b1/ec/3cb1ec30fc2f0177dbd5daf10c7a5c81d493213a/jcr:rootVersion> ;
+      fedora-internal:created
+              "2013-06-06T17:31:23.111+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:createdby
+              "<anonymous>" ;
+      fedora-internal:hasContent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds1/fcr:content> ;
+      fedora-internal:hasParent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9> ;
+      fedora-internal:isCheckedOut
+              "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:22.967+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mixinTypes
+              "fedora:datastream" , "fedora:resource" ;
+      fedora-internal:predecessors
+              <info:fedora/jcr:system/jcr:versionStorage/3c/b1/ec/3cb1ec30fc2f0177dbd5daf10c7a5c81d493213a/jcr:rootVersion> ;
+      fedora-internal:primaryType
+              "nt:file" ;
+      fedora-internal:uuid
+              "52beac73-a346-4541-98be-b8dc24164c62" ;
+      fedora-internal:versionHistory
+              <info:fedora/jcr:system/jcr:versionStorage/3c/b1/ec/3cb1ec30fc2f0177dbd5daf10c7a5c81d493213a> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds2>
+      fedora-internal:baseVersion
+              <info:fedora/jcr:system/jcr:versionStorage/8b/28/89/8b2889a381abe642b4a82d6a6009906cbf26ddee/jcr:rootVersion> ;
+      fedora-internal:created
+              "2013-06-06T17:31:31.030+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:createdby
+              "<anonymous>" ;
+      fedora-internal:hasContent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds2/fcr:content> ;
+      fedora-internal:hasParent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9> ;
+      fedora-internal:isCheckedOut
+              "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:30.925+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mixinTypes
+              "fedora:datastream" , "fedora:resource" ;
+      fedora-internal:predecessors
+              <info:fedora/jcr:system/jcr:versionStorage/8b/28/89/8b2889a381abe642b4a82d6a6009906cbf26ddee/jcr:rootVersion> ;
+      fedora-internal:primaryType
+              "nt:file" ;
+      fedora-internal:uuid
+              "3a0e3ef9-304a-47a2-8d6b-d06dbfd228ab" ;
+      fedora-internal:versionHistory
+              <info:fedora/jcr:system/jcr:versionStorage/8b/28/89/8b2889a381abe642b4a82d6a6009906cbf26ddee> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds3/fcr:content>
+      fedora:digest <urn:sha1:5f910decd4d67b76f24e2e3df5a5ec8d0b13b6d0> ;
+      fedora-internal:hasLocation
+              "/org.modeshape.jcr.value.binary.infinispan.InfinispanBinaryStore:FedoraRepositoryBinaryData:org.infinispan.loaders.file.FileCacheStore:target/FedoraRepositoryBinaryData/storage" ;
+      fedora-internal:isContentOf
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds3> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:37.713+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mimeType
+              "application/x-www-form-urlencoded" ;
+      fedora-internal:mixinTypes
+              "fedora:binary" ;
+      fedora-internal:primaryType
+              "nt:resource" ;
+      fedora:size "4"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds4>
+      fedora-internal:baseVersion
+              <info:fedora/jcr:system/jcr:versionStorage/41/df/52/41df5205faf3b8d707d99d7d59e7663f14603557/jcr:rootVersion> ;
+      fedora-internal:created
+              "2013-06-06T17:31:46.553+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:createdBy
+              "<anonymous>" ;
+      fedora-internal:createdby
+              "<anonymous>" ;
+      fedora-internal:hasContent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9/ds4/fcr:content> ;
+      fedora-internal:hasParent
+              <http://localhost:8080/fcrepo/rest/objects/c4d91780-6bdf-40a5-add5-6bc703e153a9> ;
+      fedora-internal:isCheckedOut
+              "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+      fedora-internal:lastModified
+              "2013-06-06T17:31:46.467+02:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+      fedora-internal:lastModifiedBy
+              "<anonymous>" ;
+      fedora-internal:mixinTypes
+              "fedora:datastream" , "fedora:resource" ;
+      fedora-internal:predecessors
+              <info:fedora/jcr:system/jcr:versionStorage/41/df/52/41df5205faf3b8d707d99d7d59e7663f14603557/jcr:rootVersion> ;
+      fedora-internal:primaryType
+              "nt:file" ;
+      fedora-internal:uuid
+              "0895cdab-86bc-4cc7-bfa7-d7148c72fa01" ;
+      fedora-internal:versionHistory
+              <info:fedora/jcr:system/jcr:versionStorage/41/df/52/41df5205faf3b8d707d99d7d59e7663f14603557> .
