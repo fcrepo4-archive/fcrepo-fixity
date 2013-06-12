@@ -56,7 +56,8 @@ public class FedoraFixityClient {
             /* parse the RDF N3 response using Apache Jena */
             final Model model = ModelFactory.createDefaultModel();
             try {
-                RDFDataMgr.read(model, sourceUri, Lang.N3);
+                LOG.info("reading model for {} from parent URI {}",parentUri,sourceUri);
+                RDFDataMgr.read(model, sourceUri);
             } catch (HttpException e) {
                 stmts.close();
                 throw new IOException("Unable to fetch uris from " + parentUri,
