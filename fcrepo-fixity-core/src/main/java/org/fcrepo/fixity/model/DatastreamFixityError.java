@@ -26,6 +26,11 @@ public class DatastreamFixityError extends DatastreamFixityResult {
         super(uri, ResultType.ERROR);
     }
 
+    public DatastreamFixityError(String uri, String details) {
+        super(uri, ResultType.ERROR);
+        this.details = details;
+    }
+
     @Column(name = "ERROR_DETAILS")
     private String details;
 

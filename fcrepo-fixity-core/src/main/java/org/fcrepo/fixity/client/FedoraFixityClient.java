@@ -15,8 +15,8 @@ import org.fcrepo.RdfLexicon;
 import org.fcrepo.fixity.model.DatastreamFixityError;
 import org.fcrepo.fixity.model.DatastreamFixityRepaired;
 import org.fcrepo.fixity.model.DatastreamFixityResult;
-import org.fcrepo.fixity.model.DatastreamFixityResult.ResultType;
 import org.fcrepo.fixity.model.DatastreamFixitySuccess;
+import org.fcrepo.utils.FixityResult.FixityState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -122,7 +122,7 @@ public class FedoraFixityClient {
                 st =
                         model.listStatements(res, RdfLexicon.HAS_FIXITY_STATE,
                                 (RDFNode) null).next();
-                final String state = st.getObject().asLiteral().getString();
+                final String stateName = st.getObject().asLiteral().getString();
 
                 /* parse the location */
                 st =
@@ -130,13 +130,16 @@ public class FedoraFixityClient {
                                 (RDFNode) null).next();
                 final String location = st.getObject().asResource().getURI();
 
-                LOG.debug("Found fixity information: [{}, {}, {}]", state,
+                LOG.debug("Found fixity information: [{}, {}, {}]", stateName,
                         checksum, location);
 
-                ResultType type = ResultType.valueOf(state);
-                switch (type) {
-                    case ERROR:
-                        results.add(new DatastreamFixityError(uri));
+                FixityState state = FixityState.valueOf(stateName);
+                switch (state) {
+                    case BAD_CHECKSUM:
+                        results.add(new DatastreamFixityError(uri,"Datastream has the wrong Checksum"));
+                        break;
+                    case BAD_SIZE:
+                        results.add(new DatastreamFixityError(uri,"Datastream has a bad size"));
                         break;
                     case SUCCESS:
                         results.add(new DatastreamFixitySuccess(uri));

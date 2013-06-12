@@ -111,17 +111,31 @@
 		$('#piechart').empty();
 		var r = Raphael("piechart");
 		var chart_data = new Array();
-		chart_data[0] = generalStats.numSuccesses;
+		var legend = new Array();
+		var colors = new Array();
+		var numResultTypes=0;
+		if (generalStats.numSuccesses > 0){
+			chart_data[numResultTypes] = generalStats.numSuccesses;
+			legend[numResultTypes] = '%%.%% - Success';
+			colors[numResultTypes] = '#00ff00';
+			numResultTypes++;
+		}
 		if (generalStats.numErrors > 0) {
-			chart_data[1] = generalStats.numErrors;
+			chart_data[numResultTypes] = generalStats.numErrors;
+			legend[numResultTypes] = '%%.%% - Error';
+			colors[numResultTypes] = '#ff0000';
+			numResultTypes++;
 		}
 		if (generalStats.numRepairs > 0) {
-			chart_data[2] = generalStats.numRepairs;
+			chart_data[numResultTypes] = generalStats.numErrors;
+			legend[numResultTypes] = '%%.%% - Repaired';
+			colors[numResultTypes] = '#ffff00';
+			numResultTypes++;
 		}
 		pie = r.piechart(290, 190, 120, chart_data, {
-			legend : [ "%%.%% - Success", "%%.%% - Error", "%%.%% - Repaired" ],
+			legend : legend,
 			legendpos : "east",
-			colors : [ '#00ff00', '#ff0000', '#ffff00' ]
+			colors : colors
 		});
 		label = r.label(128,40,"Overall errors vs. successes");
 	}
