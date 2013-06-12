@@ -6,12 +6,7 @@
 
   <context:property-placeholder />
 
-  <bean id="containerWrapper" class="org.fcrepo.test.util.ContainerWrapper"
-    init-method="start" destroy-method="stop">
-    <property name="port" value="${test.port:8080}" />
-    <property name="contextConfigLocations"
-      value="classpath:integration-tests/repo.xml, classpath:integration-tests/rest.xml, classpath:integration-tests/eventing.xml" />
-    <property name="packagesToScan"
-      value="org.fcrepo.api, org.fcrepo.responses, org.fcrepo.exceptionhandlers" />
-  </bean>
-</beans>
+  <bean id="containerWrapper" class="org.fcrepo.test.util.ContainerWrapper" init-method="start" destroy-method="stop" >
+    <property name="port" value="${test.port:8080}"/>
+    <property name="configLocation" value="classpath:web.xml" />
+  </bean></beans>

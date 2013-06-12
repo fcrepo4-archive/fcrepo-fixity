@@ -32,7 +32,7 @@ public class FedoraFixitClientTest {
         List<String> objectUris =
                 this.client.retrieveUris(responseUri.toASCIIString(),"http://localhost:8080/fcrepo/rest/objects");
         assertNotNull(objectUris);
-        assertTrue(objectUris.size() == 3);
+        assertTrue(objectUris.size() == 2);
     }
     @Test
     public void testRetrieveDatastreams() throws Exception {
@@ -43,6 +43,6 @@ public class FedoraFixitClientTest {
         assertEquals("file", responseUri.getScheme());
         List<String> objectUris =this.client.retrieveDatatstreamUris(responseUri.toASCIIString());
         assertNotNull(objectUris);
-        assertTrue(objectUris.size() == 4);
+        assertTrue(objectUris.size() == 3);
     }
 }
