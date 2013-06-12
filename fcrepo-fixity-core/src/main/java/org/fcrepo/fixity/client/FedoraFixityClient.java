@@ -79,9 +79,6 @@ public class FedoraFixityClient {
                 LOG.debug("adding '" + uri + "' to retrieveUris results");
             }
             return uris;
-        } catch (IOException e) {
-            LOG.error("Unable to fetch object urls", e);
-            throw e;
         } finally {
             if (stmts != null) {
                 stmts.close();
