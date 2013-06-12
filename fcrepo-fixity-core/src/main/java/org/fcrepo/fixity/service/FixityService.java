@@ -183,7 +183,7 @@ public class FixityService {
         result.setUri(uri);
 
         /*
-         * order is important here , since erros override repaires and both
+         * order is important here , since errors override repaires and both
          * override successes
          */
         if (!successes.isEmpty()) {

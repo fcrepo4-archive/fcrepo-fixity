@@ -173,6 +173,12 @@
       <artifactId>jersey-grizzly2</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.fcrepo</groupId>
+      <artifactId>fcrepo-object-serialization</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
