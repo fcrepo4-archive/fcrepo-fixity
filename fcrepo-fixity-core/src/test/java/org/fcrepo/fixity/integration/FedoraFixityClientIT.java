@@ -54,7 +54,7 @@ public class FedoraFixityClientIT {
 
         List<String> uris =
                 this.fixityClient.retrieveUris(serverAddress + "/rest/objects");
-        String createdUri = serverAddress + createdPid;
+        String createdUri = serverAddress + "/rest" + createdPid;
         assertTrue("created pid not found in fixity client request", uris
                 .contains(createdUri));
     }
