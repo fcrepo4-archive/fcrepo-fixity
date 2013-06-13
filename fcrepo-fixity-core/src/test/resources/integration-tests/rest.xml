@@ -10,7 +10,10 @@
 
   <!-- Mints PIDs-->
   <bean class="org.fcrepo.identifiers.UUIDPidMinter"/>
-
+  
+  <!-- Transaction Service bean for Injection -->
+  <bean class="org.fcrepo.services.TransactionService" />
+  
   <context:annotation-config/>
 
   <context:component-scan
