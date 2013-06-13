@@ -5,6 +5,7 @@
 package org.fcrepo.fixity.web.resources;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -12,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -81,16 +83,12 @@ public class FixityResults {
 
     @Path("/queue")
     @POST
-    public Response queueFixityChecks() throws IOException {
-        fixityService.queueFixityChecks(null);
-        return Response.ok().build();
-    }
-
-    @Path("/queue/{uri}")
-    @POST
-    public Response queueFixityChecks(@PathParam("uri")
-    final String uri) throws IOException {
-        fixityService.queueFixityCheck(uri);
+    public Response queueFixityChecks(@QueryParam("url") final String url) throws IOException {
+        if (url == null || url.length() == 0){
+            fixityService.queueFixityChecks(null);
+        }else{
+            fixityService.queueFixityChecks(Arrays.asList(url));
+        }
         return Response.ok().build();
     }
 

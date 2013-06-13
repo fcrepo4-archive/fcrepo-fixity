@@ -39,7 +39,8 @@ $(document).ready(function() {
 		.focusin(function(){
 			if (this.value == "All Objects"){
 				this.value = "";
-				$('#queueButton').val("Queue PID");
+				$('#queueButton').val("Queue Object");
+				$('#queueButton').tooltip("Queue an object for fixity checks e.g. 'http://localhost:8080/fcrepo/rest/objects/object-1'");
 			}
 		});
 

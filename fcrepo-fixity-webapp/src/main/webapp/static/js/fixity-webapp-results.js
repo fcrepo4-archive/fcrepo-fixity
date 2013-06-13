@@ -67,7 +67,7 @@
 	function queuePid(pid){
 		var path = '../fixity-results/queue';
 		if (pid != "All Objects"){
-			path = '../rest/results/queue?pid=' + pid;
+			path = '../fixity-results/queue?url=' + encodeURIComponent(pid);
 		}
 		$.post(path, function (data) {
 			location.reload(true);
