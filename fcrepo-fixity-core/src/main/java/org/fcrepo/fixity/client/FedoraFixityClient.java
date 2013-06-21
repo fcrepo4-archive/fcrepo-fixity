@@ -59,7 +59,6 @@ public class FedoraFixityClient {
                 LOG.info("reading model for {} from parent URI {}",parentUri,sourceUri);
                 RDFDataMgr.read(model, sourceUri);
             } catch (HttpException e) {
-                stmts.close();
                 throw new IOException("Unable to fetch uris from " + parentUri,
                         e);
             }
