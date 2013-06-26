@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author frank asseg
- *
  */
 @Service("fixityDatabaseService")
 public class HibernateDatabaseService implements FixityDatabaseService {
@@ -81,10 +80,11 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public DailyStatistics getFixityStatisticForDate(Date date) {
         final Session sess = this.sessionFactory.openSession();
         try {
-            DailyStatistics stat = (DailyStatistics) sess.createCriteria(
-                    DailyStatistics.class)
-                    .add(Restrictions.eq("statisticsDate", date))
-                    .uniqueResult();
+            DailyStatistics stat =
+                    (DailyStatistics) sess
+                            .createCriteria(DailyStatistics.class).add(
+                                    Restrictions.eq("statisticsDate", date))
+                            .uniqueResult();
             if (stat == null) {
                 stat = new DailyStatistics();
                 stat.setStatisticsDate(new Date());
@@ -106,9 +106,8 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public List<ObjectFixityResult> getResults(String uri) {
         Session sess = sessionFactory.openSession();
         try {
-            return sess.createCriteria(ObjectFixityResult.class)
-                    .add(Restrictions.eq("uri", uri))
-                    .list();
+            return sess.createCriteria(ObjectFixityResult.class).add(
+                    Restrictions.eq("uri", uri)).list();
         } finally {
             sess.close();
         }
@@ -116,9 +115,8 @@ public class HibernateDatabaseService implements FixityDatabaseService {
 
     /*
      * (non-Javadoc)
-     * @see
-     * org.fcrepo.fixity.db.FixityDatabaseService#addResults(java.util.Collection
-     * )
+     * @see org.fcrepo.fixity.db.FixityDatabaseService
+     * #addResults(java.util.Collection)
      */
     @Override
     @Transactional
@@ -138,10 +136,8 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public List<ObjectFixityResult> getResults(int offset, int length) {
         Session sess = sessionFactory.openSession();
         try {
-            return sess.createCriteria(ObjectFixityResult.class)
-                    .setMaxResults(length)
-                    .setFirstResult(offset)
-                    .list();
+            return sess.createCriteria(ObjectFixityResult.class).setMaxResults(
+                    length).setFirstResult(offset).list();
         } finally {
             sess.close();
         }
@@ -157,8 +153,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(ObjectFixityResult.class)
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .setProjection(Projections.rowCount()).uniqueResult();
         } finally {
             sess.close();
         }
@@ -174,8 +169,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixityError.class)
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .setProjection(Projections.rowCount()).uniqueResult();
         } finally {
             sess.close();
         }
@@ -191,8 +185,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixitySuccess.class)
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .setProjection(Projections.rowCount()).uniqueResult();
         } finally {
             sess.close();
         }
@@ -208,8 +201,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(DatastreamFixityRepaired.class)
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .setProjection(Projections.rowCount()).uniqueResult();
         } finally {
             sess.close();
         }
@@ -225,8 +217,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             return (Long) sess.createCriteria(ObjectFixityResult.class)
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .setProjection(Projections.rowCount()).uniqueResult();
         } finally {
             sess.close();
         }
@@ -258,7 +249,7 @@ public class HibernateDatabaseService implements FixityDatabaseService {
     public List<DailyStatistics> getDailyStatistics() {
         final Session sess = sessionFactory.openSession();
         try {
-            return  sess.createCriteria(DailyStatistics.class).list();
+            return sess.createCriteria(DailyStatistics.class).list();
         } finally {
             sess.close();
         }
@@ -322,9 +313,9 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         final Session sess = sessionFactory.openSession();
         try {
             sess.createQuery(
-                    String.format(
-                            "delete from ObjectFixityResult o where o.resultId='%s'",
-                            resultId)).executeUpdate();
+                    String.format("delete from ObjectFixityResult o "
+                            + "where o.resultId='%s'", resultId))
+                    .executeUpdate();
             sess.flush();
         } finally {
             sess.close();
@@ -345,14 +336,18 @@ public class HibernateDatabaseService implements FixityDatabaseService {
         return stats;
     }
 
-    /* (non-Javadoc)
-     * @see org.fcrepo.fixity.db.FixityDatabaseService#getDatastreamFixityResult(long)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.fcrepo.fixity.db.FixityDatabaseService#getDatastreamFixityResult(
+     * long)
      */
     @Override
     public DatastreamFixityResult getDatastreamFixityResult(long id) {
         final Session sess = sessionFactory.openSession();
         try {
-            return (DatastreamFixityResult) sess.get(DatastreamFixityResult.class, id);
+            return (DatastreamFixityResult) sess.get(
+                    DatastreamFixityResult.class, id);
         } finally {
             sess.close();
         }

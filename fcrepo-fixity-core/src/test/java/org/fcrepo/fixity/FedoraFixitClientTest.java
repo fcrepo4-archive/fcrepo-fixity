@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package org.fcrepo.fixity;
 
@@ -16,7 +13,6 @@ import org.junit.Test;
 
 /**
  * @author frank asseg
- *
  */
 public class FedoraFixitClientTest {
 
@@ -24,24 +20,29 @@ public class FedoraFixitClientTest {
 
     @Test
     public void testRetrieveObjects() throws Exception {
-        URI responseUri = this.getClass().getClassLoader()
-                .getResource("mock-responses/response-turtle-objects.n3")
-                .toURI();
+        URI responseUri =
+                this.getClass().getClassLoader().getResource(
+                        "mock-responses/response-turtle-objects.n3").toURI();
         assertNotNull(responseUri);
         assertEquals("file", responseUri.getScheme());
         List<String> objectUris =
-                this.client.retrieveUris(responseUri.toASCIIString(),"http://localhost:8080/fcrepo/rest/objects");
+                this.client.retrieveUris(responseUri.toASCIIString(),
+                        "http://localhost:8080/fcrepo/rest/objects");
         assertNotNull(objectUris);
         assertTrue(objectUris.size() == 2);
     }
+
     @Test
     public void testRetrieveDatastreams() throws Exception {
-        URI responseUri = this.getClass().getClassLoader()
-                .getResource("mock-responses/response-turtle-datastreams.n3")
-                .toURI();
+        URI responseUri =
+                this.getClass().getClassLoader().getResource(
+                        "mock-responses/response-turtle-datastreams.n3")
+                        .toURI();
         assertNotNull(responseUri);
         assertEquals("file", responseUri.getScheme());
-        List<String> objectUris =this.client.retrieveDatatstreamUris(responseUri.toASCIIString());
+        List<String> objectUris =
+                this.client
+                        .retrieveDatatstreamUris(responseUri.toASCIIString());
         assertNotNull(objectUris);
         assertTrue(objectUris.size() == 3);
     }

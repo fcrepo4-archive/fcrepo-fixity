@@ -11,16 +11,23 @@ import org.fcrepo.fixity.service.FixityService;
 
 /**
  * @author frank asseg
- *
  */
 @Entity
-@XmlRootElement(name="success", namespace=FixityService.FIXITY_NAMESPACE)
+@XmlRootElement(name = "success", namespace = FixityService.FIXITY_NAMESPACE)
 public class DatastreamFixitySuccess extends DatastreamFixityResult {
 
+    /**
+     * TODO
+     */
     public DatastreamFixitySuccess() {
         super(ResultType.SUCCESS);
     }
 
+    /**
+     * TODO
+     * 
+     * @param uri
+     */
     public DatastreamFixitySuccess(String uri) {
         super(uri, ResultType.SUCCESS);
     }

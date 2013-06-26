@@ -26,20 +26,26 @@ public class FixityJaxbContextResolver implements ContextResolver<JAXBContext> {
 
     private final JAXBContext context;
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(FixityJaxbContextResolver.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(FixityJaxbContextResolver.class);
 
+    /**
+     * TODO
+     */
     public FixityJaxbContextResolver() {
         try {
 
             context =
                     JAXBContext.newInstance(DailyStatistics.class,
                             Statistics.class, DatastreamFixityResult.class,
-                            DatastreamFixityError.class, DatastreamFixityRepaired.class,
-                            DatastreamFixitySuccess.class, ObjectFixityResult.class);
+                            DatastreamFixityError.class,
+                            DatastreamFixityRepaired.class,
+                            DatastreamFixitySuccess.class,
+                            ObjectFixityResult.class);
         } catch (JAXBException e) {
-            LOG.error(e.getMessage(),e);
-            throw new IllegalStateException("Not able to instantiate Jaxb context",e);
+            LOG.error(e.getMessage(), e);
+            throw new IllegalStateException(
+                    "Not able to instantiate Jaxb context", e);
         }
     }
 

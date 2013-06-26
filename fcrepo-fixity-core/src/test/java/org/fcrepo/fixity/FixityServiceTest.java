@@ -1,9 +1,5 @@
-/**
- *
- */
 
 package org.fcrepo.fixity;
-
 
 import java.util.Arrays;
 
@@ -15,12 +11,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
 /**
  * @author frank asseg
- *
  */
-public class FixityServiceTest{
+public class FixityServiceTest {
 
     private final FixityService fixityService = new FixityService();
 
@@ -29,23 +23,32 @@ public class FixityServiceTest{
         JmsTemplate mockJms = Mockito.mock(JmsTemplate.class);
         TestHelper.setField(this.fixityService, "fixityJmsTemplate", mockJms);
 
-        this.fixityService.queueFixityChecks(Arrays.asList("/objects/testob1", "/objects/testob2"));
+        this.fixityService.queueFixityChecks(Arrays.asList("/objects/testob1",
+                "/objects/testob2"));
 
-        /* check that a JMS message is actually queued via the service's JmsTemplate */
-        Mockito.verify(mockJms, Mockito.times(2)).send(Mockito.any(MessageCreator.class));
+        /*
+         * check that a JMS message is actually queued via the service's
+         * JmsTemplate
+         */
+        Mockito.verify(mockJms, Mockito.times(2)).send(
+                Mockito.any(MessageCreator.class));
     }
 
     @Test
     public void testConsumeFixityMessage() throws Exception {
         /* setup the mocks for the unit test */
         FedoraFixityClient mockClient = Mockito.mock(FedoraFixityClient.class);
-        FixityDatabaseService mockDb= Mockito.mock(FixityDatabaseService.class);
+        FixityDatabaseService mockDb =
+                Mockito.mock(FixityDatabaseService.class);
         TestHelper.setField(this.fixityService, "databaseService", mockDb);
         TestHelper.setField(this.fixityService, "fixityClient", mockClient);
 
         /* setup an appropriate response from the mock */
         String parentUri = "http://localhost:8080/objects/testobj1";
-        Mockito.when(mockClient.retrieveDatatstreamUris(Mockito.any(String.class))).thenReturn(Arrays.asList(parentUri + "/ds1", parentUri + "/ds2"));
+        Mockito.when(
+                mockClient.retrieveDatatstreamUris(Mockito.any(String.class)))
+                .thenReturn(
+                        Arrays.asList(parentUri + "/ds1", parentUri + "/ds2"));
 
         this.fixityService.consumeFixityMessage(parentUri);
 

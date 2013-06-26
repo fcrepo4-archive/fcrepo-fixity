@@ -8,7 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.fcrepo.fixity.service.FixityService;
 
-@XmlRootElement(name = "general-stat", namespace = FixityService.FIXITY_NAMESPACE)
+@XmlRootElement(name = "general-stat",
+        namespace = FixityService.FIXITY_NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Statistics {
 
@@ -24,34 +25,74 @@ public class Statistics {
     @XmlAttribute(name = "repair-count")
     private long repairCount;
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public long getNumObjects() {
         return numObjects;
     }
 
+    /**
+     * TODO
+     * 
+     * @param numObjects
+     */
     public void setNumObjects(long numObjects) {
         this.numObjects = numObjects;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public long getNumErrors() {
         return errorCount;
     }
 
+    /**
+     * TODO
+     * 
+     * @param numErrors
+     */
     public void setErrorCount(long numErrors) {
         this.errorCount = numErrors;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public long getSuccessCount() {
         return successCount;
     }
 
+    /**
+     * TODO
+     * 
+     * @param successCount
+     */
     public void setSuccessCount(long successCount) {
         this.successCount = successCount;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public long getRepairCount() {
         return this.repairCount;
     }
 
+    /**
+     * TODO
+     * 
+     * @param repairCount
+     */
     public void setRepairCount(long repairCount) {
         this.repairCount = repairCount;
     }

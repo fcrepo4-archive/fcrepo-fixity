@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author frank asseg
- *
  */
 @Path("/fixity-results")
 @Component
@@ -42,12 +41,24 @@ public class FixityResults {
     @Autowired
     private FixityDatabaseService databaseService;
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<ObjectFixityResult> getAllResults() {
         return databaseService.getResults(0, MAX_RESULTS);
     }
 
+    /**
+     * TODO
+     * 
+     * @param offset
+     * @param length
+     * @return
+     */
     @Path("/{offset}/{length}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     @GET
@@ -58,40 +69,76 @@ public class FixityResults {
         return databaseService.getResults(offset, length);
     }
 
+    /**
+     * TODO
+     * 
+     * @param id
+     * @return
+     */
     @Path("/datastream/details/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     @GET
-    public DatastreamFixityResult getDatastreamFixityResult(@PathParam("id") final long id) {
+    public DatastreamFixityResult getDatastreamFixityResult(
+            @PathParam("id")
+            final long id) {
         return databaseService.getDatastreamFixityResult(id);
     }
 
+    /**
+     * TODO
+     * 
+     * @param uri
+     * @return
+     */
     @Path("/{pid}")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-    public List<ObjectFixityResult> getResults(@PathParam("uri")
-    String uri) {
+    public List<ObjectFixityResult> getResults(
+            @PathParam("uri")
+            String uri) {
         return databaseService.getResults(uri);
     }
 
+    /**
+     * TODO
+     * 
+     * @param recordId
+     * @return
+     */
     @Path("/details/{recordId}")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-    public ObjectFixityResult getResult(@PathParam("recordId")
-    long recordId) {
+    public ObjectFixityResult getResult(
+            @PathParam("recordId")
+            long recordId) {
         return databaseService.getResult(recordId);
     }
 
+    /**
+     * TODO
+     * 
+     * @param url
+     * @return
+     * @throws IOException
+     */
     @Path("/queue")
     @POST
-    public Response queueFixityChecks(@QueryParam("url") final String url) throws IOException {
-        if (url == null || url.length() == 0){
+    public Response queueFixityChecks(
+            @QueryParam("url")
+            final String url) throws IOException {
+        if (url == null || url.length() == 0) {
             fixityService.queueFixityChecks(null);
-        }else{
+        } else {
             fixityService.queueFixityChecks(Arrays.asList(url));
         }
         return Response.ok().build();
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     @Path("/statistics-daily")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
@@ -99,6 +146,11 @@ public class FixityResults {
         return databaseService.getDailyStatistics();
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     @Path("/statistics")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})

@@ -30,9 +30,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
  * This class is responsible for interaction with the Fedora Repository
- *
+ * 
  * @author frank asseg
- *
  */
 @Service("fixityClient")
 public class FedoraFixityClient {
@@ -42,21 +41,33 @@ public class FedoraFixityClient {
 
     /**
      * Fetch all the identifiers of objects which have a given parent
-     * @param parentUri The URI of the parent (e.g. http://localhost:8080/rest/objects)
+     * 
+     * @param parentUri
+     *        The URI of the parent (e.g. http://localhost:8080/rest/objects)
      * @return A {@link List} containing the URIs of the child objects
      */
     public List<String> retrieveUris(String parentUri) throws IOException {
-        return retrieveUris(parentUri,parentUri);
+        return retrieveUris(parentUri, parentUri);
     }
 
-    public List<String> retrieveUris(String sourceUri, String parentUri) throws IOException {
-        /* fetch a RDF Description of the parent form the repository */
+    /**
+     * TODO
+     * 
+     * @param sourceUri TODO
+     * @param parentUri TODO
+     * @return TODO
+     * @throws IOException
+     */
+    public List<String> retrieveUris(String sourceUri, String parentUri)
+        throws IOException {
+        /* fetch a RDF Description of the parent from the repository */
         StmtIterator stmts = null;
         try {
             /* parse the RDF N3 response using Apache Jena */
             final Model model = ModelFactory.createDefaultModel();
             try {
-                LOG.info("reading model for {} from parent URI {}",parentUri,sourceUri);
+                LOG.info("reading model for {} from parent URI {}", parentUri,
+                        sourceUri);
                 RDFDataMgr.read(model, sourceUri);
             } catch (HttpException e) {
                 throw new IOException("Unable to fetch uris from " + parentUri,
@@ -72,7 +83,7 @@ public class FedoraFixityClient {
                             RdfLexicon.HAS_CHILD, (RDFNode) null);
             final List<String> uris = new ArrayList<>();
             while (stmts.hasNext()) {
-                Statement st = stmts.next(); //NOSONAR
+                Statement st = stmts.next(); // NOSONAR
                 String uri = st.getObject().asResource().getURI();
                 uris.add(uri);
                 LOG.debug("adding '" + uri + "' to retrieveUris results");
@@ -87,7 +98,8 @@ public class FedoraFixityClient {
 
     /**
      * Request a datastream fixity check execution from Fedora an
-     * @param uri the URI of the Fedora datastream
+     * 
+     * @param datastreamUris a List of the Fedora datastream URIs
      */
     public List<DatastreamFixityResult> requestFixityChecks(
             final List<String> datastreamUris) throws IOException {
@@ -96,18 +108,18 @@ public class FedoraFixityClient {
         for (final String uri : datastreamUris) {
             /* parse the fixity part of the RDF response */
             final Model model = ModelFactory.createDefaultModel();
-            RDFDataMgr.read(model, uri + "/fcr:fixity",Lang.N3);
+            RDFDataMgr.read(model, uri + "/fcr:fixity", Lang.N3);
             StmtIterator sts = null;
             try {
-                sts = model.listStatements(model.createResource(uri),
-                        RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
+                sts =
+                        model.listStatements(model.createResource(uri),
+                                RdfLexicon.HAS_FIXITY_RESULT, (RDFNode) null);
                 if (!sts.hasNext()) {
                     sts.close();
                     throw new IOException(
-                            "No fixity information available for " +
-                                    uri);
+                            "No fixity information available for " + uri);
                 }
-                Statement st = sts.next(); //NOSONAR
+                Statement st = sts.next(); // NOSONAR
                 final Resource res = st.getObject().asResource();
 
                 /* parse the checksum from the model */
@@ -135,10 +147,12 @@ public class FedoraFixityClient {
                 FixityState state = FixityState.valueOf(stateName);
                 switch (state) {
                     case BAD_CHECKSUM:
-                        results.add(new DatastreamFixityError(uri,"Datastream has the wrong Checksum"));
+                        results.add(new DatastreamFixityError(uri,
+                                "Datastream has the wrong Checksum"));
                         break;
                     case BAD_SIZE:
-                        results.add(new DatastreamFixityError(uri,"Datastream has a bad size"));
+                        results.add(new DatastreamFixityError(uri,
+                                "Datastream has a bad size"));
                         break;
                     case SUCCESS:
                         results.add(new DatastreamFixitySuccess(uri));
@@ -167,11 +181,12 @@ public class FedoraFixityClient {
         final Model model = ModelFactory.createDefaultModel();
         RDFDataMgr.read(model, objectUri);
         final StmtIterator sts =
-                model.listStatements(null, RdfLexicon.HAS_MIXIN_TYPE, "fedora:datastream");
+                model.listStatements(null, RdfLexicon.HAS_MIXIN_TYPE,
+                        "fedora:datastream");
         try {
             List<String> result = new ArrayList<>();
             while (sts.hasNext()) {
-                final Statement st = sts.next(); //NOSONAR
+                final Statement st = sts.next(); // NOSONAR
                 final String dsUri = st.getSubject().asResource().getURI();
                 result.add(dsUri);
             }

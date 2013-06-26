@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package org.fcrepo.fixity.integration;
 
@@ -27,7 +24,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author frank asseg
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/integration-tests/test-container.xml",
@@ -188,6 +184,7 @@ public class FixityDatabaseServiceIT {
         assertEquals(1, stats.get(0).getSuccessCount());
         assertEquals(1, stats.get(0).getRepairCount());
     }
+
     @Test
     public void testRetrieveEmptyStatistics() throws Exception {
         /* ceate two ObjectFixityResults to persist in the database */

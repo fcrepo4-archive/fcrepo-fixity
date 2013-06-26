@@ -23,15 +23,17 @@ import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * @author frank asseg
- *
  */
 @Entity
-@Table(name="FIXITY_DATASTREAM_RESULTS")
-@DiscriminatorColumn(name="RESULT_DISCRIMINATOR",discriminatorType=DiscriminatorType.INTEGER)
-@DiscriminatorOptions(force=true)
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@XmlRootElement(name="datastream-fixity-result", namespace = FixityService.FIXITY_NAMESPACE)
-@XmlSeeAlso({DatastreamFixitySuccess.class, DatastreamFixityError.class, DatastreamFixityRepaired.class})
+@Table(name = "FIXITY_DATASTREAM_RESULTS")
+@DiscriminatorColumn(name = "RESULT_DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorOptions(force = true)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@XmlRootElement(name = "datastream-fixity-result",
+        namespace = FixityService.FIXITY_NAMESPACE)
+@XmlSeeAlso({DatastreamFixitySuccess.class, DatastreamFixityError.class,
+        DatastreamFixityRepaired.class})
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class DatastreamFixityResult {
 
@@ -62,22 +64,47 @@ public abstract class DatastreamFixityResult {
         this.uri = uri;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public String getUri() {
         return uri;
     }
 
+    /**
+     * TODO
+     * 
+     * @param uri
+     */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public long getResultId() {
         return resultId;
     }
 
+    /**
+     * TODO
+     * 
+     * @param resultId
+     */
     public void setResultId(long resultId) {
         this.resultId = resultId;
     }
 
+    /**
+     * TODO
+     * 
+     * @return
+     */
     public ResultType getType() {
         return type;
     }

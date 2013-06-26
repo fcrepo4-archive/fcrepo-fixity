@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package org.fcrepo.fixity.integration;
 
@@ -26,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author frank asseg
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/integration-tests/test-container.xml",
@@ -68,7 +64,8 @@ public class FedoraFixityClientIT {
         assertEquals("Unable to create Object", 201, resp.getStatusLine()
                 .getStatusCode());
         String objectUri =
-                serverAddress + "/rest" + EntityUtils.toString(resp.getEntity());
+                serverAddress + "/rest" +
+                        EntityUtils.toString(resp.getEntity());
         postObject.releaseConnection();
 
         /* add two datastreams to the object for checksumming tests */

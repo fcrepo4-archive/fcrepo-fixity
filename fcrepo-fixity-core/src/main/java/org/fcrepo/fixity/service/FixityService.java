@@ -29,11 +29,12 @@ import org.springframework.jms.listener.adapter.ListenerExecutionFailedException
 import org.springframework.stereotype.Service;
 
 /**
- * This class is responsible for producing and consuming fixity messages form the JMS Queue
- * Message production is achieved via a User's call to queueFixityCheck()
- * Messages are consumed in the private consumeMessage() method and corresponding fixity checks are run
+ * This class is responsible for producing and consuming fixity messages form
+ * the JMS Queue Message production is achieved via a User's call to
+ * queueFixityCheck() Messages are consumed in the private consumeMessage()
+ * method and corresponding fixity checks are run
+ * 
  * @author frank asseg
- *
  */
 @Service("fixityService")
 public class FixityService {
@@ -63,17 +64,23 @@ public class FixityService {
         this.fedoraFolderUri = fedoraFolderUri;
     }
 
+    /**
+     * TODO
+     */
     @PostConstruct
-    public void afterPropertiesSet(){
+    public void afterPropertiesSet() {
         if (fedoraFolderUri == null) {
-            throw new IllegalStateException(
-                    "fedoraFolderUri property has to be set via spring configuration or the system property 'org.fcrepo.fixity.fcrepo.url' to e.g. 'http://{fedora-host}:{port}/rest/objects");
+            throw new IllegalStateException("fedoraFolderUri property must "
+                    + "be set via spring configuration or the system property "
+                    + "'org.fcrepo.fixity.fcrepo.url' to e.g. "
+                    + "'http://{fedora-host}:{port}/rest/objects");
         }
     }
 
     /**
      * Queue a List of object URIs for fixity checks
-     * @param uri the uri of the object to queue
+     * 
+     * @param uris the URIs of the objects to queue
      */
     public void queueFixityChecks(final List<String> uris) throws IOException {
         List<String> queueElements = uris;
@@ -81,11 +88,13 @@ public class FixityService {
             /* no pid was given, so queue all objects */
             queueElements = fixityClient.retrieveUris(this.fedoraFolderUri);
             if (queueElements == null) {
-                LOG.warn("Fixity check was requested for all objects, but no objects could be discovered in the repository at " +
-                        this.fedoraFolderUri);
+                LOG.warn(
+                        "Fixity check was requested for all objects, "
+                        + "but no objects could be discovered in the "
+                        + "repository at {}", this.fedoraFolderUri);
                 return;
             }
-        }else{
+        } else {
             queueElements = uris;
         }
         for (String uri : queueElements) {
@@ -95,6 +104,7 @@ public class FixityService {
 
     /**
      * Queue a single object for a fixity check
+     * 
      * @param uri the Uri of the Object to queue
      */
     public void queueFixityCheck(final String uri) {
@@ -111,8 +121,11 @@ public class FixityService {
     }
 
     /**
-     * Consume a fixity message published to the JMS queue and act on fixity check requests
-     * @param uri the text of the {@link Message} which is supposed to be a object uri
+     * Consume a fixity message published to the JMS queue and act on fixity
+     * check requests
+     * 
+     * @param uri the text of the {@link Message} which is supposed to be a
+     *        object uri
      */
     public void consumeFixityMessage(String uri) throws JMSException {
         LOG.debug("received fixity request for object {}", uri);
@@ -123,7 +136,7 @@ public class FixityService {
              */
             final ObjectFixityResult result = this.checkObjectFixity(uri);
             /* save the new result to the database */
-            if (result != null){
+            if (result != null) {
                 this.databaseService.addResult(result);
             }
         } catch (IOException e) {
@@ -135,19 +148,22 @@ public class FixityService {
 
     /**
      * Request fixity check execution from the Fedora repository
-     * @return the {@link ObjectFixityResult} or null if no result could be created
+     * 
+     * @return the {@link ObjectFixityResult} or null if no result could be
+     *         created
      */
     private ObjectFixityResult checkObjectFixity(final String uri)
-            throws IOException {
+        throws IOException {
         /*
          * fetch a list of the object's datastreams for getting their fixity
          * information
          */
-        final List<String> datastreamUris = this.fixityClient.retrieveDatatstreamUris(uri);
-        LOG.debug("discovered {} datastream URIs for Object {}",
-                datastreamUris.size(), uri);
+        final List<String> datastreamUris =
+                this.fixityClient.retrieveDatatstreamUris(uri);
+        LOG.debug("discovered {} datastream URIs for Object {}", datastreamUris
+                .size(), uri);
 
-        if (datastreamUris.isEmpty()){
+        if (datastreamUris.isEmpty()) {
             LOG.warn("Unable to generate fixity result for object without datastreams");
             return null;
         }
@@ -168,9 +184,8 @@ public class FixityService {
             } else if (dr instanceof DatastreamFixityError) {
                 errors.add((DatastreamFixityError) dr);
             } else {
-                LOG.error(
-                        "Unable to handle result type of datasstream fixity result: {}",
-                        dr.getType());
+                LOG.error("Unable to handle result type of datasstream "
+                        + "fixity result: {}", dr.getType());
             }
         }
 
